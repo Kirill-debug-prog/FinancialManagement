@@ -34,9 +34,18 @@ function CardDescription ({className, ...props}) {
     )
 }
 
+function CardContent({className, ...props}) {
+    return (
+        <div className={`cardContents ${className}`}
+        {...props}
+        />
+    )
+}
+
 export  {
     Card,
     CardHeader,
     CradTitle,
     CardDescription,
+    CardContent,
 }

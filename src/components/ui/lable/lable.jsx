@@ -1,10 +1,10 @@
 import React from "react";
 import './lable.css'
 
-function Lable({clasNAme, ...props}) {
+function Lable({clasName, ...props}) {
     return (
         <label 
-        className={`lable ${clasNAme || ""}`} 
+        className={`lable ${clasName || ""}`} 
         {...props} />
     )
 };

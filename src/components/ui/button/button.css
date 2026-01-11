@@ -48,7 +48,7 @@
 .btn-transparent {
     display: inline-flex;
     justify-content: flex-start;
-    width: 133px;
+    width: auto;
     padding: 0;
     background-color: transparent;
     color: #000000;
@@ -67,4 +67,9 @@
 
 .btn-blue:active {
     background-image: linear-gradient(to right, #0057FF, rgba(17, 62, 154, 0.8));
+}
+
+.btn-green {
+    background-color: rgba(13, 176, 42, 1);
+    color: white;
 }

@@ -37,3 +37,11 @@
     margin: 0;
     padding: 0;
 }
+
+.cardContents {
+    padding-inline: 14px;
+}
+
+.cardContents:last-child {
+    padding-bottom: 20px;
+}
