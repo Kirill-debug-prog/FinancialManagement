@@ -1,7 +1,7 @@
 import React from "react";
-import './lable.css'
+import './label.css'
 
-function Lable({clasName, ...props}) {
+function Label({clasName, ...props}) {
     return (
         <label 
         className={`lable ${clasName || ""}`} 
@@ -9,4 +9,4 @@ function Lable({clasName, ...props}) {
     )
 };
 
-export {Lable};
+export {Label};

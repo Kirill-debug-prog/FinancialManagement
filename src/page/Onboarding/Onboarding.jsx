@@ -5,7 +5,7 @@ import { CheckCircle, Wallet, DollarSign, Tag, TrendingUp } from 'lucide-react';
 import '../Onboarding/Onboarding.css'
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { Lable } from '../../components/ui/lable/lable';
+import { Label } from '../../components/ui/label/label';
 import { Button } from '../../components/ui/button/button'
 
 
@@ -127,7 +127,7 @@ function Onboarding({ onComplete }) {
                             </div>
 
                             <div className='onboarding__data'>
-                                <Lable className='onboarding__data-lable' htmlFor='user-name'>Имя пользователя</Lable>
+                                <Label className='onboarding__data-lable' htmlFor='user-name'>Имя пользователя</Label>
                                 <Input
                                     id='user-name'
                                     placeholder='Иван'
@@ -229,7 +229,7 @@ function Onboarding({ onComplete }) {
                             </div>
 
                             <div className='onboarding__data'>
-                                <Lable className='onboarding__data-lable' htmlFor='account-name'>Название счета</Lable>
+                                <Label className='onboarding__data-lable' htmlFor='account-name'>Название счета</Label>
                                 <Input
                                     id='account-name'
                                     placeholder='Например: основная карта'
@@ -282,7 +282,7 @@ function Onboarding({ onComplete }) {
                             </div>
 
                             <div className='onboarding__data'>
-                                <Lable className='onboarding__data-lable' htmlFor='initial-balance'>Наличный баланс</Lable>
+                                <Label className='onboarding__data-lable' htmlFor='initial-balance'>Наличный баланс</Label>
                                 <div className="onboarding__data-input-box">
                                     <CurrencyInputs
                                         id='initial-balance'

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Card, CardHeader, CradTitle, CardDescription } from "../../components/ui/card/card";
 import './Auth.css'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs/tabs";
-import { Lable } from "../../components/ui/lable/lable";
+import { Label } from "../../components/ui/label/label";
 import { Input } from "../../components/ui/input_data/input";
 import { Button } from "../../components/ui/button/button";
 import { toast } from "sonner";
@@ -54,7 +54,7 @@ function Auth({ onLogin }) {
                     <TabsContent value="login" >
                         <form className="container" onSubmit={handleLoginSubmit}>
                             <div className="data-container">
-                                <Lable className="login-lable" htmlFor="login-email">Email</Lable>
+                                <Label className="login-lable" htmlFor="login-email">Email</Label>
                                 <Input className="login-input" 
                                 type="email" 
                                 id="login-email" 
@@ -63,7 +63,7 @@ function Auth({ onLogin }) {
                                 onChange={(e) => setLoginEmail(e.target.value)} />
                             </div>
                             <div className="data-container">
-                                <Lable className="login-lable" htmlFor="login-register">Парль</Lable>
+                                <Label className="login-lable" htmlFor="login-register">Парль</Label>
                                 <Input className="login-input" 
                                 type="password" 
                                 id="login-register" 
@@ -91,7 +91,7 @@ function Auth({ onLogin }) {
                     <TabsContent value="register">
                         <form className="container" onSubmit={handleRegisterSubmit}>
                             <div className="data-container">
-                                <Lable className="register-lable" htmlFor="register-email">Email</Lable>
+                                <Label className="register-lable" htmlFor="register-email">Email</Label>
                                 <Input className="register-input" 
                                 type="email" 
                                 id="register-email" 
@@ -100,7 +100,7 @@ function Auth({ onLogin }) {
                                 onChange={(e) => setRegisterEmail(e.target.value)} />
                             </div>
                             <div className="data-container">
-                                <Lable className="register-lable" htmlFor="register-register">Парль</Lable>
+                                <Label className="register-lable" htmlFor="register-register">Парль</Label>
                                 <Input className="register-input" 
                                 type="password" 
                                 id="register-register" 
@@ -109,7 +109,7 @@ function Auth({ onLogin }) {
                                 onChange={(e) => setRegisterPassword(e.target.value)} />
                             </div>
                             <div className="data-container">
-                                <Lable className="register-lable" htmlFor="register-register">Подтвердить пароль</Lable>
+                                <Label className="register-lable" htmlFor="register-register">Подтвердить пароль</Label>
                                 <Input className="register-input" 
                                 type="password" 
                                 id="register-register" 

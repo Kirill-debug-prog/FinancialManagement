@@ -1,6 +1,6 @@
 import React from "react";
 import CurrencyInput from 'react-currency-input-field';
-import './input.css'
+import './input.scss'
 
 function Input({ className, type, ...props }) {
     return (

@@ -1,0 +1,98 @@
+@use '../../../assets/styles/variables.scss' as *;
+@use '../../../assets/styles/base/typography' as *;
+
+.sidebar {
+    width: 256px;
+    height: 100vh;
+
+    font-family: 'Inter', sans-serif;
+}
+
+.sidebar__container {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    row-gap: 10px;
+
+    width: 100%;
+    height: 100%;
+    padding: 24px;
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.sidebar__header {
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.sidebar__title {
+    color: $color-text;
+    text-align: center;
+}
+
+.siebar__nav {}
+
+.sidebar__menu {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-direction: column;
+    row-gap: 8px;
+
+    li {
+        width: 100%;
+
+        button {
+            width: 100%;
+        }
+    }
+}
+
+button {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    column-gap: 12px;
+
+    padding: $space-sm $space-md;
+
+    font-size: 16px;
+    font-weight: 500;
+    color: $text-gray;
+
+    cursor: pointer;
+}
+
+.sidebar__item,
+.sidebar__help {
+
+    &:hover,
+    &--active {
+        background-color: rgba(231, 242, 254, 1);
+        color: rgba(17, 90, 219, 1);
+        border-radius: 8px;
+    }
+
+    @extend .text-base;
+}
+
+.sidebar__menu li:nth-child(9) .sidebar__item,
+.sidebar__footer {
+    padding-top: 10px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.sidebar__help {
+    width : 100%;
+}
+
+.sidebar__logout {
+    width: 100%;
+    color: rgba(213, 95, 90, 1);
+
+    &:hover {
+        background-color: rgba(254, 231, 230, 1);
+        border-radius: 8px;
+    }
+}

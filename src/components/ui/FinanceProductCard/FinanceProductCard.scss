@@ -1,0 +1,79 @@
+@use '../../../assets/styles/variables.scss' as *;
+
+.finance-card {
+    border: 1px solid $border-input;
+    border-radius: 12px;
+    padding: 16px;
+    background: #fff;
+}
+
+.finance-card__header {
+    display: flex;
+    justify-content: space-between;
+    gap: $space-md;
+}
+
+.finance-card__badges {
+    display: flex;
+    gap: 8px;
+    margin-top: $space-md;
+}
+
+.finance-card__amount {
+    text-align: right;
+}
+
+.finance-card__label {
+    font-size: 1rem;
+    color: $text-gray;
+}
+
+.finance-card__positive {
+    color: $green;
+}
+
+.finance-card__value {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.finance-card__content {
+    margin-top: $space-md;
+    display: flex;
+    flex-direction: column;
+    gap: $space-md;
+}
+
+.finance-card__progress-info {
+    display: flex;
+    justify-content: space-between;
+    color: $text-gray;
+    margin-bottom: 6px;
+}
+
+.finance-card__progress-bar {
+    width: 100%;
+}
+
+.finance-card__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $space-lg;
+
+    @media (min-width: 768px) {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.finance-card__column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    row-gap: 5px;
+}
+
+.finance-card__actions {
+    display: flex;
+    gap: $space-md;
+}

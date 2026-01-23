@@ -1,0 +1,167 @@
+@use '../../assets/styles/base/typography' as *;
+@use '../../assets/styles/variables.scss' as *;
+@use "sass:color";
+
+
+//! потом убрать
+.window {
+    display: grid;
+    grid-template-columns: 256px 1fr;
+    overflow: hidden;
+    height: 100vh;
+}
+
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 24px 15px;
+    overflow: auto;
+
+    /* Header */
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    &__subtitle {
+        color: $text-gray;
+
+        @extend .text-xl;
+    }
+
+    &__add-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        padding: 10px 16px;
+        background-color: $blue;
+        color: $white;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+
+        transition: background-color 0.2s ease;
+
+        &:hover {
+            background-color: color.adjust($blue, $lightness: -6%);
+        }
+    }
+
+    /* Cards grid */
+    &__cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+    }
+
+    /* Charts grid */
+    &__charts {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+
+        @media (max-width: 1024px) {
+            grid-template-columns: 1fr;
+        }
+    }
+}
+
+
+.card {
+    background-color: $white;
+    padding: 16px;
+    border-radius: 12px;
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: $text-gray;
+    }
+
+    &__title {
+        font-size: 16px;
+        font-weight: 500;
+    }
+
+    &__value {
+        font-size: 22px;
+        font-weight: 600;
+
+        &--blue {
+            color: $blue;
+        }
+
+        &--green {
+            color: $green;
+        }
+
+        &--red {
+            color: $red;
+        }
+    }
+
+    &__hint {
+        margin-top: 4px;
+        color: $text-gray;
+
+        @extend .text-sm;
+    }
+}
+
+
+.icon {
+    &--blue {
+        color: $blue;
+    }
+
+    &--green {
+        color: $green;
+    }
+
+    &--red {
+        color: $red;
+    }
+}
+
+
+.payments {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.payment {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 12px;
+    background-color: $gray-50;
+    border-radius: 15px;
+
+    &__name {
+        margin-bottom:10px;
+    }
+
+    &__category {
+        font-size: 16px;
+        color: $text-gray;
+    }
+
+    &__right {
+        text-align: right;
+
+        h4 {
+            margin-bottom:10px;
+        }
+
+        span {
+            font-size: 16px;
+            color: $text-gray;
+        }
+    }
+}

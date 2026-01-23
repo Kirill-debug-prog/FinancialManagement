@@ -1,0 +1,156 @@
+@use '../../assets/styles/base/typography' as *;
+@use '../../assets/styles/variables.scss' as *;
+@use "sass:color";
+
+.transactions {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    font-family: 'Inter', system-ui;
+}
+
+.transactions__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.transactions__title-block {
+    display: flex;
+    flex-direction: column;
+}
+
+.transactions__subtitle {
+    margin: 4px 0 0;
+    color: $text-gray;
+
+        @extend .text-xl;
+}
+
+.transactions__add-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 10px 16px;
+    background-color: $blue;
+    color: $white;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+
+    transition: background-color 0.2s ease;
+
+    &:hover {
+        background-color: color.adjust($blue, $lightness: -6%);
+    }
+}
+
+.transactions__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+}
+
+.transactions__search {
+    position: relative;
+    flex: 1 1 320px;
+}
+
+.transactions__search-icon {
+    position: absolute;
+    left: 9px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+}
+
+.transactions__search-input {
+    padding-left: 36px;
+    width: 100%;
+}
+
+.transactions__select {
+    flex: 0 0 200px;
+}
+
+.transactions__select-trigger {
+    width: 100%;
+}
+
+.transactions__card {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-direction: column;
+    width: 100%;
+    padding: 23px 26px;
+    box-shadow: none;
+    border: 1px solid $border-input;
+}
+
+.card-content {
+    padding: 0;
+}
+
+.transactions__card-content {
+    width: 100%;
+    padding: 0;
+}
+
+.transactions__table-wrapper {
+    overflow-x: auto;
+}
+
+.transactions__row-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.transactions__card-btn {
+    width: auto;
+    padding-inline: 2px;
+
+    :hover {
+        color: rgb(138, 139, 141);
+    }
+}
+
+.transactions__amount {
+    text-align: right;
+}
+
+.transactions__amount.is--income {
+    color: #16a34a;
+}
+
+.transactions__amount.is--expense {
+    color: #dc2626;
+}
+
+.transactions__amount.is--transfer {
+    color: #2563eb;
+}
+
+.transactions__empty {
+    text-align: center;
+    padding: 48px 0;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.transactions__dialog {
+    max-width: 720px;
+}
+
+.icon {
+    width: 18px;
+    height: 18px;
+}
+
+.icon--left {
+    margin-right: 8px;
+}

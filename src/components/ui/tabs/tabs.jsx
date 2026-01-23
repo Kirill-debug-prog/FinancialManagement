@@ -1,5 +1,5 @@
 import * as React from "react";
-import './tabs.css'
+import './tabs.scss'
 import * as TabsPrimitive from "@radix-ui/react-tabs";
 
 function Tabs({ className, ...props }) {

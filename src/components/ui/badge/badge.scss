@@ -1,0 +1,77 @@
+@use '../../../assets/styles/variables.scss' as *;
+@use "sass:color";
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    width: fit-content;
+    gap: 4px;
+
+    border: 1px solid transparent;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+
+    svg {
+        width: 12px;
+        height: 12px;
+        pointer-events: none;
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4);
+    }
+
+    /* variants */
+
+    &--blue {
+        background-color: $blue;
+        color: $white;
+    }
+
+    &--green {
+        background-color: $green;
+        color: $white;
+    }
+
+    &--yellow {
+        background-color: $yellow;
+        color: $white;
+    }
+
+    &--purple {
+        background-color: $purple;
+        color: $white;
+    }
+
+    &--indigo {
+        background-color: $indigo;
+        color: $white;
+    }
+
+    &--default   {
+        background-color: #e5e7eb;
+        color: #111827;
+    }
+
+    &--red {
+        background-color: $red;
+        color: $white;
+    }
+
+    &--outline {
+        background-color: transparent;
+        border-color: #d1d5db;
+        color: #111827;
+
+        &:hover {
+            background-color: #f3f4f6;
+        }
+    }
+}
