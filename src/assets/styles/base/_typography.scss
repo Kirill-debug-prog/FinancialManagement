@@ -1,0 +1,128 @@
+html {
+    font-size: 16px;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Headings */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--color-text);
+    margin: 0;
+}
+
+h1 {
+    font-size: 1.5rem;
+    /* 24px */
+}
+
+h2 {
+    font-size: 1.25rem;
+    /* 20px */
+}
+
+h3 {
+    font-size: 1.125rem;
+    /* 18px */
+}
+
+h4 {
+    font-size: 1.1rem;
+    /* 16px */
+}
+
+h5 {
+    font-size: 0.875rem;
+    /* 14px */
+}
+
+h6 {
+    font-size: 0.75rem;
+    /* 12px */
+}
+
+/* Paragraphs & text */
+
+p {
+    margin: 0;
+    color: var(--color-text);
+}
+
+small {
+    font-size: 0.875rem;
+}
+
+/* Utility text classes */
+
+.text-xs {
+    font-size: 0.75rem;
+    /* 12px */
+}
+
+.text-sm {
+    font-size: 0.875rem;
+    /* 14px */
+}
+
+.text-base {
+    font-size: 1rem;
+    /* 16px */
+}
+
+.text-lg {
+    font-size: 1.125rem;
+    /* 18px */
+}
+
+.text-xl {
+    font-size: 1.25rem;
+    /* 20px */
+}
+
+/* Font weight */
+
+.font-normal {
+    font-weight: 400;
+}
+
+.font-medium {
+    font-weight: 500;
+}
+
+.font-semibold {
+    font-weight: 600;
+}
+
+.font-bold {
+    font-weight: 700;
+}
+
+/* Text alignment */
+
+.text-left {
+    text-align: left;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+/* Links */
+a {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
