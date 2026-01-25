@@ -1,4 +1,4 @@
-import React, { useState } from "react";   
+import { useState } from "react";
 import { Card, CardHeader, CradTitle, CardDescription } from "../../components/ui/card/card";
 import './Auth.css'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs/tabs";
@@ -6,6 +6,7 @@ import { Label } from "../../components/ui/label/label";
 import { Input } from "../../components/ui/input_data/input";
 import { Button } from "../../components/ui/button/button";
 import { toast } from "sonner";
+import { useNavigate } from 'react-router-dom'
 
 function Auth({ onLogin }) {
     const [loginEmail, setLoginEmail] = useState("");
@@ -14,11 +15,14 @@ function Auth({ onLogin }) {
     const [registerPassword, setRegisterPassword] = useState("");
     const [registerConfirmPassword, setRegisterConfirmPassword] = useState("");
 
-    const  handleLoginSubmit = (event) =>  {
+    const navigate = useNavigate()
+
+    const handleLoginSubmit = (event) => {
         event.preventDefault();
         if (loginEmail && loginPassword) {
             toast.success('Вы успешно вошли в систему');
             onLogin(false);
+            navigate('/app/dashboard')
         } else {
             toast.error('Пожалуйста, заполните все поля');
         };
@@ -32,7 +36,8 @@ function Auth({ onLogin }) {
             toast.error('Пароли не совпадают');
         } else {
             toast.success('Регистрация прошла успешно');
-            onLogin(false);
+            onLogin(true);
+            navigate('/welcome')
         }
     };
 
@@ -55,21 +60,21 @@ function Auth({ onLogin }) {
                         <form className="container" onSubmit={handleLoginSubmit}>
                             <div className="data-container">
                                 <Label className="login-lable" htmlFor="login-email">Email</Label>
-                                <Input className="login-input" 
-                                type="email" 
-                                id="login-email" 
-                                placeholder="your@email.com"
-                                value={loginEmail}
-                                onChange={(e) => setLoginEmail(e.target.value)} />
+                                <Input className="login-input"
+                                    type="email"
+                                    id="login-email"
+                                    placeholder="your@email.com"
+                                    value={loginEmail}
+                                    onChange={(e) => setLoginEmail(e.target.value)} />
                             </div>
                             <div className="data-container">
                                 <Label className="login-lable" htmlFor="login-register">Парль</Label>
-                                <Input className="login-input" 
-                                type="password" 
-                                id="login-register" 
-                                placeholder="••••••••"
-                                value={loginPassword}
-                                onChange={(e) => setLoginPassword(e.target.value)} />
+                                <Input className="login-input"
+                                    type="password"
+                                    id="login-register"
+                                    placeholder="••••••••"
+                                    value={loginPassword}
+                                    onChange={(e) => setLoginPassword(e.target.value)} />
                             </div>
                             <div className="data-container">
                                 <Button className="forgot-password-button" variant="transparent" type="button">Забыли пароль?</Button>
@@ -92,30 +97,30 @@ function Auth({ onLogin }) {
                         <form className="container" onSubmit={handleRegisterSubmit}>
                             <div className="data-container">
                                 <Label className="register-lable" htmlFor="register-email">Email</Label>
-                                <Input className="register-input" 
-                                type="email" 
-                                id="register-email" 
-                                placeholder="your@email.com"
-                                value={registerEmail}
-                                onChange={(e) => setRegisterEmail(e.target.value)} />
+                                <Input className="register-input"
+                                    type="email"
+                                    id="register-email"
+                                    placeholder="your@email.com"
+                                    value={registerEmail}
+                                    onChange={(e) => setRegisterEmail(e.target.value)} />
                             </div>
                             <div className="data-container">
                                 <Label className="register-lable" htmlFor="register-register">Парль</Label>
-                                <Input className="register-input" 
-                                type="password" 
-                                id="register-register" 
-                                placeholder="••••••••"
-                                value={registerPassword}
-                                onChange={(e) => setRegisterPassword(e.target.value)} />
+                                <Input className="register-input"
+                                    type="password"
+                                    id="register-register"
+                                    placeholder="••••••••"
+                                    value={registerPassword}
+                                    onChange={(e) => setRegisterPassword(e.target.value)} />
                             </div>
                             <div className="data-container">
                                 <Label className="register-lable" htmlFor="register-register">Подтвердить пароль</Label>
-                                <Input className="register-input" 
-                                type="password" 
-                                id="register-register" 
-                                placeholder="••••••••"
-                                value={registerConfirmPassword}
-                                onChange={(e) => setRegisterConfirmPassword(e.target.value)} />
+                                <Input className="register-input"
+                                    type="password"
+                                    id="register-register"
+                                    placeholder="••••••••"
+                                    value={registerConfirmPassword}
+                                    onChange={(e) => setRegisterConfirmPassword(e.target.value)} />
                             </div>
                             <div className="data-container">
                                 <Button className="register-button" variant="black" type="sumbit">Войти</Button>

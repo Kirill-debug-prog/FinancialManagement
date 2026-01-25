@@ -49,7 +49,8 @@
     }
 }
 
-button {
+button,
+.sidebar__item {
     display: flex;
     justify-content: flex-start;
     align-items: center;
@@ -72,6 +73,7 @@ button {
         background-color: rgba(231, 242, 254, 1);
         color: rgba(17, 90, 219, 1);
         border-radius: 8px;
+        text-decoration: none;
     }
 
     @extend .text-base;

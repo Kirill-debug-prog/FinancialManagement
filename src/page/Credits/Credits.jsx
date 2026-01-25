@@ -111,85 +111,180 @@ export default function Credits() {
     };
 
     return (
-        <div className="window">
-            <AppSidebar />
-            <div className="credits">
-                {/* Header */}
-                <div className="credits__header">
+        <div className="credits">
+            {/* Header */}
+            <div className="credits__header">
+                <div>
+                    <h1 className="credits__title">Кредиты и долги</h1>
+                    <p className="credits__subtitle">Управление займами и обязательствами</p>
+                </div>
+
+                <Dialog open={dialogOpenCredit} onOpenChange={setDialogOpenCredit}>
+                    <DialogTrigger asChild>
+                        <button className="dashboard__add-btn">
+                            <Plus size={18} />
+                            Добавить кредит
+                        </button>
+                    </DialogTrigger>
+
+                    <DialogContent aria-describedby={undefined}>
+                        <DialogHeader>
+                            <DialogTitle>Новый кредит</DialogTitle>
+                        </DialogHeader>
+                        <div className="credit-form">
+                            <div className="credit-form__field">
+                                <Label htmlFor="credit-name">Название *</Label>
+                                <Input
+                                    id="credit-name"
+                                    placeholder="Например: Кредит на авто"
+                                    value={creditName}
+                                    onChange={(e) => setCreditName(e.terget.value)}
+                                />
+                            </div>
+
+                            <div className="credit-form__field">
+                                <Label htmlFor="credit-type">Тип кредита *</Label>
+                                <Select value={creditType} onValueChange={setCreditType}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Выберите тип" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="mortgage">Ипотека</SelectItem>
+                                        <SelectItem value="auto">Автокредит</SelectItem>
+                                        <SelectItem value="consumer">Потребительский</SelectItem>
+                                        <SelectItem value="personal">Личный долг</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            <div className="credit-form__row">
+                                <div className="credit-form__field">
+                                    <Label htmlFor="total-amount">Общая сумма</Label>
+                                    <Input
+                                        id="total-amount"
+                                        placeholder="0"
+                                        type="number"
+                                    />
+                                </div>
+                                <div className="credit-form__field">
+                                    <Label htmlFor="interest-rate">Процентная ставка (%)</Label>
+                                    <Input
+                                        id="interest-rate"
+                                        placeholder="Например: Кредит на авто"
+                                        type="number"
+                                        step="0.1"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="credit-form__row">
+                                <div className="credit-form__field">
+                                    <Label htmlFor="monthly-payment">Ежемесячный платёж</Label>
+                                    <Input
+                                        id="monthly-payment"
+                                        placeholder="0"
+                                        type="number"
+                                    />
+                                </div>
+                                <div className="credit-form__field">
+                                    <Label htmlFor="end-date">Дата окончания</Label>
+                                    <Input
+                                        id="end-date"
+                                        type="date"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="transaction-form__buttons">
+                                <Button type="submit" className="transaction-form__button transaction-form__button--primary" onClick={handleAddCredit}>
+                                    Добавить
+                                </Button>
+                                <Button type="button" variant="outline" className="transaction-form__button transaction-form__button--outline" onClick={() => setDialogOpenCredit(false)}>
+                                    Отмена
+                                </Button>
+                            </div>
+                        </div>
+                    </DialogContent>
+                </Dialog>
+            </div>
+            <div className="credit">
+                <div className="credit__title ">
+                    <span>Мои кредиты</span>
+                </div>
+                <div className="credit__position">
+                    {creditsData.map((credit) => (
+                        <FinanceProductCard
+                            key={credit.id}
+                            variant="credit"
+                            title={credit.name}
+                            typeLabel={getTypeLabel(credit.type)}
+                            statusBadge={getStatusBadge(credit.status)}
+                            remainingAmount={credit.remainingAmount}
+                            totalAmount={credit.totalAmount}
+                            interestRate={credit.interestRate}
+                            monthlyPayment={credit.monthlyPayment}
+                            nextPaymentDate={credit.nextPaymentDate}
+                            endDate={credit.endDate}
+                            actions={[
+                                { label: 'Погасить досрочно', onClick: () => { } },
+                                { label: 'График платежей', onClick: () => { } },
+                                { label: 'Изменить', onClick: () => { } },
+                            ]}
+                        />
+                    ))}
+                </div>
+            </div>
+
+            <div className="debts">
+                <div className="debts__header">
                     <div>
-                        <h1 className="credits__title">Кредиты и долги</h1>
-                        <p className="credits__subtitle">Управление займами и обязательствами</p>
+                        <span className="debts__title ">
+                            Мои долги (дебиторская задолженность)
+                        </span>
                     </div>
 
-                    <Dialog open={dialogOpenCredit} onOpenChange={setDialogOpenCredit}>
+                    <Dialog open={dialogOpenDebts} onOpenChange={setDialogOpenDebts}>
                         <DialogTrigger asChild>
                             <button className="dashboard__add-btn">
                                 <Plus size={18} />
-                                Добавить кредит
+                                Добавить долг
                             </button>
                         </DialogTrigger>
 
                         <DialogContent aria-describedby={undefined}>
                             <DialogHeader>
-                                <DialogTitle>Новый кредит</DialogTitle>
+                                <DialogTitle>Новый долг</DialogTitle>
                             </DialogHeader>
                             <div className="credit-form">
                                 <div className="credit-form__field">
-                                    <Label htmlFor="credit-name">Название *</Label>
+                                    <Label htmlFor="debts-name">Название *</Label>
                                     <Input
-                                        id="credit-name"
-                                        placeholder="Например: Кредит на авто"
-                                        value={creditName}
-                                        onChange={(e) => setCreditName(e.terget.value)}
+                                        id="debts-name"
+                                        placeholder="Например: Занял коллеге"
+                                        value={debtsName}
+                                        onChange={(e) => setDebtsName(e.terget.value)}
                                     />
                                 </div>
 
                                 <div className="credit-form__field">
-                                    <Label htmlFor="credit-type">Тип кредита *</Label>
-                                    <Select value={creditType} onValueChange={setCreditType}>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Выберите тип" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="mortgage">Ипотека</SelectItem>
-                                            <SelectItem value="auto">Автокредит</SelectItem>
-                                            <SelectItem value="consumer">Потребительский</SelectItem>
-                                            <SelectItem value="personal">Личный долг</SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                                    <Label htmlFor="total-amount">Общая сумма</Label>
+                                    <Input
+                                        id="total-amount"
+                                        placeholder="0"
+                                        type="number"
+                                    />
                                 </div>
 
                                 <div className="credit-form__row">
                                     <div className="credit-form__field">
-                                        <Label htmlFor="total-amount">Общая сумма</Label>
+                                        <Label htmlFor="start-date">Дата выдачи*</Label>
                                         <Input
-                                            id="total-amount"
-                                            placeholder="0"
-                                            type="number"
+                                            id="start-date"
+                                            type="date"
                                         />
                                     </div>
                                     <div className="credit-form__field">
-                                        <Label htmlFor="interest-rate">Процентная ставка (%)</Label>
-                                        <Input
-                                            id="interest-rate"
-                                            placeholder="Например: Кредит на авто"
-                                            type="number"
-                                            step="0.1"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="credit-form__row">
-                                    <div className="credit-form__field">
-                                        <Label htmlFor="monthly-payment">Ежемесячный платёж</Label>
-                                        <Input
-                                            id="monthly-payment"
-                                            placeholder="0"
-                                            type="number"
-                                        />
-                                    </div>
-                                    <div className="credit-form__field">
-                                        <Label htmlFor="end-date">Дата окончания</Label>
+                                        <Label htmlFor="end-date">Срок возврата*</Label>
                                         <Input
                                             id="end-date"
                                             type="date"
@@ -201,7 +296,7 @@ export default function Credits() {
                                     <Button type="submit" className="transaction-form__button transaction-form__button--primary" onClick={handleAddCredit}>
                                         Добавить
                                     </Button>
-                                    <Button type="button" variant="outline" className="transaction-form__button transaction-form__button--outline" onClick={() => setDialogOpenCredit(false)}>
+                                    <Button type="button" variant="outline" className="transaction-form__button transaction-form__button--outline" onClick={() => setDialogOpenDebts(false)}>
                                         Отмена
                                     </Button>
                                 </div>
@@ -209,166 +304,68 @@ export default function Credits() {
                         </DialogContent>
                     </Dialog>
                 </div>
-                <div className="credit">
-                    <div className="credit__title ">
-                        <span>Мои кредиты</span>
-                    </div>
-                    <div className="credit__position">
-                        {creditsData.map((credit) => (
-                            <FinanceProductCard
-                                key={credit.id}
-                                variant="credit"
-                                title={credit.name}
-                                typeLabel={getTypeLabel(credit.type)}
-                                statusBadge={getStatusBadge(credit.status)}
-                                remainingAmount={credit.remainingAmount}
-                                totalAmount={credit.totalAmount}
-                                interestRate={credit.interestRate}
-                                monthlyPayment={credit.monthlyPayment}
-                                nextPaymentDate={credit.nextPaymentDate}
-                                endDate={credit.endDate}
-                                actions={[
-                                    { label: 'Погасить досрочно', onClick: () => { } },
-                                    { label: 'График платежей', onClick: () => { } },
-                                    { label: 'Изменить', onClick: () => { } },
-                                ]}
-                            />
-                        ))}
-                    </div>
-                </div>
 
-                <div className="debts">
-                    <div className="debts__header">
-                        <div>
-                            <span className="debts__title ">
-                                Мои долги (дебиторская задолженность)
-                            </span>
-                        </div>
 
-                        <Dialog open={dialogOpenDebts} onOpenChange={setDialogOpenDebts}>
-                            <DialogTrigger asChild>
-                                <button className="dashboard__add-btn">
-                                    <Plus size={18} />
-                                    Добавить долг
-                                </button>
-                            </DialogTrigger>
-
-                            <DialogContent aria-describedby={undefined}>
-                                <DialogHeader>
-                                    <DialogTitle>Новый долг</DialogTitle>
-                                </DialogHeader>
-                                <div className="credit-form">
-                                    <div className="credit-form__field">
-                                        <Label htmlFor="debts-name">Название *</Label>
-                                        <Input
-                                            id="debts-name"
-                                            placeholder="Например: Занял коллеге"
-                                            value={debtsName}
-                                            onChange={(e) => setDebtsName(e.terget.value)}
-                                        />
+                <div className="debts__grid">
+                    {debtsData.map((debt) => (
+                        <Card className="debt-card" key={debt.id}>
+                            <CardHeader>
+                                <div className="debt-card__header">
+                                    <div>
+                                        <h4 className="debt-card__title">
+                                            {debt.name}
+                                        </h4>
+                                        <p className="debt-card__person">
+                                            {debt.person}
+                                        </p>
                                     </div>
 
-                                    <div className="credit-form__field">
-                                        <Label htmlFor="total-amount">Общая сумма</Label>
-                                        <Input
-                                            id="total-amount"
-                                            placeholder="0"
-                                            type="number"
-                                        />
+                                    {getStatusBadge(debt.status)}
+                                </div>
+                            </CardHeader>
+
+                            <CardContent className="card-content">
+                                <div className="debt-card__content">
+                                    <div className="debt-card__row">
+                                        <span className="debt-card__label">Сумма:</span>
+                                        <span className="debt-card__value">
+                                            {debt.amount.toLocaleString('ru-RU')} ₽
+                                        </span>
                                     </div>
 
-                                    <div className="credit-form__row">
-                                        <div className="credit-form__field">
-                                            <Label htmlFor="start-date">Дата выдачи*</Label>
-                                            <Input
-                                                id="start-date"
-                                                type="date"
-                                            />
+                                    <div className="debt-card__row">
+                                        <span className="debt-card__label">Дата выдачи:</span>
+                                        <span className="debt-card__value">
+                                            {new Date(debt.date).toLocaleDateString('ru-RU')}
+                                        </span>
+                                    </div>
+
+                                    <div className="debt-card__row">
+                                        <span className="debt-card__label">Срок возврата:</span>
+                                        <span className="debt-card__value">
+                                            {new Date(debt.returnDate).toLocaleDateString('ru-RU')}
+                                        </span>
+                                    </div>
+
+                                    {debt.status === 'overdue' && (
+                                        <div className="debt-card__alert">
+                                            <AlertCircle size={16} />
+                                            <span>Просрочен</span>
                                         </div>
-                                        <div className="credit-form__field">
-                                            <Label htmlFor="end-date">Срок возврата*</Label>
-                                            <Input
-                                                id="end-date"
-                                                type="date"
-                                            />
-                                        </div>
-                                    </div>
+                                    )}
 
-                                    <div className="transaction-form__buttons">
-                                        <Button type="submit" className="transaction-form__button transaction-form__button--primary" onClick={handleAddCredit}>
-                                            Добавить
+                                    <div className="debt-card__actions">
+                                        <Button size="auto" variant="white">
+                                            Напомнить
                                         </Button>
-                                        <Button type="button" variant="outline" className="transaction-form__button transaction-form__button--outline" onClick={() => setDialogOpenDebts(false)}>
-                                            Отмена
+                                        <Button size="auto" variant="white">
+                                            Получено
                                         </Button>
                                     </div>
                                 </div>
-                            </DialogContent>
-                        </Dialog>
-                    </div>
-
-
-                    <div className="debts__grid">
-                        {debtsData.map((debt) => (
-                            <Card className="debt-card" key={debt.id}>
-                                <CardHeader>
-                                    <div className="debt-card__header">
-                                        <div>
-                                            <h4 className="debt-card__title">
-                                                {debt.name}
-                                            </h4>
-                                            <p className="debt-card__person">
-                                                {debt.person}
-                                            </p>
-                                        </div>
-
-                                        {getStatusBadge(debt.status)}
-                                    </div>
-                                </CardHeader>
-
-                                <CardContent className="card-content">
-                                    <div className="debt-card__content">
-                                        <div className="debt-card__row">
-                                            <span className="debt-card__label">Сумма:</span>
-                                            <span className="debt-card__value">
-                                                {debt.amount.toLocaleString('ru-RU')} ₽
-                                            </span>
-                                        </div>
-
-                                        <div className="debt-card__row">
-                                            <span className="debt-card__label">Дата выдачи:</span>
-                                            <span className="debt-card__value">
-                                                {new Date(debt.date).toLocaleDateString('ru-RU')}
-                                            </span>
-                                        </div>
-
-                                        <div className="debt-card__row">
-                                            <span className="debt-card__label">Срок возврата:</span>
-                                            <span className="debt-card__value">
-                                                {new Date(debt.returnDate).toLocaleDateString('ru-RU')}
-                                            </span>
-                                        </div>
-
-                                        {debt.status === 'overdue' && (
-                                            <div className="debt-card__alert">
-                                                <AlertCircle size={16} />
-                                                <span>Просрочен</span>
-                                            </div>
-                                        )}
-
-                                        <div className="debt-card__actions">
-                                            <Button size="auto" variant="white">
-                                                Напомнить
-                                            </Button>
-                                            <Button size="auto" variant="white">
-                                                Получено
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ))}
-                    </div>
+                            </CardContent>
+                        </Card>
+                    ))}
                 </div>
             </div>
         </div>

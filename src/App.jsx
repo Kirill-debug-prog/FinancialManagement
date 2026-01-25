@@ -1,23 +1,12 @@
-import { useState } from 'react'
+import { Toaster } from 'sonner'
 import './App.css'
-import Auth from './page/Login/Auth'
-import { Toaster } from 'sonner';
-import FirstTimeWelcome from './page/FirstTimeWelcome/FirstTimeWelcome'
-import { Onboarding } from './page/Onboarding/Onboarding';
-import OnboardingSuccess from './page/OnboardingSuccess/OnboardingSuccess';
-import WelcomeModal from './components/ui/WelcomeModel/WelcomeModal';
+import Router from './app/Router.jsx'
 
 function App() {
-
   return (
     <>
-      {/* <Auth />
-      <Toaster/> */}
-      {/* <FirstTimeWelcome /> */}
-      {/* <Onboarding/> */}
-      {/* <OnboardingSuccess userName="Анна" onContinue={() => {}} /> */}
-      <WelcomeModal userName="Анна" onClose={() => {}} />
-      <Toaster/>
+      <Router />
+      <Toaster />
     </>
   )
 }

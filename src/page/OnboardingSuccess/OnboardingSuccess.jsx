@@ -1,8 +1,12 @@
 import { motion } from 'framer-motion';
 import { CheckCircle, Sparkles, TrendingUp, Wallet, BarChart3 } from 'lucide-react';
 import './OnboardingSuccess.css';
+import { useNavigate } from 'react-router-dom'
 
 export default function OnboardingSuccess({ userName, onContinue }) {
+
+    const navigate = useNavigate();
+
     return (
         <div className="onboarding-success">
             <div className="onboarding-success__container">
@@ -81,9 +85,14 @@ export default function OnboardingSuccess({ userName, onContinue }) {
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.6, delay: 1.2 }}
-                    className="onboarding-success__action" 
+                    className="onboarding-success__action"
                 >
-                    <button onClick={onContinue} className="onboarding-success__button">
+                    <button
+                        onClick={() => {
+                            onContinue()
+                            navigate('/app/dashboard')
+                        }}
+                        className="onboarding-success__button">
                         Перейти в приложение
                         <CheckCircle size={18} />
                     </button>

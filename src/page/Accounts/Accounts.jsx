@@ -70,142 +70,139 @@ export default function Accounts() {
     }
 
     return (
-        <div className="window">
-            <AppSidebar currentPage="accounts-window__sidebar" />
-            <div className="accounts">
-                <div className="accounts__header">
-                    <div>
-                        <h1 className="accounts__title">Счета и кошельки</h1>
-                        <p className="accounts__subtitle">Управление вашими счетами</p>
-                    </div>
+        <div className="accounts">
+            <div className="accounts__header">
+                <div>
+                    <h1 className="accounts__title">Счета и кошельки</h1>
+                    <p className="accounts__subtitle">Управление вашими счетами</p>
+                </div>
 
-                    {/* Total Balance */}
-                    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                        <DialogTrigger asChild>
-                            <button className="accounts__add-btn">
-                                <Plus size={18} />
-                                Добавить счёт
-                            </button>
-                        </DialogTrigger>
+                {/* Total Balance */}
+                <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                    <DialogTrigger asChild>
+                        <button className="accounts__add-btn">
+                            <Plus size={18} />
+                            Добавить счёт
+                        </button>
+                    </DialogTrigger>
 
-                        <DialogContent aria-describedby={undefined}>
-                            <DialogHeader>
-                                <DialogTitle>Новый счёт</DialogTitle>
-                            </DialogHeader>
-                            <div className="account__form">
-                                <div className="account__form-field">
-                                    <Label htmlFor="account-name">Название счёта *</Label>
-                                    <Input
-                                        id="account-name"
-                                        placeholder="Например: Основная карта"
-                                        value={accountName}
-                                        onChange={(e) => setAccountName(e.target.value)}
-                                    />
+                    <DialogContent aria-describedby={undefined}>
+                        <DialogHeader>
+                            <DialogTitle>Новый счёт</DialogTitle>
+                        </DialogHeader>
+                        <div className="account__form">
+                            <div className="account__form-field">
+                                <Label htmlFor="account-name">Название счёта *</Label>
+                                <Input
+                                    id="account-name"
+                                    placeholder="Например: Основная карта"
+                                    value={accountName}
+                                    onChange={(e) => setAccountName(e.target.value)}
+                                />
 
-                                    <div className="account__from-field">
-                                        <Label htmlFor="account-type">Тип счёта *</Label>
-                                        <Select value={accountType} onValueChange={setAccountType}>
+                                <div className="account__from-field">
+                                    <Label htmlFor="account-type">Тип счёта *</Label>
+                                    <Select value={accountType} onValueChange={setAccountType}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Выберите тип" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="card">Банковская карта</SelectItem>
+                                            <SelectItem value="cash">Наличные</SelectItem>
+                                            <SelectItem value="savings">Сберегательный счёт</SelectItem>
+                                            <SelectItem value="investment">Инвестиционный счёт</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div className="account__form-row">
+                                    <div className="account__form-field">
+                                        <Label htmlFor="currency">Валюта</Label>
+                                        <Select value={currency} onValueChange={setCurrency}>
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Выберите тип" />
+                                                <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="card">Банковская карта</SelectItem>
-                                                <SelectItem value="cash">Наличные</SelectItem>
-                                                <SelectItem value="savings">Сберегательный счёт</SelectItem>
-                                                <SelectItem value="investment">Инвестиционный счёт</SelectItem>
+                                                <SelectItem value="RUB">RUB (₽)</SelectItem>
+                                                <SelectItem value="USD">USD ($)</SelectItem>
+                                                <SelectItem value="EUR">EUR (€)</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
-
-                                    <div className="account__form-row">
-                                        <div className="account__form-field">
-                                            <Label htmlFor="currency">Валюта</Label>
-                                            <Select value={currency} onValueChange={setCurrency}>
-                                                <SelectTrigger>
-                                                    <SelectValue />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="RUB">RUB (₽)</SelectItem>
-                                                    <SelectItem value="USD">USD ($)</SelectItem>
-                                                    <SelectItem value="EUR">EUR (€)</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                        <div className="account__form-field">
-                                            <Label htmlFor="initial-balance">Начальный баланс</Label>
-                                            <Input
-                                                id="initial-balance"
-                                                type="number"
-                                                placeholder="0"
-                                                value={intialBalance}
-                                                onChange={(e) => setInitialBalance(e.target.value)}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="account__form-buttons">
-                                        <Button onClick={handleAddAccount} className="flex-1">
-                                            Добавить
-                                        </Button>
-                                        <Button variant="outline" className="flex-1" onClick={() => setDialogOpen(false)}>
-                                            Отмена
-                                        </Button>
+                                    <div className="account__form-field">
+                                        <Label htmlFor="initial-balance">Начальный баланс</Label>
+                                        <Input
+                                            id="initial-balance"
+                                            type="number"
+                                            placeholder="0"
+                                            value={intialBalance}
+                                            onChange={(e) => setInitialBalance(e.target.value)}
+                                        />
                                     </div>
                                 </div>
+
+                                <div className="account__form-buttons">
+                                    <Button onClick={handleAddAccount} className="flex-1">
+                                        Добавить
+                                    </Button>
+                                    <Button variant="outline" className="flex-1" onClick={() => setDialogOpen(false)}>
+                                        Отмена
+                                    </Button>
+                                </div>
                             </div>
-                        </DialogContent>
-                    </Dialog>
-                </div>
+                        </div>
+                    </DialogContent>
+                </Dialog>
+            </div>
 
-                <Card className="accounts__balance">
-                    <CardHeader>
-                        <CradTitle className="accounts__balance-title text-xl">Общий баланс</CradTitle>
-                    </CardHeader>
-                    <CardContent className="accounts__balance-content">
-                        <p className="accounts__balance-amount font-semibold text-xl">{totlalBalance.toLocaleString()} ₽</p>
-                        <p className="accounts__balance-subtitle text-lg">Сумма по всем счетам в рублях</p>
-                    </CardContent>
-                </Card>
+            <Card className="accounts__balance">
+                <CardHeader>
+                    <CradTitle className="accounts__balance-title text-xl">Общий баланс</CradTitle>
+                </CardHeader>
+                <CardContent className="accounts__balance-content">
+                    <p className="accounts__balance-amount font-semibold text-xl">{totlalBalance.toLocaleString()} ₽</p>
+                    <p className="accounts__balance-subtitle text-lg">Сумма по всем счетам в рублях</p>
+                </CardContent>
+            </Card>
 
-                {/* Accounts List */}
-                <div className="accounts__list">
-                    {accountsData.map((account) => {
-                        const Icon = account.icon;
-                        return (
-                            <Card key={account.id} className="accounts__card">
-                                <CardHeader>
-                                    <div className="accounts__card-header">
-                                        <div className={`accounts__icon-wrapper`} style={{ backgroundColor: account.color }}>
-                                            <Icon size={30} />
-                                        </div>
-                                        <div className="header-text">
-                                            <CradTitle className="accounts__card-title text-xl font-normal">{account.name}</CradTitle>
-                                            <Badge className="accounts__card-type text-base font-semibold">{getTypeLabel(account.type)}</Badge>
-                                        </div>
+            {/* Accounts List */}
+            <div className="accounts__list">
+                {accountsData.map((account) => {
+                    const Icon = account.icon;
+                    return (
+                        <Card key={account.id} className="accounts__card">
+                            <CardHeader>
+                                <div className="accounts__card-header">
+                                    <div className={`accounts__icon-wrapper`} style={{ backgroundColor: account.color }}>
+                                        <Icon size={30} />
                                     </div>
-                                </CardHeader>
-                                <CardContent className="accounts__card-content">
-                                    <div className="accounts__card-balance text-xl">
-                                        {account.balance.toLocaleString()} {getCurrencySymbol(account.currency)}
+                                    <div className="header-text">
+                                        <CradTitle className="accounts__card-title text-xl font-normal">{account.name}</CradTitle>
+                                        <Badge className="accounts__card-type text-base font-semibold">{getTypeLabel(account.type)}</Badge>
                                     </div>
-                                    <div className="accounts__card-actions">
-                                        <Button variant="white" size="sm" className="accounts__card-action-btn">
-                                            <Edit size={16} />
-                                            Изменить
-                                        </Button>
-                                        <Button variant="white" size="sm" className="accounts__card-action-btn">
-                                            <ArrowRightLeft size={16} />
-                                            Перевести
-                                        </Button>
-                                        <Button variant="white" size="sm" className="accounts__card-action-btn">
-                                            <Trash2 size={16} />
-                                        </Button>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        )
-                    })}
-                </div>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="accounts__card-content">
+                                <div className="accounts__card-balance text-xl">
+                                    {account.balance.toLocaleString()} {getCurrencySymbol(account.currency)}
+                                </div>
+                                <div className="accounts__card-actions">
+                                    <Button variant="white" size="sm" className="accounts__card-action-btn">
+                                        <Edit size={16} />
+                                        Изменить
+                                    </Button>
+                                    <Button variant="white" size="sm" className="accounts__card-action-btn">
+                                        <ArrowRightLeft size={16} />
+                                        Перевести
+                                    </Button>
+                                    <Button variant="white" size="sm" className="accounts__card-action-btn">
+                                        <Trash2 size={16} />
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )
+                })}
             </div>
         </div>
     )

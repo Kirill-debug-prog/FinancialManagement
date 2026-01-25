@@ -10,24 +10,28 @@ import {
     Download,
     Shield,
     LogOut,
-    HelpCircle,    
+    HelpCircle,
 } from 'lucide-react';
+import { NavLink, useNavigate } from 'react-router-dom'
 import './AppSidebar.scss';
 
 const menuItems = [
-    { id: 'dashboard', label: 'Главная', icon: LayoutDashboard },
-    { id: 'accounts', label: 'Счета', icon: Wallet },
-    { id: 'transactions', label: 'Операции', icon: ArrowLeftRight },
-    { id: 'credits', label: 'Кредиты и долги', icon: CreditCard },
-    { id: 'deposits', label: 'Вклады', icon: PiggyBank },
-    { id: 'reports', label: 'Отчёты', icon: BarChart3 },
-    { id: 'notifications', label: 'Уведомления', icon: Bell },
-    { id: 'import', label: 'Импорт/Экспорт', icon: Download },
-    { id: 'settings', label: 'Настройки', icon: Settings },
-    { id: 'admin', label: 'Админ-панель', icon: Shield },
+    { route: '/app/dashboard', label: 'Главная', icon: LayoutDashboard },
+    { route: '/app/accounts', label: 'Счета', icon: Wallet },
+    { route: '/app/transactions', label: 'Операции', icon: ArrowLeftRight },
+    { route: '/app/credits', label: 'Кредиты и долги', icon: CreditCard },
+    { route: '/app/deposits', label: 'Вклады', icon: PiggyBank },
+    { route: '/app/reports', label: 'Отчёты', icon: BarChart3 },
+    { route: '/app/notifications', label: 'Уведомления', icon: Bell },
+    { route: '/app/import', label: 'Импорт/Экспорт', icon: Download },
+    { route: '/app/settings', label: 'Настройки', icon: Settings },
+    { route: '/app/admin', label: 'Админ-панель', icon: Shield },
 ];
 
-export default function AppSidebar({ currentPage, onNavigate }) {
+export default function AppSidebar({onLogout}) {
+
+    const navigate = useNavigate();
+
     return (
         <aside className="sidebar">
             <div className="sidebar__container">
@@ -39,20 +43,18 @@ export default function AppSidebar({ currentPage, onNavigate }) {
                     <ul className="sidebar__menu">
                         {menuItems.map((item) => {
                             const Icon = item.icon;
-                            const isActive = currentPage === item.id;
 
                             return (
-                                <li key={item.id}>
-                                    <button
-                                        onClick={() => {
-                                            onNavigate(item.id);
-                                        }}
-                                        className={`sidebar__item ${isActive ? 'sidebar__item--active' : ''
-                                            }`}
+                                <li key={item.route}>
+                                    <NavLink
+                                        to={item.route}
+                                        className={({ isActive }) =>
+                                            `sidebar__item ${isActive ? 'sidebar__item--active' : ''}`
+                                        }
                                     >
                                         <Icon className="sidebar__icon" />
                                         <span>{item.label}</span>
-                                    </button>
+                                    </NavLink>
                                 </li>
                             );
                         })}
@@ -68,6 +70,10 @@ export default function AppSidebar({ currentPage, onNavigate }) {
                     </button>
                     <button
                         className="sidebar__logout"
+                        onClick={() => {
+                            onLogout()
+                            navigate('/login')
+                        }}
                     >
                         <LogOut className="sidebar__icon" />
                         Выйти

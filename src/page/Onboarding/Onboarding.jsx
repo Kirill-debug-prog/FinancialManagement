@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { Label } from '../../components/ui/label/label';
 import { Button } from '../../components/ui/button/button'
-
+import { useNavigate } from 'react-router-dom'
 
 const categories = {
     expense: [
@@ -43,6 +43,8 @@ function Onboarding({ onComplete }) {
         categories.income.filter(c => c.selected).map(c => c.id)
     )
 
+    const navigate = useNavigate()
+
     const totalStep = 5;
     const progres = (step / totalStep) * 100
 
@@ -69,6 +71,7 @@ function Onboarding({ onComplete }) {
     const handleComplete = () => {
         toast.success('Настройка завершена! Добро пожаловать!');
         onComplete(userName)
+        navigate('/onboarding-success')
     }
 
     const handleInputChangeLetter = (event) => {
@@ -419,7 +422,7 @@ function Onboarding({ onComplete }) {
                                     Начать работу
                                 </Button>
                             )}
-                        {step < totalStep && (
+                        {/* {step < totalStep && (
                             <Button
                                 onClick={handleComplete}
                                 className="onboarding__button-skip"
@@ -427,7 +430,7 @@ function Onboarding({ onComplete }) {
                             >
                                 Пропустить настройку
                             </Button>
-                        )}
+                        )} */}
                     </div>
                 </CardContent>
             </Card>

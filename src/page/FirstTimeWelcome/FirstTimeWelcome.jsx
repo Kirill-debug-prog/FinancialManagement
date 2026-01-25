@@ -3,9 +3,12 @@ import { Sparkles, TrendingUp, Shield, Zap, CheckCircle } from 'lucide-react';
 import { motion, scale } from 'framer-motion'
 import "./FirstTimeWelcome.css"
 import { Button } from "../../components/ui/button/button";
+import { useNavigate } from 'react-router-dom'
 
 function FirstTimeWelcome() {
     const [currentFeature, setCurrentFeature] = useState(0)
+
+    const navigate = useNavigate()
 
     const features = [
         {
@@ -133,7 +136,13 @@ function FirstTimeWelcome() {
                 transition={{ duration: 0.6, delay: 0.5 }}
                 className="welcome__btn-block"
             >
-                <Button className="welcome__btn-next" variant="blue">Начать работу</Button>
+                <Button
+                    className="welcome__btn-next"
+                    variant="blue"
+                    onClick={() => navigate('/onboarding')}
+                >
+                    Начать работу
+                </Button>
                 <p className="welcome__time-text">Найстройка займет всего 2 минуты</p>
             </motion.div>
         </div>
