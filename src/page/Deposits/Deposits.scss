@@ -2,13 +2,6 @@
 @use '../../assets/styles/variables.scss' as *;
 @use "sass:color";
 
-.window {
-    display: grid;
-    grid-template-columns: 256px 1fr;
-    overflow: hidden;
-    height: 100vh;
-}
-
 .deposits {
     display: flex;
     flex-direction: column;

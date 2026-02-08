@@ -1,0 +1,322 @@
+@use '../../assets/styles/base/typography' as *;
+@use '../../assets/styles/variables.scss' as *;
+
+.import-export {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 24px 15px;
+    overflow: auto;
+
+    &__header {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    &__subtitle {
+        color: $text-gray;
+
+        @extend .text-xl;
+    }
+}
+
+.import-export__tabs {
+    display: flex;
+    flex-direction: column;
+}
+
+.import-export__tabs-list {
+    margin-bottom: 24px;
+}
+
+.import-export__tab-content {
+    margin-top: 0;
+}
+
+// Import section
+.import-export__import-card {
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+    justify-content: flex-start;
+    align-items: flex-start;
+    box-shadow: none;
+    border: 1px solid $border-input;
+
+    &__content {
+        padding: 0;
+    }
+}
+
+.import-export__import-controls {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+
+    width: 75rem;
+    height: 28.75rem;
+    border: 5px dashed $border-input;
+    border-radius: $radius-md;
+
+    & .import-export__icon {
+        width: 59px;
+        height: 59px;
+        color: $gray-600;
+    }
+
+    & .hidden {
+        display: none;
+    }
+
+    & .import-export__button {
+        width: auto;
+    }
+}
+
+.import-export__progress {
+    padding-block: $space-md;
+}
+
+.import-export__todo {
+    display: flex;
+    flex-direction: column;
+    gap: $space-sm;
+
+    margin-top: $space-md;
+    padding: $space-md;
+    border-radius: 1rem;
+
+    background-color: rgba(231, 242, 254, 1);
+
+    &-title {
+        color: #083D8B
+    }
+
+    &-list {
+        display: flex;
+        flex-direction: column;
+        gap: $space-sm;
+        padding-left: $space-lg;
+        color: #093F9D;
+
+        & li {
+            list-style: disc;
+        }
+    }
+}
+
+// Export section
+.import-export__tab-content {
+    display: none;
+    margin-top: 0;
+    padding-top: 0;
+    box-sizing: border-box;
+
+    &[data-state="active"] {
+        display: block;
+        animation: fadeUp .12s ease;
+    }
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.import-export__export-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: $space-md;
+}
+
+.import-export__export-card {
+    box-shadow: none;
+    border: 1px solid $border-input;
+    border-radius: $radius-md;
+
+    &-content {
+        padding: 1.25rem;
+    }
+}
+
+.import-export__controls {
+    display: flex;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.import-export__select-group {
+    flex: 1 1 220px;
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: $space-sm;
+}
+
+.import-export__label {
+    @extend .text-sm;
+    color: $color-text;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.import-export__select-trigger {
+    width: 100%;
+    min-height: 2.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.import-export__export-group {
+    margin-top: $space-md;
+    display: flex;
+    flex-direction: column;
+    gap: $space-sm;
+}
+
+.import-export__checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.import-export__checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    input[type="checkbox"] {
+        width: 1.05rem;
+        height: 1.05rem;
+        margin: 0;
+
+    }
+
+    label {
+        margin: 0;
+        @extend .text-sm;
+        font-weight: 400;
+    }
+}
+
+.import-export__export-button {
+    margin-top: $space-md;
+}
+
+.import-export__quick-export {
+    margin-top: $space-md;
+    background-color: #f9fafb;
+    border: 1px solid $border-input;
+    border-radius: $radius-md;
+    padding: 0.75rem;
+}
+
+.import-export__quick-export-title {
+    @extend .text-sm;
+    margin-bottom: 0.5rem;
+}
+
+.import-export__quick-export-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+
+    &>* {
+        flex-shrink: 0;
+    }
+}
+
+.import-export__history-section {
+    display: grid;
+    gap: 1rem;
+}
+
+.import-export__card {
+    border-radius: $radius-md;
+    border: 1px solid $border-input;
+    box-shadow: none;
+
+    &-content {
+        padding: 0.75rem;
+    }
+}
+
+.import-export__history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.import-export__history-item {
+    display: block;
+    border: 1px solid rgba(15, 23, 42, 0.1);
+    border-radius: 0.75rem;
+    padding: 0.75rem;
+    background: #fff;
+}
+
+.import-export__history-item-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.import-export__history-item-main {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: row;
+    column-gap: 1rem;
+}
+
+.import-export__history-item-info>.import-export__history-item-details,
+.import-export__history-item-info>.import-export__history-item-info-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.import-export__history-item-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
+}
+
+.import-export__history-filename {
+    @extend .text-sm;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.import-export__history-date {
+    @extend .text-xs;
+    margin: 0;
+}
+
+.import-export__history-item-status {
+    margin-left: 0.75rem;
+    display: flex;
+    align-items: center;
+}
+
+.import-export__history-item-action {
+    margin-left: 0.75rem;
+    white-space: nowrap;
+}

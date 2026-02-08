@@ -12,7 +12,8 @@ $gray-50: #f9fafb;
 $white: #ffffff;
 $color-focus-outline: rgba(99, 102, 241, 0.3);
 $color-selection-bg: #6366f1;
-$border-input: #e5e7eb;
+$border-input: #e5e7eb; // найти и заменитьть на $color-border
+$color-border: #e5e7eb;
 
 /* Spacing */
 $space-xs: 4px;

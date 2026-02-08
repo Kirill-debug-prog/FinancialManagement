@@ -1,0 +1,152 @@
+@use '../../assets/styles/base/typography' as *;
+@use '../../assets/styles/variables.scss' as *;
+
+.report {
+    display: flex;
+    flex-direction: column;
+    gap: $space-lg;
+    padding: $space-lg 15px;
+    overflow: auto;
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    &__subtitle {
+        color: $text-gray;
+
+        @extend .text-xl;
+    }
+
+    &__action {
+        display: flex;
+
+        gap: $space-md;
+        margin-top: $space-md;
+
+    }
+}
+
+//! Filters
+.report__filter {
+    display: flex;
+    flex-direction: column;
+    row-gap: 30px;
+
+
+    &-header {
+        display: flex;
+        justify-content: flex-start;
+    }
+
+    &-title {
+        color: $text-gray;
+    }
+
+    &-items {
+        display: flex;
+        column-gap: $space-lg;
+    }
+
+    &-item {
+        width: 12.5rem;
+    }
+}
+
+//! Summary Cards
+.report__summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: $space-lg;
+}
+
+.card {
+
+    &__value {
+        
+        @extend .text-base;
+
+        &--blue {
+            color: $blue;
+        }
+
+        &--green {
+            color: $green;
+        }
+
+        &--red {
+            color: $red;
+        }
+
+        &--purple {
+            color: $purple;
+        }
+    }
+}
+
+.icon {
+    &--blue {
+        color: $blue;
+    }
+
+    &--green {
+        color: $green;
+    }
+
+    &--red {
+        color: $red;
+    }
+
+    &--purple {
+        color: $purple;
+    }
+}
+
+//! Diagrams
+.report__diagrams {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $space-md;
+}
+
+//? Top Categories
+.top-categories {
+
+    &__list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    &__item {
+        margin-bottom: 0.5rem;
+    }
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+
+    &__name {
+        color: #111827;
+    }
+
+    &__value {
+        color: #111827;
+    }
+
+    &__progress {
+        width: 100%;
+        background-color: #e5e7eb;
+        border-radius: 9999px;
+        height: 0.5rem;
+    }
+
+    &__progress-bar {
+        height: 0.5rem;
+        border-radius: 9999px;
+    }
+}

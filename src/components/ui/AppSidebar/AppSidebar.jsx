@@ -22,10 +22,11 @@ const menuItems = [
     { route: '/app/credits', label: 'Кредиты и долги', icon: CreditCard },
     { route: '/app/deposits', label: 'Вклады', icon: PiggyBank },
     { route: '/app/reports', label: 'Отчёты', icon: BarChart3 },
-    { route: '/app/notifications', label: 'Уведомления', icon: Bell },
-    { route: '/app/import', label: 'Импорт/Экспорт', icon: Download },
+    // { route: '/app/notifications', label: 'Уведомления', icon: Bell },
+    { route: '/app/importExport', label: 'Импорт/Экспорт', icon: Download },
     { route: '/app/settings', label: 'Настройки', icon: Settings },
-    { route: '/app/admin', label: 'Админ-панель', icon: Shield },
+    { route: '/app/help', label: 'Помощь', icon: HelpCircle},
+    // { route: '/app/admin', label: 'Админ-панель', icon: Shield },
 ];
 
 export default function AppSidebar({onLogout}) {
@@ -62,12 +63,6 @@ export default function AppSidebar({onLogout}) {
                 </nav>
 
                 <div className="sidebar__footer">
-                    <button
-                        className="sidebar__help"
-                    >
-                        <HelpCircle className="sidebar__icon" />
-                        Помощь
-                    </button>
                     <button
                         className="sidebar__logout"
                         onClick={() => {

@@ -5,6 +5,10 @@ import Accounts from '../page/Accounts/Accounts'
 import Transactions from '../page/Transactions/Transactions'
 import Credits from '../page/Credits/Credits'
 import Deposits from '../page/Deposits/Deposits'
+import ImportExport from '../page/ImportExport/ImportExport' 
+import { Reports } from '../page/Reports/Reports'
+import Setting from '../page/Settings/Setting'
+import Help from '../page/Help/Help'
 import { useState } from 'react'
 import './AppLayout.css'
 
@@ -28,6 +32,10 @@ export default function AppLayout({onLogout}) {
                     <Route path="transactions" element={<Transactions />} />
                     <Route path="credits" element={<Credits />} />
                     <Route path="deposits" element={<Deposits />} />
+                    <Route path="reports" element={<Reports />} />
+                    <Route path="importExport" element={<ImportExport/>} />
+                    <Route path="settings" element={<Setting/>} />
+                    <Route path='help' element={<Help />} />
 
                     <Route path="*" element={<Navigate to="dashboard" />} />
                 </Routes>

@@ -187,15 +187,15 @@ export default function Accounts() {
                                     {account.balance.toLocaleString()} {getCurrencySymbol(account.currency)}
                                 </div>
                                 <div className="accounts__card-actions">
-                                    <Button variant="white" size="sm" className="accounts__card-action-btn">
+                                    <Button variant="white" className="accounts__card-action-btn">
                                         <Edit size={16} />
                                         Изменить
                                     </Button>
-                                    <Button variant="white" size="sm" className="accounts__card-action-btn">
+                                    <Button variant="white" className="accounts__card-action-btn">
                                         <ArrowRightLeft size={16} />
                                         Перевести
                                     </Button>
-                                    <Button variant="white" size="sm" className="accounts__card-action-btn">
+                                    <Button variant="white"  className="accounts__card-action-btn">
                                         <Trash2 size={16} />
                                     </Button>
                                 </div>

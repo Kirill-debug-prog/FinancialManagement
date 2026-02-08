@@ -1,0 +1,54 @@
+@use '../../../assets/styles/variables.scss' as *;
+@use '../../../assets/styles/base/typography' as *;
+
+.accordion {
+    width: 100%;
+}
+
+.accordion__item {
+    border-bottom: 1px solid $color-border;
+
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+.accordion__trigger {
+    width: 100%;
+    padding: 16px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    font-size: 14px;
+    font-weight: 500;
+    text-align: left;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.accordion__icon {
+    transition: transform 0.2s ease;
+}
+
+.accordion__item.is-open .accordion__icon {
+    transform: rotate(180deg);
+}
+
+.accordion__content {
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.accordion__content-inner {
+    padding-bottom: 16px;
+    font-size: 14px;
+    color: #4b5563;
+}

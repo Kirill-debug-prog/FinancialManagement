@@ -1,5 +1,4 @@
-import React from "react";
-import './button.css'
+import './button.scss'
 
 export function Button({ variant = "black", size="default", className, ...props }) {
     return (

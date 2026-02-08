@@ -1,0 +1,495 @@
+@use '../../assets/styles/base/typography' as *;
+@use '../../assets/styles/variables.scss' as *;
+
+.help {
+    display: flex;
+    flex-direction: column;
+    gap: $space-lg;
+    padding: $space-lg 15px;
+    overflow: auto;
+
+    &__header {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: flex-start;
+
+        &-text {
+            width: 100%;
+        }
+    }
+
+    &__subtitle {
+        color: $gray-600;
+
+        @extend .text-xl;
+    }
+
+    &__search-wrapper {
+        position: relative;
+        margin-top: 1rem;
+    }
+
+    &__search {
+        padding-left: 2.5rem;
+    }
+
+    &__search-icon {
+        position: absolute;
+        top: 5px;
+        left: 0.6rem;
+        color: $text-gray;
+    }
+}
+
+//! section
+.help-sections {
+    margin-top: $space-lg;
+}
+
+.help-empty {
+    &__content {
+        padding: 3rem 0;
+        text-align: center;
+    }
+
+    &__icon {
+        width: 3rem;
+        height: 3rem;
+        color: $gray-600;
+        margin: 0 auto 1rem;
+    }
+}
+
+.help-grid {
+    display: grid;
+    gap: 24px;
+
+    @media (min-width: 768px) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.help-card {
+    transition: box-shadow 0.2s ease;
+
+    &:hover {
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    &__header-content {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+    }
+
+    &__icon {
+        padding: 12px;
+        border-radius: 12px;
+    }
+
+    &__icon-svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    &__description {
+        margin-top: 4px;
+        color: $text-gray;
+
+        @extend .text-sm;
+    }
+}
+
+.help-accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    &__trigger {
+        
+        @extend .text-sm;
+
+        text-align: left;
+
+        &:hover {
+            text-decoration: none;
+        }
+    }
+
+    &__question {
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+    }
+
+    &__question-icon {
+        width: 16px;
+        height: 16px;
+        color: $blue;
+        margin-top: 2px;
+        flex-shrink: 0;
+    }
+}
+
+.help-card {
+    &__icon {
+        padding: 12px;
+        border-radius: 12px;
+    }
+
+    &__icon-svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    &--blue {
+        .help-card__icon {
+            background: #eff6ff;
+        }
+
+        .help-card__icon-svg {
+            color: #2563eb;
+        }
+    }
+
+    &--purple {
+        .help-card__icon {
+            background: #f5f3ff;
+        }
+
+        .help-card__icon-svg {
+            color: #7c3aed;
+        }
+    }
+
+    &--green {
+        .help-card__icon {
+            background: #ecfdf5;
+        }
+
+        .help-card__icon-svg {
+            color: #16a34a;
+        }
+    }
+
+    &--red {
+        .help-card__icon {
+            background: #fef2f2;
+        }
+
+        .help-card__icon-svg {
+            color: #dc2626;
+        }
+    }
+
+    &--yellow {
+        .help-card__icon {
+            background: #fefce8;
+        }
+
+        .help-card__icon-svg {
+            color: #ca8a04;
+        }
+    }
+
+    &--gray {
+        .help-card__icon {
+            background: #f9fafb;
+        }
+
+        .help-card__icon-svg {
+            color: #4b5563;
+        }
+    }
+
+    &--emerald {
+        .help-card__icon {
+            background: #ecfdf5;
+        }
+
+        .help-card__icon-svg {
+            color: #059669;
+        }
+    }
+
+    &--indigo {
+        .help-card__icon {
+            background: #eef2ff;
+        }
+
+        .help-card__icon-svg {
+            color: #4f46e5;
+        }
+    }
+
+    &--cyan {
+        .help-card__icon {
+            background: #ecfeff;
+        }
+
+        .help-card__icon-svg {
+            color: #0891b2;
+        }
+    }
+}
+
+
+//! Frequently asked questions
+.faq-tab {
+    margin-top: $space-lg;
+}
+
+.faq-card {
+    &__header {
+        padding-bottom: 0;
+    }
+
+    &__title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #111827;
+
+        @extend .text-lg;
+    }
+
+    &__title-icon {
+        width: 20px;
+        height: 20px;
+        color: $blue;
+    }
+
+    &__description {
+        margin-top: 4px;
+        color: $text-gray;
+
+        @extend .text-sm;
+    }
+
+    &__content {
+        margin-top: 16px;
+    }
+}
+
+.faq-accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    &__trigger {
+        text-align: left;
+
+        &:hover {
+            text-decoration: none;
+        }
+    }
+
+    &__question {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    &__icon {
+        width: 20px;
+        height: 20px;
+        color: $green;
+        margin-top: 2px;
+        flex-shrink: 0;
+    }
+
+    &__answer {
+        padding-left: 32px;
+        font-size: 14px;
+        color: $gray-600;
+        line-height: 1.5;
+    }
+}
+
+//! Tips and recommendations
+.tips-tab {
+    margin-top: $space-lg;
+
+    &__wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: $space-lg
+    }
+}
+
+.tips-header {
+    background: linear-gradient(135deg, #eff6ff, #eef2ff);
+    border: 1px solid #bfdbfe;
+
+    &__title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        
+        @extend .text-lg;
+    }
+
+    &__icon {
+        width: 20px;
+        height: 20px;
+        color: #ca8a04;
+    }
+
+    &__description {
+        margin-top: 4px;
+        color: $text-gray;
+
+        @extend .text-sm;
+    }
+}
+
+.tips-grid {
+    display: grid;
+    gap: 16px;
+
+    @media (min-width: 768px) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: 1024px) {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* ===== Tip card ===== */
+
+.tip-card {
+    transition: box-shadow 0.2s ease;
+
+    &:hover {
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+    }
+
+    &__title-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    &__icon {
+        padding: 8px;
+        background: #dbeafe;
+        border-radius: 8px;
+    }
+
+    &__icon-svg {
+        width: 20px;
+        height: 20px;
+        color: $blue;
+    }
+
+
+    &__text {
+        color: $text-gray;
+        line-height: 1.5;
+
+        @extend .text-sm;
+    }
+}
+
+.first-steps {
+    &__header {
+        padding-bottom: 0;
+    }
+
+    &__content {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-top: space-md;
+    }
+
+    &__item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    &__step {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #dbeafe;
+        color: $blue;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    &__item-title {
+        @extend .text-sm;
+    }
+
+    &__item-description {
+        margin-top: 4px;
+        font-size: 13px;
+        color: $text-gray;
+        line-height: 1.5;
+    }
+}
+
+.help-contact {
+    margin-top: 32px;
+    background: linear-gradient(135deg, #eff6ff, #eef2ff);
+    border: 1px solid #bfdbfe;
+
+    &__content {
+        padding: 24px 0;
+    }
+
+    &__layout {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+
+        @media (min-width: 768px) {
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+        }
+    }
+
+    &__info {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    &__icon {
+        padding: 12px;
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    &__icon-svg {
+        width: 24px;
+        height: 24px;
+        color: $blue;
+    }
+
+    &__description {
+        color: $text-gray;
+    }
+
+    &__actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    &__badge {
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+            background-color: #e5e7eb;
+        }
+    }
+}
