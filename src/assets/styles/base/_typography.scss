@@ -1,128 +1,111 @@
-html {
-    font-size: 16px;
-    font-family: 'Inter', sans-serif;
+// typography.css
+:root {
+    --font-family-base: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+    --color-text: #000000;
+    --color-primary: #2563eb;
+    --color-focus-outline: rgba(99, 102, 241, 0.3);
+
+    /* базовые размеры в rem */
+    --fs-h1: 1.5rem;
+    /* 24px */
+    --fs-h2: 1.25rem;
+    /* 20px */
+    --fs-h3: 1.125rem;
+    /* 18px */
+    --fs-h4: 1.1rem;
+    /* 17.6px */
+    --fs-h5: 0.875rem;
+    /* 14px */
+    --fs-h6: 0.75rem;
+    /* 12px */
+
+    --fs-base: 1rem;
+    /* 16px */
+    --fs-sm: 0.875rem;
+    --fs-xs: 0.75rem;
+    --fs-lg: 1.125rem;
+    --fs-xl: 1.25rem;
 }
 
-/* Headings */
+/* Устанавливаем базу — сначала fallback в rem, затем поверх можно включить clamp */
+html {
+    font-size: 1rem;
+    font-family: var(--font-family-base);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    font-weight: 600;
-    line-height: 1.2;
-    color: var(--color-text);
-    margin: 0;
+/* --- Включаем плавный размер шрифта для современных браузеров.
+   Комментарий: изменение --scale-base можно включить позже. */
+@supports (font-size: clamp(14px, 1vw + 1rem, 18px)) {
+    :root {
+        --scale-base: clamp(14px, 1vw + 12px, 18px);
+    }
+
+    html {
+        font-size: var(--scale-base);
+    }
 }
 
 h1 {
-    font-size: 1.5rem;
-    /* 24px */
+    font-size: var(--fs-h1);
 }
 
 h2 {
-    font-size: 1.25rem;
-    /* 20px */
+    font-size: var(--fs-h2);
 }
 
 h3 {
-    font-size: 1.125rem;
-    /* 18px */
+    font-size: var(--fs-h3);
 }
 
 h4 {
-    font-size: 1.1rem;
-    /* 16px */
+    font-size: var(--fs-h4);
 }
 
 h5 {
-    font-size: 0.875rem;
-    /* 14px */
+    font-size: var(--fs-h5);
 }
 
 h6 {
-    font-size: 0.75rem;
-    /* 12px */
+    font-size: var(--fs-h6);
 }
-
-/* Paragraphs & text */
-
-p {
-    margin: 0;
-    color: var(--color-text);
-}
-
-small {
-    font-size: 0.875rem;
-}
-
-/* Utility text classes */
 
 .text-xs {
-    font-size: 0.75rem;
-    /* 12px */
+    font-size: var(--fs-xs);
 }
 
 .text-sm {
-    font-size: 0.875rem;
-    /* 14px */
+    font-size: var(--fs-sm);
 }
 
 .text-base {
-    font-size: 1rem;
-    /* 16px */
+    font-size: var(--fs-base);
 }
 
 .text-lg {
-    font-size: 1.125rem;
-    /* 18px */
+    font-size: var(--fs-lg);
 }
 
 .text-xl {
-    font-size: 1.25rem;
-    /* 20px */
+    font-size: var(--fs-xl);
 }
 
-/* Font weight */
-
-.font-normal {
-    font-weight: 400;
+:focus {
+    outline: none;
 }
 
-.font-medium {
-    font-weight: 500;
+:focus-visible {
+    outline: 2px solid var(--color-focus-outline);
+    outline-offset: 2px;
 }
 
-.font-semibold {
-    font-weight: 600;
-}
-
-.font-bold {
-    font-weight: 700;
-}
-
-/* Text alignment */
-
-.text-left {
-    text-align: left;
-}
-
-.text-center {
-    text-align: center;
-}
-
-.text-right {
-    text-align: right;
-}
-
-/* Links */
 a {
     color: var(--color-primary);
     text-decoration: none;
 }
 
-a:hover {
+a:hover,
+a:focus {
     text-decoration: underline;
 }

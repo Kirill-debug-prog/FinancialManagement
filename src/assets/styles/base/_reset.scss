@@ -1,4 +1,4 @@
-// reset.scss — мягкое сброс стилей (на основе modern-normalize)
+// reset.scss
 
 *,
 *::before,
@@ -6,21 +6,22 @@
     box-sizing: border-box;
 }
 
-// Убираем отступы у root-элементов
 html {
-    line-height: 1.15;
     -webkit-text-size-adjust: 100%;
-    // Предотвращает масштабирование на мобильных при вводе текста
+    line-height: 1.15;
 }
 
+/* Базовая типографика наследуется из main styles (не ломаем) */
 body {
     margin: 0;
     padding: 0;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background: var(--bg, #fff);
+    color: var(--color-text, #000);
 }
 
-// Убираем отступы у списков
+/* Списки */
 ul,
 ol {
     margin: 0;
@@ -28,14 +29,14 @@ ol {
     list-style: none;
 }
 
-// Убираем стили у ссылок по умолчанию
+/* Ссылки — минимальный сброс, визуальные стили в typography */
 a {
-    text-decoration: none;
     color: inherit;
+    text-decoration: none;
     cursor: pointer;
 }
 
-// Убираем отступы у изображений
+/* Медиа */
 img,
 svg,
 video,
@@ -49,29 +50,34 @@ object {
     height: auto;
 }
 
-// Убираем отступы у форм
+/* Формы — не удаляем доступность, только базовый сброс внешнего вида */
 button,
 input,
 optgroup,
 select,
 textarea {
     margin: 0;
-    padding: 0;
     font-family: inherit;
     font-size: inherit;
     line-height: inherit;
     color: inherit;
     background: transparent;
     border: none;
+    /* НЕ удаляем outline полностью — используем :focus-visible в typography */
+    -webkit-appearance: none;
+}
+
+/* Разрешаем видимый фокус только через :focus-visible */
+:focus {
     outline: none;
 }
 
-// Фокус — будет управляться через UI-компоненты
-*:focus {
-    outline: none;
+:focus-visible {
+    outline: 2px solid var(--color-focus-outline, rgba(99, 102, 241, 0.3));
+    outline-offset: 2px;
 }
 
-// Заголовки — их стили будем управлять через .text-h1 и т.д.
+/* Заголовки/параграфы — сброс отступов; стили задаём в typography */
 h1,
 h2,
 h3,
@@ -80,26 +86,16 @@ h5,
 h6 {
     margin: 0;
     padding: 0;
-    font-size: inherit;
-    font-weight: inherit;
 }
 
-// Параграфы — отступы через .text-body и переменные
-p {
-    margin: 0;
-    padding: 0;
-}
-
-// Таблицы
+/* Таблицы */
 table {
     border-collapse: collapse;
     border-spacing: 0;
 }
 
-// Прозрачные кнопки (часто используется в компонентах)
+/* Кнопки по-умолчанию: делают их кликабельными, но стили — в компоненте */
 button {
     background: none;
-    padding: 0;
-    border: none;
     cursor: pointer;
 }
