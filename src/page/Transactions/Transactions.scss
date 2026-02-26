@@ -3,40 +3,42 @@
 @use "sass:color";
 
 .transactions {
-    padding: 24px;
+    padding: $space-lg;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: $space-lg;
     font-family: 'Inter', system-ui;
 }
 
 .transactions__header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: $space-md;
 }
 
 .transactions__title-block {
     display: flex;
     flex-direction: column;
+    gap: 0.25rem;
 }
 
 .transactions__subtitle {
-    margin: 4px 0 0;
+    margin: 0;
     color: $text-gray;
-
-        @extend .text-xl;
+    @extend .text-xl;
 }
 
 .transactions__add-btn {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: $space-sm;
 
-    padding: 10px 16px;
+    padding: 0.625rem 1rem;
     background-color: $blue;
     color: $white;
-    border-radius: 8px;
+    border-radius: $radius-md;
     border: none;
     cursor: pointer;
 
@@ -50,30 +52,32 @@
 .transactions__filters {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: $space-md;
     align-items: center;
 }
 
 .transactions__search {
     position: relative;
-    flex: 1 1 320px;
+    flex: 1 1 20rem;
+    min-width: 16rem;
 }
 
 .transactions__search-icon {
     position: absolute;
-    left: 9px;
+    left: 0.5625rem;
     top: 50%;
     transform: translateY(-50%);
     color: #9ca3af;
 }
 
 .transactions__search-input {
-    padding-left: 36px;
+    padding-left: 2.25rem;
     width: 100%;
 }
 
 .transactions__select {
-    flex: 0 0 200px;
+    flex: 1 1 12rem;
+    min-width: 10rem;
 }
 
 .transactions__select-trigger {
@@ -82,17 +86,13 @@
 
 .transactions__card {
     display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
     flex-direction: column;
     width: 100%;
-    padding: 23px 26px;
+
+    padding: 1.5rem; // ~24px
     box-shadow: none;
     border: 1px solid $border-input;
-}
-
-.card-content {
-    padding: 0;
+    border-radius: $radius-lg;
 }
 
 .transactions__card-content {
@@ -107,50 +107,42 @@
 .transactions__row-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 8px;
+    gap: $space-sm;
 }
 
 .transactions__card-btn {
-    width: auto;
-    padding-inline: 2px;
+    padding-inline: 0.25rem;
 
-    :hover {
-        color: rgb(138, 139, 141);
+    &:hover {   // ✅ фикс hover
+        color: #8a8b8d;
     }
 }
 
 .transactions__amount {
     text-align: right;
-}
 
-.transactions__amount.is--income {
-    color: #16a34a;
-}
-
-.transactions__amount.is--expense {
-    color: #dc2626;
-}
-
-.transactions__amount.is--transfer {
-    color: #2563eb;
+    &.is--income { color: #16a34a; }
+    &.is--expense { color: #dc2626; }
+    &.is--transfer { color: #2563eb; }
 }
 
 .transactions__empty {
     text-align: center;
-    padding: 48px 0;
+    padding: 3rem 0;
     color: #6b7280;
-    font-size: 14px;
+    font-size: 0.875rem;
 }
 
 .transactions__dialog {
-    max-width: 720px;
+    max-width: 45rem;
+    width: 100%;
 }
 
 .icon {
-    width: 18px;
-    height: 18px;
+    width: 1.125rem;
+    height: 1.125rem;
 }
 
 .icon--left {
-    margin-right: 8px;
+    margin-right: $space-sm;
 }

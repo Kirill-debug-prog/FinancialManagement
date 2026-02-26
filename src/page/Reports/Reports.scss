@@ -5,27 +5,28 @@
     display: flex;
     flex-direction: column;
     gap: $space-lg;
-    padding: $space-lg 15px;
+    padding: $space-lg 1rem;
     overflow: auto;
 
     &__header {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
+        flex-wrap: wrap;
+        gap: $space-md;
     }
 
     &__subtitle {
         color: $text-gray;
-
         @extend .text-xl;
+        margin: 0;
     }
 
     &__action {
         display: flex;
-
+        flex-wrap: wrap;
         gap: $space-md;
         margin-top: $space-md;
-
     }
 }
 
@@ -33,8 +34,7 @@
 .report__filter {
     display: flex;
     flex-direction: column;
-    row-gap: 30px;
-
+    row-gap: $space-xl;
 
     &-header {
         display: flex;
@@ -47,73 +47,50 @@
 
     &-items {
         display: flex;
-        column-gap: $space-lg;
+        flex-wrap: wrap;
+        gap: $space-lg;
     }
 
     &-item {
-        width: 12.5rem;
+        flex: 1 1 12rem;
+        min-width: 10rem;
     }
 }
 
 //! Summary Cards
 .report__summary-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
     gap: $space-lg;
 }
 
 .card {
-
     &__value {
-        
         @extend .text-base;
 
-        &--blue {
-            color: $blue;
-        }
-
-        &--green {
-            color: $green;
-        }
-
-        &--red {
-            color: $red;
-        }
-
-        &--purple {
-            color: $purple;
-        }
+        &--blue { color: $blue; }
+        &--green { color: $green; }
+        &--red { color: $red; }
+        &--purple { color: $purple; }
     }
 }
 
 .icon {
-    &--blue {
-        color: $blue;
-    }
-
-    &--green {
-        color: $green;
-    }
-
-    &--red {
-        color: $red;
-    }
-
-    &--purple {
-        color: $purple;
-    }
+    &--blue { color: $blue; }
+    &--green { color: $green; }
+    &--red { color: $red; }
+    &--purple { color: $purple; }
 }
 
 //! Diagrams
 .report__diagrams {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(23rem, 1fr));
     gap: $space-md;
 }
 
 //? Top Categories
 .top-categories {
-
     &__list {
         display: flex;
         flex-direction: column;
@@ -130,10 +107,7 @@
         margin-bottom: 0.5rem;
     }
 
-    &__name {
-        color: #111827;
-    }
-
+    &__name,
     &__value {
         color: #111827;
     }

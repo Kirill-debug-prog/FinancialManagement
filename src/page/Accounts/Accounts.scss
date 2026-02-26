@@ -4,7 +4,7 @@
 
 .window {
     display: grid;
-    grid-template-columns: 256px 1fr;
+    grid-template-columns: 16rem 1fr;
     overflow: hidden;
     height: 100vh;
 }
@@ -12,11 +12,10 @@
 .accounts {
     display: flex;
     flex-direction: column;
-    gap: 24px;
-    padding: 24px 15px;
+    gap: $space-lg;
+    padding: $space-lg $space-md;
     overflow: auto;
 
-    /* Header */
     &__header {
         display: flex;
         justify-content: space-between;
@@ -25,19 +24,19 @@
 
     &__subtitle {
         color: $text-gray;
-
         @extend .text-xl;
+        margin: 0;
     }
 
     &__add-btn {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: $space-sm;
 
-        padding: 10px 16px;
+        padding: $space-sm $space-md;
         background-color: $blue;
         color: $white;
-        border-radius: 8px;
+        border-radius: $radius-sm;
         border: none;
         cursor: pointer;
 
@@ -50,35 +49,34 @@
 
     &__list {
         display: grid;
-        grid-template-columns: repeat(3, minmax(357px, 1fr));
-        grid-template-rows: repeat((auto-fit, minmax(176px, 1fr)));
-        gap: 2.125rem;
-        padding: 2px 7px;
+        grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+        gap: $space-xl;
+        padding: $space-xs $space-sm;
     }
 }
 
 .account__form {
     width: 100%;
     display: block;
-    margin-top: 1rem;
+    margin-top: $space-md;
 }
 
 .account__form-row {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+    gap: $space-md;
 }
 
 .account__form-field {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: $space-sm;
 }
 
 .account__form-buttons {
     display: flex;
-    gap: 0.75rem;
-    padding-top: 1rem;
+    gap: $space-md;
+    padding-top: $space-md;
 }
 
 .account__form-button {
@@ -87,92 +85,87 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-weight: 600;
+    padding: $space-sm $space-md;
+    border-radius: $radius-sm;
+    font-weight: $weight-bold;
 }
-
 
 .accounts__balance {
     display: flex;
-    justify-content: flex-start;
     align-items: flex-start;
-    row-gap: 1rem;
 
     color: $white;
     background-image: linear-gradient(90deg, #3258F2 0%, #4C3BED 100%);
+    border-radius: $radius-md;
+    padding: $space-lg;
 
     &-title {
         color: $white;
     }
 
+    &-amount {
+        margin: 0;
+    }
+
     &-content {
         display: flex;
         flex-direction: column;
-        row-gap: 0.65rem;
-        padding: 0;
+        row-gap: $space-sm;
     }
 
     &-subtitle {
         color: #D7DCFA;
+        margin: 0;
     }
 }
 
 .accounts__card {
     display: flex;
-    justify-content: flex-start;
     align-items: flex-start;
-    row-gap: 2rem;
+    row-gap: $space-xl;
 
-    padding: 15px 10px 10px 22px;
-    border: 1px solid $border-input;
-    box-shadow: none;
+    padding: $space-md;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    box-shadow: $shadow-sm;
+
     transition: box-shadow 0.2s ease, transform 0.2s ease;
 
     &:hover {
-        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.25);
-        transform: translateY(-2px);
+        box-shadow: $shadow-md;
+        transform: translateY(-0.125rem);
     }
 
     &-header {
         display: flex;
         align-items: center;
-        justify-content: center;
-        flex-direction: row;
-        column-gap: 10px;
+        column-gap: $space-sm;
     }
 
     &-content {
         display: flex;
-        justify-content: flex-end;
-        align-items: flex-start;
         flex-direction: column;
     }
 
     &-actions {
         display: flex;
-        justify-content: center;
-        align-items: center;
-        column-gap: 1rem;
-
-        margin-top: 12px;
+        column-gap: $space-md;
+        margin-top: $space-sm;
     }
-
 }
 
 .accounts__icon-wrapper {
-    padding: 0.35rem;
-    border-radius: 7px;
+    padding: $space-xs;
+    border-radius: $radius-sm;
     color: $white;
 }
 
 .header-text {
     display: flex;
     flex-direction: column;
-    row-gap: 7px;
+    row-gap: $space-xs;
 }
 
 .accounts__card-action-btn {
-    width: auto;
-    padding: 0px 4px;
+    padding: 0 $space-xs;
 }

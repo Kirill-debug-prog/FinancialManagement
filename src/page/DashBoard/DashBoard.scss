@@ -2,11 +2,10 @@
 @use '../../assets/styles/variables.scss' as *;
 @use "sass:color";
 
-
 //! потом убрать
 .window {
     display: grid;
-    grid-template-columns: 256px 1fr;
+    grid-template-columns: 16rem 1fr;
     overflow: hidden;
     height: 100vh;
 }
@@ -14,8 +13,8 @@
 .dashboard {
     display: flex;
     flex-direction: column;
-    gap: 24px;
-    padding: 24px 15px;
+    gap: $space-lg;
+    padding: $space-lg $space-md;
     overflow: auto;
 
     /* Header */
@@ -27,19 +26,19 @@
 
     &__subtitle {
         color: $text-gray;
-
         @extend .text-xl;
+        margin: 0;
     }
 
     &__add-btn {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: $space-sm;
 
-        padding: 10px 16px;
+        padding: $space-sm $space-md;
         background-color: $blue;
         color: $white;
-        border-radius: 8px;
+        border-radius: $radius-sm;
         border: none;
         cursor: pointer;
 
@@ -53,42 +52,38 @@
     /* Cards grid */
     &__cards {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(13.75rem, 1fr));
+        gap: $space-md;
     }
 
     /* Charts grid */
     &__charts {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 24px;
-
-        @media (max-width: 1024px) {
-            grid-template-columns: 1fr;
-        }
+        gap: $space-lg;
     }
 }
 
-
 .card {
     background-color: $white;
-    padding: 16px;
-    border-radius: 12px;
+    padding: $space-md;
+    border-radius: $radius-md;
 
     &__header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         color: $text-gray;
+        margin-bottom: 1rem;
     }
 
     &__title {
-        font-size: 16px;
+        font-size: $font-size-base;
         font-weight: 500;
     }
 
     &__value {
-        font-size: 22px;
+        font-size: $font-size-lg;
         font-weight: 600;
 
         &--blue {
@@ -105,13 +100,11 @@
     }
 
     &__hint {
-        margin-top: 4px;
+        margin-top: $space-xs;
         color: $text-gray;
-
         @extend .text-sm;
     }
 }
-
 
 .icon {
     &--blue {
@@ -127,11 +120,10 @@
     }
 }
 
-
 .payments {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 0.75rem;
 }
 
 .payment {
@@ -139,16 +131,16 @@
     justify-content: space-between;
     align-items: center;
 
-    padding: 12px;
+    padding: 0.75rem;
     background-color: $gray-50;
-    border-radius: 15px;
+    border-radius: $radius-lg;
 
     &__name {
-        margin-bottom:10px;
+        margin-bottom: $space-sm;
     }
 
     &__category {
-        font-size: 16px;
+        font-size: $font-size-base;
         color: $text-gray;
     }
 
@@ -156,11 +148,11 @@
         text-align: right;
 
         h4 {
-            margin-bottom:10px;
+            margin-bottom: $space-sm;
         }
 
         span {
-            font-size: 16px;
+            font-size: $font-size-base;
             color: $text-gray;
         }
     }

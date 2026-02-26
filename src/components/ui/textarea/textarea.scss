@@ -14,9 +14,9 @@
     outline: none;
     transition: color 0.2s, box-shadow 0.2s;
 
-    &:focus {
+    &:focus-visible {
         border-color: $color-selection-bg;
-        box-shadow: 0 0 0 3px $color-focus-outline;
+        box-shadow: 0 0 0 0.1875rem $color-focus-outline;
     }
 
     &::placeholder {

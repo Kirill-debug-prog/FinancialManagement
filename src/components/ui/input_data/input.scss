@@ -3,20 +3,20 @@
 
 .input-box {
     width: 100%;
-    height: 36px;
-    padding: 0 12px;
+    height: 2.25rem;
+    padding: 0 0.75rem;
     border: 1px solid $border-input;
-    border-radius: 8px;
+    border-radius: 0.5rem;
     background-color: #fff;
     color: #000;
     font-family: 'Inter', sans-serif;
-    font-size: 16px;
+    font-size: 1rem;
     outline: none;
     transition: border-color 0.2s, box-shadow 0.2s;
 
     &:focus {
         border-color: $color-selection-bg;
-        box-shadow: 0 0 0 3px $color-focus-outline;
+        box-shadow: 0 0 0 0.1875rem $color-focus-outline;
     }
 
     &:disabled {
@@ -34,17 +34,16 @@
     }
 }
 
-
 .input-data {
     font-family: 'Inter', sans-serif;
     font-weight: 400;
-    font-size: 16px;
+    font-size: 1rem;
     color: #000;
 }
 
 .input-data::placeholder {
     font-family: 'Inter', sans-serif;
     font-weight: 400;
-    font-size: 16px;
+    font-size: 1rem;
     color: $text-gray;
 }

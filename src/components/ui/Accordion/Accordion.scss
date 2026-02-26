@@ -1,5 +1,4 @@
 @use '../../../assets/styles/variables.scss' as *;
-@use '../../../assets/styles/base/typography' as *;
 
 .accordion {
     width: 100%;
@@ -15,26 +14,34 @@
 
 .accordion__trigger {
     width: 100%;
-    padding: 16px 0;
+    padding: $space-md 0;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 12px;
+    gap: $space-sm;
 
     background: none;
     border: none;
     cursor: pointer;
 
-    font-size: 14px;
+    font-size: 0.875rem;
     font-weight: 500;
     text-align: left;
+
+    transition: background 0.2s ease;
 
     &:hover {
         text-decoration: underline;
     }
+
+    /* планшеты и выше */
+    @include respond(md) {
+        font-size: 1rem;
+    }
 }
 
 .accordion__icon {
+    flex-shrink: 0; // чтобы иконка не сжималась
     transition: transform 0.2s ease;
 }
 
@@ -48,7 +55,11 @@
 }
 
 .accordion__content-inner {
-    padding-bottom: 16px;
-    font-size: 14px;
-    color: #4b5563;
+    padding-bottom: $space-md;
+    font-size: 0.875rem;
+    color: $gray-600;
+
+    @include respond(md) {
+        font-size: 1rem;
+    }
 }

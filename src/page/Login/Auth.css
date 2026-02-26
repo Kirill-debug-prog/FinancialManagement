@@ -3,26 +3,27 @@
     justify-content: center;
     align-items: center;
 
-    width: 100vw;
-    height: auto;
+    width: 100%;
     min-height: 100vh;
+    padding: 1rem;
     background: linear-gradient(#D0EEFF, #FFF2E8);
 }
 
 .auth-card {
-    width: 412px;
+    width: 100%;
+    max-width: 25.75rem;
 }
 
 .container {
     display: flex;
     flex-direction: column;
-    row-gap: 16px;
+    row-gap: 1rem;
 }
 
 .data-container {
     display: flex;
     flex-direction: column;
-    row-gap: 4px;
+    row-gap: 0.25rem;
 }
 
 .data-container:nth-child(3) {
@@ -32,15 +33,15 @@
 .or-hr-wrapper {
     position: relative;
     text-align: center;
-    font-size: 16px;
-    padding-block: 13px 13px;
+    font-size: 1rem;
+    padding-block: 0.8125rem;
     text-transform: uppercase;
     color: #6b7280;
 }
 
 .or-hr {
     border: none;
-    border-top: 1px solid #d1d5db;
+    border-top: 0.0625rem solid #d1d5db;
     margin: 0;
 }
 

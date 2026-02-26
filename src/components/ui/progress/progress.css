@@ -1,9 +1,8 @@
 .progress-root {
-    width: 713px;
-    height: 8px;
-    border-radius: 58px;
+    width: 44.5625rem;
+    height: 0.5rem;
+    border-radius: 3.625rem;
     overflow: hidden;
-
 
     background-color: #D9D9D9;
     transform: translateZ(0);

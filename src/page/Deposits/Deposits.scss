@@ -5,8 +5,8 @@
 .deposits {
     display: flex;
     flex-direction: column;
-    gap: 24px;
-    padding: 24px 15px;
+    gap: $space-lg;
+    padding: $space-lg $space-md;
     overflow: auto;
 
     &__header {
@@ -17,19 +17,19 @@
 
     &__subtitle {
         color: $text-gray;
-
         @extend .text-xl;
+        margin: 0;;
     }
 
     &__add-btn {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: $space-sm;
 
-        padding: 10px 16px;
+        padding: $space-sm $space-md;
         background-color: $blue;
         color: $white;
-        border-radius: 8px;
+        border-radius: $radius-sm;
         border: none;
         cursor: pointer;
 
@@ -45,25 +45,25 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    row-gap: 10px;
-    margin-top: 1rem;
+    row-gap: $space-sm;
+    margin-top: $space-md;
 
     &__row {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
+        gap: $space-md;
     }
 
     &__field {
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        gap: $space-sm;
     }
 
     &__buttons {
         display: flex;
-        gap: 0.75rem;
-        padding-top: 1rem;
+        gap: $space-md;
+        padding-top: $space-md;
     }
 
     &__button {
@@ -72,8 +72,8 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        padding: 10px 14px;
-        border-radius: 8px;
+        padding: $space-sm $space-md;
+        border-radius: $radius-sm;
         font-weight: 600;
     }
 }
@@ -81,9 +81,9 @@
 .deposits-summary {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: $space-md;
 
-    @media (min-width: 768px) {
+    @include respond(md) {
         grid-template-columns: repeat(3, 1fr);
     }
 
@@ -91,19 +91,20 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding-bottom: 0.5rem;
+        padding-bottom: $space-sm;
     }
 
     &__title {
-        color: $text-gray;
+        font-size: $font-size-base;
+        font-weight: 500;
     }
 
     &__icon {
-        width: 20px;
-        height: 20px;
+        width: 1.25rem;
+        height: 1.25rem;
 
         &--green {
-            color: #1B9732;
+            color: $green;
         }
 
         &--blue {
@@ -116,24 +117,26 @@
     }
 
     &__value {
-        @extend .font-semibold;
+        font-size: $font-size-lg;
+        font-weight: 600;
 
         &--blue {
             color: $blue;
         }
 
         &--green {
-            color: #1B9732;
+            color: $green;
         }
 
         &--purple {
-            color: $purple
+            color: $purple;
         }
     }
 
     &__subtitle {
-        margin-top: 0.25rem;
+        margin-top: $space-xs;
         color: $text-gray;
+        @extend .text-sm;
     }
 }
 
@@ -141,7 +144,7 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    row-gap: 20px;
+    row-gap: $space-lg;
 
     &__title {
         @extend .text-xl;
@@ -151,6 +154,6 @@
         display: flex;
         justify-content: flex-start;
         flex-direction: column;
-        row-gap: 20px;
+        row-gap: $space-lg;
     }
 }

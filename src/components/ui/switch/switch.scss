@@ -2,11 +2,11 @@
     position: relative;
     display: inline-flex;
     align-items: center;
-    width: 32px;
+    width: 2rem;
     height: 1.15rem;
     flex-shrink: 0;
 
-    padding: 2px;
+    padding: 0.125rem;
     border-radius: 9999px;
     border: 1px solid transparent;
     outline: none;
@@ -23,7 +23,7 @@
     }
 
     &:focus-visible {
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.4);
+        box-shadow: 0 0 0 0.1875rem rgba(37, 99, 235, 0.4);
     }
 
     &:disabled {
@@ -34,8 +34,8 @@
 
 .switch__thumb {
     pointer-events: none;
-    width: 16px;
-    height: 16px;
+    width: 1rem;
+    height: 1rem;
     border-radius: 50%;
 
     background-color: var(--switch-thumb, #ffffff);
@@ -46,7 +46,7 @@
     }
 
     &[data-state="checked"] {
-        transform: translateX(14px);
+        transform: translateX(0.875rem);
     }
 }
 

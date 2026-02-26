@@ -2,27 +2,36 @@
 @use '../../../assets/styles/base/typography' as *;
 
 .sidebar {
-    width: 256px;
-    height: 100vh;
-
+    width: 100%; // mobile-first — на маленьких экранах занимает всю ширину
+    max-width: 256px; // на больших экранах ограничиваем ширину
+    min-width: 200px; // чтобы не сжималось слишком сильно
+    height: auto; // высота адаптивная
     font-family: 'Inter', sans-serif;
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+
+    @include respond(md) {
+        width: 256px; // фиксированная ширина на планшет/десктоп
+        height: 100vh;
+    }
 }
 
 .sidebar__container {
     display: flex;
-    justify-content: space-between;
     flex-direction: column;
-    row-gap: 10px;
-
+    justify-content: space-between;
+    row-gap: $space-sm;
+    padding: $space-lg;
     width: 100%;
-    height: 100%;
-    padding: 24px;
-    background-color: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    height: auto;
+
+    @include respond(md) {
+        height: 100%; // только на больших экранах
+    }
 }
 
 .sidebar__header {
-    padding-bottom: 10px;
+    padding-bottom: $space-sm;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
@@ -31,14 +40,10 @@
     text-align: center;
 }
 
-.siebar__nav {}
-
 .sidebar__menu {
     display: flex;
-    justify-content: center;
-    align-items: flex-start;
     flex-direction: column;
-    row-gap: 8px;
+    row-gap: $space-xs;
 
     li {
         width: 100%;
@@ -49,44 +54,34 @@
     }
 }
 
-button,
 .sidebar__item {
     display: flex;
-    justify-content: flex-start;
     align-items: center;
-    column-gap: 12px;
-
+    justify-content: flex-start;
+    column-gap: $space-sm;
     padding: $space-sm $space-md;
-
-    font-size: 16px;
+    font-size: 0.875rem;
     font-weight: 500;
     color: $text-gray;
-
     cursor: pointer;
-}
-
-.sidebar__item,
-.sidebar__help {
 
     &:hover,
     &--active {
         background-color: rgba(231, 242, 254, 1);
         color: rgba(17, 90, 219, 1);
-        border-radius: 8px;
+        border-radius: $radius-sm;
         text-decoration: none;
     }
-
-    @extend .text-base;
 }
 
 .sidebar__menu li:nth-child(8) .sidebar__item,
 .sidebar__footer {
-    padding-top: 10px;
+    padding-top: $space-sm;
     border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .sidebar__help {
-    width : 100%;
+    width: 100%;
 }
 
 .sidebar__logout {
@@ -95,6 +90,6 @@ button,
 
     &:hover {
         background-color: rgba(254, 231, 230, 1);
-        border-radius: 8px;
+        border-radius: $radius-sm;
     }
 }

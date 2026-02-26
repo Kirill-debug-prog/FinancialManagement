@@ -1,28 +1,26 @@
 .card {
     display: flex;
     flex-direction: column;
-    row-gap: 10px;
-    padding-block: 20px;
-    padding-inline: 16px;
+    row-gap: 0.625rem;
+    padding-block: 1.25rem;
+    padding-inline: 1rem;
     background-color: #fff;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.25);
-    border-radius: 30px;
-}
+    border-radius: 1.875rem;}
 
 .cardHeder {
     display: grid;
     grid-template-rows: auto auto;
-    row-gap: 9px;
+    row-gap: 0.5625rem;
     align-items: center;
 }
 
 .cardTitle {
-    font-family: 'inter', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-weight: 700;
-    font-size: 16px;
+    font-size: 1rem;
     color: #000;
     text-align: center;
-
     margin: 0;
     padding: 0;
 }
@@ -30,18 +28,17 @@
 .cardDescription {
     font-family: 'Inter', sans-serif;
     font-weight: 400;
-    font-size: 16px;
-    columns: #666363;
+    font-size: 1rem;
+    color: #666363;
     text-align: center;
-
     margin: 0;
     padding: 0;
 }
 
 .cardContents {
-    padding-inline: 14px;
+    padding-inline: 0.875rem;
 }
 
 .cardContents:last-child {
-    padding-bottom: 20px;
+    padding-bottom: 1.25rem;
 }

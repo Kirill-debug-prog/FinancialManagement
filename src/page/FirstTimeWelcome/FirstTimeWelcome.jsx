@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { Sparkles, TrendingUp, Shield, Zap, CheckCircle } from 'lucide-react';
 import { motion, scale } from 'framer-motion'
-import "./FirstTimeWelcome.css"
+import './FirstTimeWelcome.scss'
 import { Button } from "../../components/ui/button/button";
 import { useNavigate } from 'react-router-dom'
 
