@@ -1,0 +1,14 @@
+.separator {
+    flex-shrink: 0;
+    background-color: #e5e7eb;
+
+    &[data-orientation="horizontal"] {
+        width: 100%;
+        height: 0.0625rem;
+    }
+
+    &[data-orientation="vertical"] {
+        width: 0.0625rem;
+        height: 100%;
+    }
+}

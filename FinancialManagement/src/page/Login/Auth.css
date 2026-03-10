@@ -1,0 +1,55 @@
+.main-auth {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 100%;
+    min-height: 100vh;
+    padding: 1rem;
+    background: linear-gradient(#D0EEFF, #FFF2E8);
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 25.75rem;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    row-gap: 1rem;
+}
+
+.data-container {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.25rem;
+}
+
+.data-container:nth-child(3) {
+    justify-content: flex-start;
+}
+
+.or-hr-wrapper {
+    position: relative;
+    text-align: center;
+    font-size: 1rem;
+    padding-block: 0.8125rem;
+    text-transform: uppercase;
+    color: #6b7280;
+}
+
+.or-hr {
+    border: none;
+    border-top: 0.0625rem solid #d1d5db;
+    margin: 0;
+}
+
+.or-hr-label {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    padding: 0 0.5rem;
+}

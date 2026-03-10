@@ -1,0 +1,58 @@
+.dialog-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 50;
+}
+
+.dialog-content {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    background: #fff;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+
+    width: calc(100% - 2rem);
+    /* даёт горизонтальные отступы на мобильных */
+    max-width: 37.5rem;
+    box-shadow: 0 1.25rem 2.5rem rgba(0, 0, 0, 0.2);
+
+    z-index: 51;
+
+    /* предотвращаем выход за экран при длинном контенте */
+    max-height: calc(100vh - 2rem);
+    overflow: auto;
+}
+
+.dialog-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    padding: 0.25rem;
+}
+
+.dialog-close:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 0.1875rem rgba(59, 130, 246, 0.4);
+    border-radius: 0.25rem;
+}
+
+.dialog-title {
+    margin: 0;
+    padding: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.dialog-description {
+    color: #6b7280;
+    margin-top: 0.25rem;
+}

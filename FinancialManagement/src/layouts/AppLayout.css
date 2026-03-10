@@ -1,0 +1,10 @@
+.window {
+    display: grid;
+    grid-template-columns: 256px 1fr;
+    overflow: hidden;
+    height: 100vh;
+}
+
+.main {
+    overflow: auto;
+}
