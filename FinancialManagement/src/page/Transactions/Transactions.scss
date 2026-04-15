@@ -1,0 +1,148 @@
+@use '../../assets/styles/base/typography' as *;
+@use '../../assets/styles/variables.scss' as *;
+@use "sass:color";
+
+.transactions {
+    padding: $space-lg;
+    display: flex;
+    flex-direction: column;
+    gap: $space-lg;
+    font-family: 'Inter', system-ui;
+}
+
+.transactions__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: $space-md;
+}
+
+.transactions__title-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.transactions__subtitle {
+    margin: 0;
+    color: $text-gray;
+    @extend .text-xl;
+}
+
+.transactions__add-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-sm;
+
+    padding: 0.625rem 1rem;
+    background-color: $blue;
+    color: $white;
+    border-radius: $radius-md;
+    border: none;
+    cursor: pointer;
+
+    transition: background-color 0.2s ease;
+
+    &:hover {
+        background-color: color.adjust($blue, $lightness: -6%);
+    }
+}
+
+.transactions__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-md;
+    align-items: center;
+}
+
+.transactions__search {
+    position: relative;
+    flex: 1 1 20rem;
+    min-width: 16rem;
+}
+
+.transactions__search-icon {
+    position: absolute;
+    left: 0.5625rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+}
+
+.transactions__search-input {
+    padding-left: 2.25rem;
+    width: 100%;
+}
+
+.transactions__select {
+    flex: 1 1 12rem;
+    min-width: 10rem;
+}
+
+.transactions__select-trigger {
+    width: 100%;
+}
+
+.transactions__card {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    padding: 1.5rem; // ~24px
+    box-shadow: none;
+    border: 1px solid $border-input;
+    border-radius: $radius-lg;
+}
+
+.transactions__card-content {
+    width: 100%;
+    padding: 0;
+}
+
+.transactions__table-wrapper {
+    overflow-x: auto;
+}
+
+.transactions__row-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: $space-sm;
+}
+
+.transactions__card-btn {
+    padding-inline: 0.25rem;
+
+    &:hover {   // ✅ фикс hover
+        color: #8a8b8d;
+    }
+}
+
+.transactions__amount {
+    text-align: right;
+
+    &.is--income { color: #16a34a; }
+    &.is--expense { color: #dc2626; }
+    &.is--transfer { color: #2563eb; }
+}
+
+.transactions__empty {
+    text-align: center;
+    padding: 3rem 0;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.transactions__dialog {
+    max-width: 45rem;
+    width: 100%;
+}
+
+.icon {
+    width: 1.125rem;
+    height: 1.125rem;
+}
+
+.icon--left {
+    margin-right: $space-sm;
+}
