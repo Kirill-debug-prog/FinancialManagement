@@ -26,6 +26,5 @@ pnpm-debug.log*
 .idea/
 .DS_Store
 
-# Env
-*.env
+# IDE config
 .claude/
