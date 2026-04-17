@@ -9,12 +9,23 @@ import ImportExport from '../page/ImportExport/ImportExport'
 import { Reports } from '../page/Reports/Reports'
 import Setting from '../page/Settings/Setting'
 import Help from '../page/Help/Help'
-import { useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
+import { useLocation } from "react-router-dom";
 import './AppLayout.css'
 
 export default function AppLayout({onLogout}) {
     const [sidebarOpen, setSidebarOpen] = useState(true)
     const navigate = useNavigate()
+
+    const mainRef = useRef(null)
+    const { pathname } = useLocation()
+
+    useEffect(() => {
+        if (mainRef.current) {
+            mainRef.current.scrollTo(0, 0)
+        }
+    }, [pathname])
+    
 
     return (
         <div className="window">
@@ -25,7 +36,7 @@ export default function AppLayout({onLogout}) {
                 onLogout={onLogout}
             />
 
-            <main className="main">
+            <main ref={mainRef} className="main">
                 <Routes>
                     <Route path="dashboard" element={<Dashboard />} />
                     <Route path="accounts" element={<Accounts />} />

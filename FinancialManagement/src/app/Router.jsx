@@ -8,6 +8,7 @@ import AppLayout from '../layouts/AppLayout'
 import ProtectedRoute from './ProtectedRoute.jsx'
 import WelcomeModal from '../components/ui/WelcomeModel/WelcomeModal.jsx'
 import { isAuthenticated as checkAuth, clearAuth, getActiveProfileId } from '../api/client'
+import ScrollTop from '../components/ScrollTop.jsx'
 
 export default function Router() {
     const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -42,6 +43,7 @@ export default function Router() {
 
     return (
         <BrowserRouter>
+            <ScrollTop />
             <Routes>
 
                 {/* ---------- LOGIN ---------- */}
