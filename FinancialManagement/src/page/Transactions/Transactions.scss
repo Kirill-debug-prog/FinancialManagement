@@ -8,6 +8,16 @@
     flex-direction: column;
     gap: $space-lg;
     font-family: 'Inter', system-ui;
+
+    @include respond-down(md) {
+        padding: $space-md;
+        gap: $space-md;
+    }
+
+    @include respond-down(sm) {
+        padding: $space-sm;
+        gap: $space-sm;
+    }
 }
 
 .transactions__header {
@@ -16,6 +26,11 @@
     align-items: flex-start;
     flex-wrap: wrap;
     gap: $space-md;
+
+    @include respond-down(md) {
+        flex-direction: column;
+        gap: $space-sm;
+    }
 }
 
 .transactions__title-block {
@@ -28,24 +43,42 @@
     margin: 0;
     color: $text-gray;
     @extend .text-xl;
+
+    @include respond-down(md) {
+        font-size: 1.125rem;
+    }
+
+    @include respond-down(sm) {
+        font-size: 1rem;
+    }
 }
 
 .transactions__add-btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: $space-sm;
-
     padding: 0.625rem 1rem;
     background-color: $blue;
     color: $white;
     border-radius: $radius-md;
     border: none;
     cursor: pointer;
-
     transition: background-color 0.2s ease;
+    white-space: nowrap;
 
     &:hover {
         background-color: color.adjust($blue, $lightness: -6%);
+    }
+
+    @include respond-down(md) {
+        width: 100%;
+        padding: 0.75rem 1rem;
+    }
+
+    @include respond-down(sm) {
+        font-size: 0.875rem;
+        padding: 0.625rem 0.75rem;
     }
 }
 
@@ -54,12 +87,27 @@
     flex-wrap: wrap;
     gap: $space-md;
     align-items: center;
+
+    @include respond-down(md) {
+        flex-direction: column;
+        width: 100%;
+        gap: $space-sm;
+    }
 }
 
 .transactions__search {
     position: relative;
     flex: 1 1 20rem;
     min-width: 16rem;
+
+    @include respond-down(md) {
+        flex: 1 1 100%;
+        min-width: 100%;
+    }
+
+    @include respond-down(sm) {
+        min-width: 100%;
+    }
 }
 
 .transactions__search-icon {
@@ -68,16 +116,36 @@
     top: 50%;
     transform: translateY(-50%);
     color: #9ca3af;
+
+    @include respond-down(sm) {
+        width: 18px;
+        height: 18px;
+    }
 }
 
 .transactions__search-input {
     padding-left: 2.25rem;
     width: 100%;
+
+    @include respond-down(sm) {
+        padding-left: 1.75rem;
+        font-size: 0.875rem;
+    }
 }
 
 .transactions__select {
     flex: 1 1 12rem;
     min-width: 10rem;
+
+    @include respond-down(md) {
+        flex: 1 1 48%;
+        min-width: 48%;
+    }
+
+    @include respond-down(sm) {
+        flex: 1 1 100%;
+        min-width: 100%;
+    }
 }
 
 .transactions__select-trigger {
@@ -88,11 +156,20 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-
-    padding: 1.5rem; // ~24px
+    padding: 1.5rem;
     box-shadow: none;
     border: 1px solid $border-input;
     border-radius: $radius-lg;
+
+    @include respond-down(md) {
+        padding: 1rem;
+        border-radius: $radius-md;
+    }
+
+    @include respond-down(sm) {
+        padding: 0.75rem;
+        border-radius: $radius-sm;
+    }
 }
 
 .transactions__card-content {
@@ -102,24 +179,48 @@
 
 .transactions__table-wrapper {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+
+    @include respond-down(md) {
+        margin: 0 -1rem;
+        padding: 0 1rem;
+    }
+
+    @include respond-down(sm) {
+        margin: 0 -0.75rem;
+        padding: 0 0.75rem;
+    }
 }
 
 .transactions__row-actions {
     display: flex;
     justify-content: flex-end;
     gap: $space-sm;
+
+    @include respond-down(sm) {
+        gap: $space-xs;
+    }
 }
 
 .transactions__card-btn {
     padding-inline: 0.25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
-    &:hover {   // ✅ фикс hover
+    &:hover {
         color: #8a8b8d;
+    }
+
+    @include respond-down(sm) {
+        width: 24px;
+        height: 24px;
     }
 }
 
 .transactions__amount {
     text-align: right;
+    white-space: nowrap;
 
     &.is--income { color: #16a34a; }
     &.is--expense { color: #dc2626; }
@@ -131,18 +232,44 @@
     padding: 3rem 0;
     color: #6b7280;
     font-size: 0.875rem;
+
+    @include respond-down(md) {
+        padding: 2rem 0;
+    }
+
+    @include respond-down(sm) {
+        padding: 1.5rem 0;
+        font-size: 0.75rem;
+    }
 }
 
 .transactions__dialog {
     max-width: 45rem;
     width: 100%;
+
+    @include respond-down(md) {
+        max-width: 90vw;
+    }
+
+    @include respond-down(sm) {
+        max-width: 95vw;
+    }
 }
 
 .icon {
     width: 1.125rem;
     height: 1.125rem;
+
+    @include respond-down(sm) {
+        width: 1rem;
+        height: 1rem;
+    }
 }
 
 .icon--left {
     margin-right: $space-sm;
+
+    @include respond-down(sm) {
+        margin-right: $space-xs;
+    }
 }

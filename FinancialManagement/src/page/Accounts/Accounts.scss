@@ -2,13 +2,6 @@
 @use '../../assets/styles/variables.scss' as *;
 @use "sass:color";
 
-.window {
-    display: grid;
-    grid-template-columns: 16rem 1fr;
-    overflow: hidden;
-    height: 100vh;
-}
-
 .accounts {
     display: flex;
     flex-direction: column;
@@ -16,34 +9,69 @@
     padding: $space-lg $space-md;
     overflow: auto;
 
+    @include respond-down(md) {
+        padding: $space-md;
+        gap: $space-md;
+    }
+
+    @include respond-down(sm) {
+        padding: $space-sm;
+        gap: $space-sm;
+    }
+
     &__header {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        flex-wrap: wrap;
+        gap: $space-md;
+
+        @include respond-down(md) {
+            flex-direction: column;
+            gap: $space-sm;
+        }
     }
 
     &__subtitle {
         color: $text-gray;
         @extend .text-xl;
         margin: 0;
+
+        @include respond-down(md) {
+            font-size: 1.125rem;
+        }
+
+        @include respond-down(sm) {
+            font-size: 1rem;
+        }
     }
 
     &__add-btn {
         display: flex;
         align-items: center;
+        justify-content: center;
         gap: $space-sm;
-
         padding: $space-sm $space-md;
         background-color: $blue;
         color: $white;
         border-radius: $radius-sm;
         border: none;
         cursor: pointer;
-
         transition: background-color 0.2s ease;
+        white-space: nowrap;
 
         &:hover {
             background-color: color.adjust($blue, $lightness: -6%);
+        }
+
+        @include respond-down(md) {
+            width: 100%;
+            padding: 0.75rem $space-md;
+        }
+
+        @include respond-down(sm) {
+            font-size: 0.875rem;
+            padding: 0.625rem 0.75rem;
         }
     }
 
@@ -52,6 +80,22 @@
         grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
         gap: $space-xl;
         padding: $space-xs $space-sm;
+
+        @include respond-down(lg) {
+            grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+            gap: $space-lg;
+        }
+
+        @include respond-down(md) {
+            grid-template-columns: repeat(2, 1fr);
+            gap: $space-md;
+            padding: 0;
+        }
+
+        @include respond-down(sm) {
+            grid-template-columns: 1fr;
+            gap: $space-md;
+        }
     }
 }
 
@@ -59,24 +103,43 @@
     width: 100%;
     display: block;
     margin-top: $space-md;
+
+    @include respond-down(sm) {
+        margin-top: $space-sm;
+    }
 }
 
 .account__form-row {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: $space-md;
+
+    @include respond-down(md) {
+        grid-template-columns: 1fr;
+        gap: $space-sm;
+    }
 }
 
 .account__form-field {
     display: flex;
     flex-direction: column;
     gap: $space-sm;
+
+    @include respond-down(sm) {
+        gap: $space-xs;
+    }
 }
 
 .account__form-buttons {
     display: flex;
     gap: $space-md;
     padding-top: $space-md;
+
+    @include respond-down(md) {
+        flex-direction: column;
+        gap: $space-sm;
+        padding-top: $space-sm;
+    }
 }
 
 .account__form-button {
@@ -88,34 +151,64 @@
     padding: $space-sm $space-md;
     border-radius: $radius-sm;
     font-weight: $weight-bold;
+
+    @include respond-down(sm) {
+        padding: $space-sm $space-sm;
+        font-size: 0.875rem;
+    }
 }
 
 .accounts__balance {
     display: flex;
     align-items: flex-start;
-
     color: $white;
     background-image: linear-gradient(90deg, #3258F2 0%, #4C3BED 100%);
     border-radius: $radius-md;
     padding: $space-lg;
 
+    @include respond-down(md) {
+        padding: $space-md;
+        border-radius: $radius-md;
+    }
+
+    @include respond-down(sm) {
+        padding: $space-sm;
+        border-radius: $radius-sm;
+    }
+
     &-title {
         color: $white;
+
+        @include respond-down(sm) {
+            font-size: 0.875rem;
+        }
     }
 
     &-amount {
         margin: 0;
+
+        @include respond-down(sm) {
+            font-size: 1.25rem;
+        }
     }
 
     &-content {
         display: flex;
         flex-direction: column;
         row-gap: $space-sm;
+
+        @include respond-down(sm) {
+            row-gap: $space-xs;
+        }
     }
 
     &-subtitle {
         color: #D7DCFA;
         margin: 0;
+
+        @include respond-down(sm) {
+            font-size: 0.75rem;
+        }
     }
 }
 
@@ -123,12 +216,10 @@
     display: flex;
     align-items: flex-start;
     row-gap: $space-xl;
-
     padding: $space-md;
     border: 1px solid $color-border;
     border-radius: $radius-md;
     box-shadow: $shadow-sm;
-
     transition: box-shadow 0.2s ease, transform 0.2s ease;
 
     &:hover {
@@ -136,21 +227,49 @@
         transform: translateY(-0.125rem);
     }
 
+    @include respond-down(md) {
+        row-gap: $space-md;
+        padding: $space-sm;
+        border-radius: $radius-sm;
+    }
+
+    @include respond-down(sm) {
+        flex-wrap: wrap;
+        row-gap: $space-sm;
+        padding: $space-sm;
+    }
+
     &-header {
         display: flex;
         align-items: center;
         column-gap: $space-sm;
+
+        @include respond-down(sm) {
+            flex: 1;
+            min-width: 100%;
+        }
     }
 
     &-content {
         display: flex;
         flex-direction: column;
+
+        @include respond-down(sm) {
+            flex: 1;
+            min-width: 100%;
+        }
     }
 
     &-actions {
         display: flex;
         column-gap: $space-md;
         margin-top: $space-sm;
+
+        @include respond-down(sm) {
+            column-gap: $space-sm;
+            width: 100%;
+            margin-top: $space-xs;
+        }
     }
 }
 
@@ -158,14 +277,32 @@
     padding: $space-xs;
     border-radius: $radius-sm;
     color: $white;
+    flex-shrink: 0;
+
+    @include respond-down(sm) {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 }
 
 .header-text {
     display: flex;
     flex-direction: column;
     row-gap: $space-xs;
+
+    @include respond-down(sm) {
+        row-gap: 0;
+    }
 }
 
 .accounts__card-action-btn {
     padding: 0 $space-xs;
+    flex-shrink: 0;
+
+    @include respond-down(sm) {
+        padding: 0.25rem;
+    }
 }

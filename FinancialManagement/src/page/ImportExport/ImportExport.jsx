@@ -66,6 +66,14 @@ export default function ImportExport() {
     const [importProgress, setImportProgress] = useState(0)
     const [exportFormat, setExportFormat] = useState('csv')
     const [exportPeriod, setExportPeriod] = useState('month')
+    
+    // State для чекбоксов экспорта
+    const [exportCheckboxes, setExportCheckboxes] = useState({
+        transactions: true,
+        accounts: true,
+        credits: true,
+        deposits: true,
+    })
 
     const handleImport = () => {
         setImporting(true)
@@ -90,6 +98,14 @@ export default function ImportExport() {
 
     const handleFileUpload = () => {
         document.getElementById('file-input')?.click();
+    }
+
+    // Обработчик для чекбоксов
+    const handleCheckboxChange = (name) => {
+        setExportCheckboxes(prev => ({
+            ...prev,
+            [name]: !prev[name]
+        }))
     }
 
     const getStatusBadge = (status) => {
@@ -223,19 +239,39 @@ export default function ImportExport() {
                                     <Label className="import-export__label">Что экспортировать</Label>
                                     <div className="import-export__checkbox-group">
                                         <div className="import-export__checkbox-item">
-                                            <input type="checkbox" id="export-transactions" defaultChecked />
+                                            <input 
+                                                type="checkbox" 
+                                                id="export-transactions" 
+                                                checked={exportCheckboxes.transactions}
+                                                onChange={() => handleCheckboxChange('transactions')}
+                                            />
                                             <Label htmlFor="export-transactions">Операции</Label>
                                         </div>
                                         <div className="import-export__checkbox-item">
-                                            <input type="checkbox" id="export-accounts" defaultChecked />
+                                            <input 
+                                                type="checkbox" 
+                                                id="export-accounts" 
+                                                checked={exportCheckboxes.accounts}
+                                                onChange={() => handleCheckboxChange('accounts')}
+                                            />
                                             <Label htmlFor="export-accounts">Счета</Label>
                                         </div>
                                         <div className="import-export__checkbox-item">
-                                            <input type="checkbox" id="export-credits" defaultChecked />
+                                            <input 
+                                                type="checkbox" 
+                                                id="export-credits" 
+                                                checked={exportCheckboxes.credits}
+                                                onChange={() => handleCheckboxChange('credits')}
+                                            />
                                             <Label htmlFor="export-credits">Кредиты</Label>
                                         </div>
                                         <div className="import-export__checkbox-item">
-                                            <input type="checkbox" id="export-deposits" defaultChecked />
+                                            <input 
+                                                type="checkbox" 
+                                                id="export-deposits" 
+                                                checked={exportCheckboxes.deposits}
+                                                onChange={() => handleCheckboxChange('deposits')}
+                                            />
                                             <Label htmlFor="export-deposits">Вклады</Label>
                                         </div>
                                     </div>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Card, CardHeader, CradTitle, CardDescription } from "../../components/ui/card/card";
-import './Auth.css'
+import './Auth.scss'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs/tabs";
 import { Label } from "../../components/ui/label/label";
 import { Input } from "../../components/ui/input_data/input";

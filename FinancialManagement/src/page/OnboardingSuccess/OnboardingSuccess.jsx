@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { CheckCircle, Sparkles, TrendingUp, Wallet, BarChart3 } from 'lucide-react';
-import './OnboardingSuccess.css';
+import './OnboardingSuccess.scss';
 import { useNavigate } from 'react-router-dom'
 
 export default function OnboardingSuccess({ userName, onContinue }) {

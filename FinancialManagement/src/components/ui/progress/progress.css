@@ -3,9 +3,26 @@
     height: 0.5rem;
     border-radius: 3.625rem;
     overflow: hidden;
-
     background-color: #D9D9D9;
     transform: translateZ(0);
+
+    @media (max-width: 1024px) {
+        width: 100%;
+    }
+
+    @media (max-width: 768px) {
+        height: 0.375rem;
+    }
+
+    @media (max-width: 480px) {
+        height: 0.3125rem;
+    }
+}
+
+@supports not (selector(::-webkit-scrollbar)) {
+    .progress-root {
+        width: 100%;
+    }
 }
 
 .progress-indicator {

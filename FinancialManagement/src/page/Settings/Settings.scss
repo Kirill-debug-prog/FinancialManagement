@@ -4,9 +4,19 @@
 .settings {
     display: flex;
     flex-direction: column;
-    gap: $space-lg;
-    padding: $space-lg 1rem;
+    gap: $space-sm;
+    padding: $space-sm 0.5rem;
     overflow: auto;
+
+    @include respond(md) {
+        gap: $space-md;
+        padding: $space-md 1rem;
+    }
+
+    @include respond(lg) {
+        gap: $space-lg;
+        padding: $space-lg 1rem;
+    }
 
     &__header {
         display: flex;
@@ -15,20 +25,64 @@
         align-items: flex-start;
     }
 
+    &__title {
+        font-size: 1.5rem;
+        font-weight: 700;
+
+        @include respond(md) {
+            font-size: 1.875rem;
+        }
+
+        @include respond(lg) {
+            font-size: 2rem;
+        }
+    }
+
     &__subtitle {
         color: $text-gray;
-        @extend .text-xl;
+        font-size: 0.9375rem;
+        font-weight: 500;
+        margin: 0;
+
+        @include respond(md) {
+            font-size: 1.0625rem;
+        }
+
+        @include respond(lg) {
+            font-size: 1.25rem;
+        }
     }
 }
 
 .card {
     box-shadow: none;
     border: 1px solid $border-input;
+    border-radius: 0.75rem;
+    padding: 0.75rem;
+
+    @include respond(md) {
+        padding: 1rem;
+        border-radius: 0.875rem;
+    }
+
+    @include respond(lg) {
+        padding: 1.25rem;
+        border-radius: 1rem;
+    }
 }
 
 .card-header--start {
     display: flex;
     align-items: flex-start;
+    margin-bottom: 0.5rem;
+
+    @include respond(md) {
+        margin-bottom: 0.75rem;
+    }
+
+    @include respond(lg) {
+        margin-bottom: 1rem;
+    }
 }
 
 .card-header--between {
@@ -40,19 +94,39 @@
 .card-content--spaced {
     display: flex;
     flex-direction: column;
-    gap: $space-lg;
+    gap: $space-sm;
+
+    @include respond(md) {
+        gap: $space-md;
+    }
+
+    @include respond(lg) {
+        gap: $space-lg;
+    }
 }
 
 .stack {
     display: flex;
     flex-direction: column;
-    gap: $space-lg;
+    gap: $space-sm;
+
+    @include respond(md) {
+        gap: $space-md;
+    }
+
+    @include respond(lg) {
+        gap: $space-lg;
+    }
 }
 
 .stack-sm {
     display: flex;
     flex-direction: column;
-    gap: $space-md;
+    gap: $space-sm;
+
+    @include respond(md) {
+        gap: $space-md;
+    }
 }
 
 .row {
@@ -63,20 +137,55 @@
 
 .grid--2cols {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
-    gap: $space-md;
+    grid-template-columns: 1fr;
+    gap: $space-sm;
+
+    @include respond(md) {
+        grid-template-columns: repeat(2, 1fr);
+        gap: $space-md;
+    }
+
+    @include respond(lg) {
+        grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+        gap: $space-md;
+    }
 }
 
 .profile-row {
     display: flex;
     align-items: center;
-    gap: $space-lg;
+    gap: $space-md;
+    flex-direction: column;
     flex-wrap: wrap;
+
+    @include respond(sm) {
+        flex-direction: row;
+        gap: $space-md;
+    }
+
+    @include respond(md) {
+        gap: $space-lg;
+    }
+
+    @include respond(lg) {
+        gap: $space-lg;
+    }
 }
 
 .avatar--large {
-    width: 6rem;
-    height: 6rem;
+    width: 4rem;
+    height: 4rem;
+    flex-shrink: 0;
+
+    @include respond(md) {
+        width: 5rem;
+        height: 5rem;
+    }
+
+    @include respond(lg) {
+        width: 6rem;
+        height: 6rem;
+    }
 }
 
 .avatar-fallback--blue {
@@ -92,14 +201,38 @@
     .muted {
         margin-top: $space-sm;
         color: $text-gray;
-        @extend .text-sm;
+        font-size: 0.75rem;
+        font-weight: 400;
+
+        @include respond(md) {
+            font-size: 0.8125rem;
+        }
+
+        @include respond(lg) {
+            font-size: 0.875rem;
+        }
     }
 }
 
 .categories-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-    gap: $space-md;
+    grid-template-columns: 1fr;
+    gap: $space-sm;
+
+    @include respond(sm) {
+        grid-template-columns: repeat(2, 1fr);
+        gap: $space-md;
+    }
+
+    @include respond(md) {
+        grid-template-columns: repeat(2, 1fr);
+        gap: $space-md;
+    }
+
+    @include respond(lg) {
+        grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+        gap: $space-md;
+    }
 }
 
 .category-item {
@@ -124,9 +257,17 @@
 }
 
 .category-name {
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     font-weight: 500;
     color: #111827;
+
+    @include respond(md) {
+        font-size: 0.8125rem;
+    }
+
+    @include respond(lg) {
+        font-size: 0.875rem;
+    }
 }
 
 .category-bar {

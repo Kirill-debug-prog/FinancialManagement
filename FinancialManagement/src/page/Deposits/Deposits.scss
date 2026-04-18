@@ -9,34 +9,69 @@
     padding: $space-lg $space-md;
     overflow: auto;
 
+    @include respond-down(md) {
+        padding: $space-md;
+        gap: $space-md;
+    }
+
+    @include respond-down(sm) {
+        padding: $space-sm;
+        gap: $space-sm;
+    }
+
     &__header {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        flex-wrap: wrap;
+        gap: $space-md;
+
+        @include respond-down(md) {
+            flex-direction: column;
+            gap: $space-sm;
+        }
     }
 
     &__subtitle {
         color: $text-gray;
         @extend .text-xl;
-        margin: 0;;
+        margin: 0;
+
+        @include respond-down(md) {
+            font-size: 1.125rem;
+        }
+
+        @include respond-down(sm) {
+            font-size: 1rem;
+        }
     }
 
     &__add-btn {
         display: flex;
         align-items: center;
+        justify-content: center;
         gap: $space-sm;
-
         padding: $space-sm $space-md;
         background-color: $blue;
         color: $white;
         border-radius: $radius-sm;
         border: none;
         cursor: pointer;
-
         transition: background-color 0.2s ease;
+        white-space: nowrap;
 
         &:hover {
             background-color: color.adjust($blue, $lightness: -6%);
+        }
+
+        @include respond-down(md) {
+            width: 100%;
+            padding: 0.75rem $space-md;
+        }
+
+        @include respond-down(sm) {
+            font-size: 0.875rem;
+            padding: 0.625rem 0.75rem;
         }
     }
 }
@@ -48,22 +83,45 @@
     row-gap: $space-sm;
     margin-top: $space-md;
 
+    @include respond-down(sm) {
+        margin-top: $space-sm;
+    }
+
     &__row {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: $space-md;
+
+        @include respond-down(md) {
+            grid-template-columns: 1fr;
+            gap: $space-sm;
+        }
     }
 
     &__field {
         display: flex;
         flex-direction: column;
         gap: $space-sm;
+
+        @include respond-down(sm) {
+            gap: $space-xs;
+        }
     }
 
     &__buttons {
         display: flex;
         gap: $space-md;
         padding-top: $space-md;
+
+        @include respond-down(md) {
+            flex-direction: column;
+            gap: $space-sm;
+        }
+
+        @include respond-down(sm) {
+            gap: $space-xs;
+            padding-top: $space-sm;
+        }
     }
 
     &__button {
@@ -75,6 +133,11 @@
         padding: $space-sm $space-md;
         border-radius: $radius-sm;
         font-weight: 600;
+
+        @include respond-down(sm) {
+            padding: $space-sm $space-xs;
+            font-size: 0.875rem;
+        }
     }
 }
 
@@ -83,8 +146,17 @@
     grid-template-columns: 1fr;
     gap: $space-md;
 
-    @include respond(md) {
+    @include respond(lg) {
         grid-template-columns: repeat(3, 1fr);
+    }
+
+    @include respond-down(md) {
+        grid-template-columns: 1fr;
+        gap: $space-sm;
+    }
+
+    @include respond-down(sm) {
+        gap: $space-xs;
     }
 
     &__header {
@@ -92,16 +164,29 @@
         align-items: center;
         justify-content: space-between;
         padding-bottom: $space-sm;
+
+        @include respond-down(sm) {
+            padding-bottom: $space-xs;
+        }
     }
 
     &__title {
         font-size: $font-size-base;
         font-weight: 500;
+
+        @include respond-down(sm) {
+            font-size: 0.875rem;
+        }
     }
 
     &__icon {
         width: 1.25rem;
         height: 1.25rem;
+
+        @include respond-down(sm) {
+            width: 1rem;
+            height: 1rem;
+        }
 
         &--green {
             color: $green;
@@ -120,6 +205,14 @@
         font-size: $font-size-lg;
         font-weight: 600;
 
+        @include respond-down(md) {
+            font-size: 1.125rem;
+        }
+
+        @include respond-down(sm) {
+            font-size: 1rem;
+        }
+
         &--blue {
             color: $blue;
         }
@@ -137,6 +230,11 @@
         margin-top: $space-xs;
         color: $text-gray;
         @extend .text-sm;
+
+        @include respond-down(sm) {
+            margin-top: $space-xs;
+            font-size: 0.75rem;
+        }
     }
 }
 
@@ -146,8 +244,24 @@
     justify-content: flex-start;
     row-gap: $space-lg;
 
+    @include respond-down(md) {
+        row-gap: $space-md;
+    }
+
+    @include respond-down(sm) {
+        row-gap: $space-sm;
+    }
+
     &__title {
         @extend .text-xl;
+
+        @include respond-down(md) {
+            font-size: 1.125rem;
+        }
+
+        @include respond-down(sm) {
+            font-size: 1rem;
+        }
     }
 
     &__position {
@@ -155,5 +269,13 @@
         justify-content: flex-start;
         flex-direction: column;
         row-gap: $space-lg;
+
+        @include respond-down(md) {
+            row-gap: $space-md;
+        }
+
+        @include respond-down(sm) {
+            row-gap: $space-sm;
+        }
     }
 }

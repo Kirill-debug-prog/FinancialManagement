@@ -2,16 +2,18 @@
 @use '../../../assets/styles/base/typography' as *;
 
 .sidebar {
-    width: 100%; // mobile-first — на маленьких экранах занимает всю ширину
-    max-width: 256px; // на больших экранах ограничиваем ширину
-    min-width: 200px; // чтобы не сжималось слишком сильно
-    height: auto; // высота адаптивная
+    width: 256px;
+    height: 100vh;
     font-family: 'Inter', sans-serif;
     background-color: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
 
     @include respond(md) {
-        width: 256px; // фиксированная ширина на планшет/десктоп
+        width: 256px;
         height: 100vh;
     }
 }
@@ -23,11 +25,8 @@
     row-gap: $space-sm;
     padding: $space-lg;
     width: 100%;
-    height: auto;
-
-    @include respond(md) {
-        height: 100%; // только на больших экранах
-    }
+    height: 100%;
+    box-sizing: border-box;
 }
 
 .sidebar__header {
@@ -38,12 +37,23 @@
 .sidebar__title {
     color: $color-text;
     text-align: center;
+    margin: 0;
+    font-size: 1.125rem;
+}
+
+.sidebar__nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: $space-sm 0;
 }
 
 .sidebar__menu {
     display: flex;
     flex-direction: column;
     row-gap: $space-xs;
+    list-style: none;
+    margin: 0;
+    padding: 0;
 
     li {
         width: 100%;
@@ -64,32 +74,124 @@
     font-weight: 500;
     color: $text-gray;
     cursor: pointer;
+    text-decoration: none;
+    border-radius: $radius-sm;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
     &:hover,
     &--active {
         background-color: rgba(231, 242, 254, 1);
         color: rgba(17, 90, 219, 1);
-        border-radius: $radius-sm;
         text-decoration: none;
+    }
+
+    .sidebar__icon {
+        flex-shrink: 0;
+        width: 20px;
+        height: 20px;
     }
 }
 
-.sidebar__menu li:nth-child(8) .sidebar__item,
-.sidebar__footer {
-    padding-top: $space-sm;
+.sidebar__menu li:nth-child(8) .sidebar__item {
     border-top: 1px solid rgba(0, 0, 0, 0.1);
+    margin-top: $space-sm;
+    padding-top: $space-md;
+}
+
+.sidebar__footer {
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    padding-top: $space-md;
+}
+
+.sidebar__logout {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    column-gap: $space-sm;
+    padding: $space-sm $space-md;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: rgba(213, 95, 90, 1);
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: $radius-sm;
+    transition: all 0.2s ease;
+
+    .sidebar__icon {
+        flex-shrink: 0;
+        width: 20px;
+        height: 20px;
+    }
+
+    &:hover {
+        background-color: rgba(254, 231, 230, 1);
+    }
 }
 
 .sidebar__help {
     width: 100%;
 }
 
-.sidebar__logout {
-    width: 100%;
-    color: rgba(213, 95, 90, 1);
+/* ================== Mobile Sidebar ================== */
+@media (max-width: 767px) {
+    .sidebar {
+        position: fixed;
+        top: 60px;
+        left: 0;
+        right: 0;
+        width: 100%;
+        max-width: 100%;
+        height: calc(100vh - 60px);
+        background-color: #fff;
+        border-right: none;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        z-index: 50;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
 
-    &:hover {
-        background-color: rgba(254, 231, 230, 1);
-        border-radius: $radius-sm;
+        &.sidebar--open {
+            transform: translateX(0);
+        }
+    }
+
+    .sidebar__title {
+        display: none;
+    }
+
+    .sidebar__header {
+        display: none;
+    }
+
+    .sidebar__container {
+        padding: $space-md;
+    }
+
+    .sidebar__item {
+        padding: $space-md $space-md;
+        font-size: 1rem;
+    }
+}
+
+/* ================== Tablet ================== */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .sidebar {
+        width: 256px;
+    }
+
+    .sidebar__item {
+        font-size: 0.875rem;
+        padding: $space-sm $space-md;
+    }
+}
+
+/* ================== Large Desktop ================== */
+@media (min-width: 1024px) {
+    .sidebar {
+        width: 256px;
     }
 }

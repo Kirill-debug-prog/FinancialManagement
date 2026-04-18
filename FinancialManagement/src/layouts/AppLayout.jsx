@@ -11,10 +11,11 @@ import Setting from '../page/Settings/Setting'
 import Help from '../page/Help/Help'
 import { useEffect, useState, useRef } from 'react'
 import { useLocation } from "react-router-dom";
+import { Menu, X } from 'lucide-react'
 import './AppLayout.css'
 
 export default function AppLayout({onLogout}) {
-    const [sidebarOpen, setSidebarOpen] = useState(true)
+    const [sidebarOpen, setSidebarOpen] = useState(false)
     const navigate = useNavigate()
 
     const mainRef = useRef(null)
@@ -25,14 +26,52 @@ export default function AppLayout({onLogout}) {
             mainRef.current.scrollTo(0, 0)
         }
     }, [pathname])
+
+    // Закрываем сайдбар при навигации на мобильных
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth >= 768) {
+                setSidebarOpen(true)
+            } else {
+                setSidebarOpen(false)
+            }
+        }
+
+        window.addEventListener('resize', handleResize)
+        // Инициализация на загрузку
+        handleResize()
+
+        return () => window.removeEventListener('resize', handleResize)
+    }, [])
     
 
     return (
         <div className="window">
+            {/* Мобильный хедер с бургер-меню */}
+            <div className="mobile-header">
+                <button
+                    className="burger-button"
+                    onClick={() => setSidebarOpen(!sidebarOpen)}
+                    aria-label="Toggle menu"
+                >
+                    {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
+                </button>
+                <h1 className="mobile-header__title">Финансовый помощник</h1>
+                <div style={{ width: 40 }} /> {/* Spacer для центрирования */}
+            </div>
+
+            {/* Overlay для мобильных */}
+            {sidebarOpen && (
+                <div
+                    className="sidebar-overlay"
+                    onClick={() => setSidebarOpen(false)}
+                />
+            )}
+
             <AppSidebar
                 isOpen={sidebarOpen}
                 onToggle={() => setSidebarOpen(!sidebarOpen)}
-                onNavigate={(path) => navigate(path)}
+                onNavigate={() => setSidebarOpen(false)}
                 onLogout={onLogout}
             />
 
