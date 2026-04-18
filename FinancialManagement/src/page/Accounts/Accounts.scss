@@ -5,44 +5,65 @@
 .accounts {
     display: flex;
     flex-direction: column;
-    gap: $space-lg;
-    padding: $space-lg $space-md;
+    gap: $space-sm;
+    padding: $space-sm 0.5rem;
     overflow: auto;
 
-    @include respond-down(md) {
-        padding: $space-md;
+    @include respond(md) {
         gap: $space-md;
+        padding: $space-md 1rem;
     }
 
-    @include respond-down(sm) {
-        padding: $space-sm;
-        gap: $space-sm;
+    @include respond(lg) {
+        gap: $space-lg;
+        padding: $space-lg 1.5rem;
     }
 
     &__header {
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: flex-start;
+        flex-direction: column;
         flex-wrap: wrap;
-        gap: $space-md;
+        gap: $space-sm;
 
-        @include respond-down(md) {
-            flex-direction: column;
-            gap: $space-sm;
+        @include respond(md) {
+            flex-direction: row;
+            align-items: center;
+            gap: $space-md;
+        }
+
+        @include respond(lg) {
+            gap: $space-md;
+        }
+    }
+
+    &__title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0;
+
+        @include respond(md) {
+            font-size: 1.875rem;
+        }
+
+        @include respond(lg) {
+            font-size: 2rem;
         }
     }
 
     &__subtitle {
         color: $text-gray;
-        @extend .text-xl;
+        font-size: 0.9375rem;
+        font-weight: 500;
         margin: 0;
 
-        @include respond-down(md) {
-            font-size: 1.125rem;
+        @include respond(md) {
+            font-size: 1.0625rem;
         }
 
-        @include respond-down(sm) {
-            font-size: 1rem;
+        @include respond(lg) {
+            font-size: 1.25rem;
         }
     }
 
@@ -51,7 +72,7 @@
         align-items: center;
         justify-content: center;
         gap: $space-sm;
-        padding: $space-sm $space-md;
+        padding: 0.625rem 1rem;
         background-color: $blue;
         color: $white;
         border-radius: $radius-sm;
@@ -59,42 +80,54 @@
         cursor: pointer;
         transition: background-color 0.2s ease;
         white-space: nowrap;
+        font-size: 0.875rem;
+        font-weight: 600;
+        min-height: 2.125rem;
+
+        @include respond(md) {
+            padding: 0.75rem 1.25rem;
+            font-size: 0.9375rem;
+            min-height: 2.375rem;
+        }
+
+        @include respond(lg) {
+            padding: 0.875rem 1.5rem;
+            font-size: 1rem;
+            min-height: 2.5rem;
+        }
 
         &:hover {
             background-color: color.adjust($blue, $lightness: -6%);
         }
 
-        @include respond-down(md) {
-            width: 100%;
-            padding: 0.75rem $space-md;
-        }
-
-        @include respond-down(sm) {
-            font-size: 0.875rem;
-            padding: 0.625rem 0.75rem;
+        &:active {
+            transform: scale(0.98);
         }
     }
 
     &__list {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
-        gap: $space-xl;
-        padding: $space-xs $space-sm;
+        grid-template-columns: 1fr;
+        gap: $space-sm;
 
-        @include respond-down(lg) {
+        @include respond(sm) {
+            grid-template-columns: 1fr;
+            gap: $space-md;
+        }
+
+        @include respond(md) {
+            grid-template-columns: repeat(2, 1fr);
+            gap: $space-md;
+        }
+
+        @include respond(lg) {
             grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
             gap: $space-lg;
         }
 
-        @include respond-down(md) {
-            grid-template-columns: repeat(2, 1fr);
-            gap: $space-md;
-            padding: 0;
-        }
-
-        @include respond-down(sm) {
-            grid-template-columns: 1fr;
-            gap: $space-md;
+        @include respond(xl) {
+            grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+            gap: $space-xl;
         }
     }
 }
@@ -102,43 +135,78 @@
 .account__form {
     width: 100%;
     display: block;
-    margin-top: $space-md;
+    margin-top: $space-sm;
 
-    @include respond-down(sm) {
-        margin-top: $space-sm;
+    @include respond(md) {
+        margin-top: $space-md;
+    }
+
+    @include respond(lg) {
+        margin-top: $space-lg;
     }
 }
 
 .account__form-row {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: $space-md;
+    grid-template-columns: 1fr;
+    gap: $space-sm;
 
-    @include respond-down(md) {
-        grid-template-columns: 1fr;
-        gap: $space-sm;
+    @include respond(md) {
+        grid-template-columns: repeat(2, 1fr);
+        gap: $space-md;
+    }
+
+    @include respond(lg) {
+        grid-template-columns: repeat(2, 1fr);
+        gap: $space-lg;
     }
 }
 
 .account__form-field {
     display: flex;
     flex-direction: column;
-    gap: $space-sm;
+    gap: $space-xs;
 
-    @include respond-down(sm) {
-        gap: $space-xs;
+    @include respond(md) {
+        gap: $space-sm;
+    }
+
+    @include respond(lg) {
+        gap: $space-sm;
+    }
+}
+
+.account__from-field {
+    display: flex;
+    flex-direction: column;
+    gap: $space-xs;
+    margin-top: $space-sm;
+
+    @include respond(md) {
+        gap: $space-sm;
+        margin-top: $space-md;
+    }
+
+    @include respond(lg) {
+        gap: $space-sm;
     }
 }
 
 .account__form-buttons {
     display: flex;
-    gap: $space-md;
-    padding-top: $space-md;
+    flex-direction: column;
+    gap: $space-sm;
+    padding-top: $space-sm;
 
-    @include respond-down(md) {
-        flex-direction: column;
-        gap: $space-sm;
-        padding-top: $space-sm;
+    @include respond(md) {
+        flex-direction: row;
+        gap: $space-md;
+        padding-top: $space-md;
+    }
+
+    @include respond(lg) {
+        gap: $space-lg;
+        padding-top: $space-lg;
     }
 }
 
@@ -148,13 +216,22 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: $space-sm $space-md;
+    padding: 0.625rem 1rem;
     border-radius: $radius-sm;
     font-weight: $weight-bold;
+    font-size: 0.875rem;
+    min-height: 2.125rem;
 
-    @include respond-down(sm) {
-        padding: $space-sm $space-sm;
-        font-size: 0.875rem;
+    @include respond(md) {
+        padding: 0.75rem 1.25rem;
+        font-size: 0.9375rem;
+        min-height: 2.375rem;
+    }
+
+    @include respond(lg) {
+        padding: 0.875rem 1.5rem;
+        font-size: 1rem;
+        min-height: 2.5rem;
     }
 }
 
@@ -163,139 +240,223 @@
     align-items: flex-start;
     color: $white;
     background-image: linear-gradient(90deg, #3258F2 0%, #4C3BED 100%);
-    border-radius: $radius-md;
-    padding: $space-lg;
+    border-radius: $radius-sm;
+    padding: $space-sm;
+    width: 100%;
 
-    @include respond-down(md) {
+    @include respond(md) {
         padding: $space-md;
         border-radius: $radius-md;
     }
 
-    @include respond-down(sm) {
-        padding: $space-sm;
-        border-radius: $radius-sm;
+    @include respond(lg) {
+        padding: $space-lg;
+        border-radius: $radius-md;
     }
 
     &-title {
         color: $white;
+        font-size: 0.75rem;
+        font-weight: 500;
 
-        @include respond-down(sm) {
+        @include respond(md) {
             font-size: 0.875rem;
+        }
+
+        @include respond(lg) {
+            font-size: 0.9375rem;
         }
     }
 
     &-amount {
         margin: 0;
+        font-size: 1.25rem;
+        font-weight: 700;
 
-        @include respond-down(sm) {
-            font-size: 1.25rem;
+        @include respond(md) {
+            font-size: 1.5rem;
+        }
+
+        @include respond(lg) {
+            font-size: 1.875rem;
         }
     }
 
     &-content {
         display: flex;
         flex-direction: column;
-        row-gap: $space-sm;
+        row-gap: $space-xs;
 
-        @include respond-down(sm) {
-            row-gap: $space-xs;
+        @include respond(md) {
+            row-gap: $space-sm;
+        }
+
+        @include respond(lg) {
+            row-gap: $space-sm;
         }
     }
 
     &-subtitle {
         color: #D7DCFA;
         margin: 0;
+        font-size: 0.7rem;
 
-        @include respond-down(sm) {
-            font-size: 0.75rem;
+        @include respond(md) {
+            font-size: 0.8125rem;
+        }
+
+        @include respond(lg) {
+            font-size: 0.875rem;
         }
     }
 }
 
 .accounts__card {
     display: flex;
-    align-items: flex-start;
-    row-gap: $space-xl;
-    padding: $space-md;
+    flex-direction: column;
+    row-gap: $space-sm;
+    padding: $space-sm;
     border: 1px solid $color-border;
-    border-radius: $radius-md;
+    border-radius: $radius-sm;
     box-shadow: $shadow-sm;
     transition: box-shadow 0.2s ease, transform 0.2s ease;
+    overflow: hidden;
+
+    @include respond(md) {
+        row-gap: $space-md;
+        padding: $space-md;
+        border-radius: $radius-md;
+    }
+
+    @include respond(lg) {
+        row-gap: $space-md;
+        padding: $space-lg;
+        border-radius: $radius-md;
+    }
 
     &:hover {
         box-shadow: $shadow-md;
         transform: translateY(-0.125rem);
     }
 
-    @include respond-down(md) {
-        row-gap: $space-md;
-        padding: $space-sm;
-        border-radius: $radius-sm;
-    }
-
-    @include respond-down(sm) {
-        flex-wrap: wrap;
-        row-gap: $space-sm;
-        padding: $space-sm;
-    }
-
     &-header {
         display: flex;
         align-items: center;
         column-gap: $space-sm;
+        width: 100%;
 
-        @include respond-down(sm) {
-            flex: 1;
-            min-width: 100%;
+        @include respond(md) {
+            column-gap: $space-md;
+        }
+
+        @include respond(lg) {
+            column-gap: $space-md;
         }
     }
 
     &-content {
         display: flex;
         flex-direction: column;
+        row-gap: $space-xs;
+        width: 100%;
 
-        @include respond-down(sm) {
-            flex: 1;
-            min-width: 100%;
+        @include respond(md) {
+            row-gap: $space-sm;
+        }
+
+        @include respond(lg) {
+            row-gap: $space-sm;
         }
     }
 
     &-actions {
         display: flex;
-        column-gap: $space-md;
-        margin-top: $space-sm;
+        flex-direction: column;
+        column-gap: $space-sm;
+        row-gap: $space-xs;
+        width: 100%;
+        margin-top: $space-xs;
 
-        @include respond-down(sm) {
-            column-gap: $space-sm;
-            width: 100%;
-            margin-top: $space-xs;
+        @include respond(md) {
+            flex-direction: row;
+            column-gap: $space-md;
+            row-gap: $space-md;
+            margin-top: $space-sm;
+        }
+
+        @include respond(lg) {
+            column-gap: $space-md;
+            margin-top: $space-md;
+        }
+
+        button {
+            flex: 1;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.75rem;
+            min-height: 1.875rem;
+
+            @include respond(md) {
+                padding: 0.625rem 1rem;
+                font-size: 0.8125rem;
+                min-height: 2rem;
+            }
+
+            @include respond(lg) {
+                padding: 0.75rem 1.25rem;
+                font-size: 0.875rem;
+                min-height: 2.125rem;
+            }
         }
     }
 }
 
 .accounts__icon-wrapper {
-    padding: $space-xs;
+    width: 2rem;
+    height: 2rem;
+    padding: 0.25rem;
     border-radius: $radius-sm;
     color: $white;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
 
-    @include respond-down(sm) {
-        width: 32px;
-        height: 32px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    @include respond(md) {
+        width: 2.5rem;
+        height: 2.5rem;
+        padding: 0.375rem;
+        border-radius: $radius-sm;
+        font-size: 1.125rem;
+    }
+
+    @include respond(lg) {
+        width: 3rem;
+        height: 3rem;
+        padding: 0.5rem;
+        border-radius: $radius-md;
+        font-size: 1.25rem;
     }
 }
 
 .header-text {
     display: flex;
     flex-direction: column;
-    row-gap: $space-xs;
+    row-gap: 0;
+    width: 100%;
 
-    @include respond-down(sm) {
-        row-gap: 0;
+    @include respond(md) {
+        row-gap: $space-xs;
     }
+
+    @include respond(lg) {
+        row-gap: $space-xs;
+    }
+}
+
+.accounts__card-actions {
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .accounts__card-action-btn {
