@@ -8,7 +8,7 @@ import { Label } from '../../components/ui/label/label';
 import { Input } from '../../components/ui/input_data/input';
 import { Badge } from '../../components/ui/badge/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select/select";
-import { getAccounts, createAccount, deleteAccount } from '../../api/accounts';
+import { getAccounts, createAccount, deleteAccount, updateAccount } from '../../api/accounts';
 import { getCurrencies } from '../../api/currencies';
 import { transformAccountFromBackend, getCurrencySymbol } from '../../api/transformers';
 import './Accounts.scss'
@@ -19,6 +19,14 @@ export default function Accounts() {
     const [accountType, setAccountType] = useState('')
     const [currency, setCurrency] = useState('RUB')
     const [intialBalance, setInitialBalance] = useState('')
+
+    const [editDialogOpen, setEditDialogOpen] = useState(false)
+    const [editingAccountId, setEditingAccountId] = useState(null)
+    const [editForm, setEditForm] = useState({ name: '', type: '' })
+
+    const [transferDialogOpen, setTransferDialogOpen] = useState(false)
+    const [transferForm, setTransferForm] = useState({ fromAccountId: null, toAccountId: null, amount: '' })
+
     const [accounts, setAccounts] = useState([])
     const [currencies, setCurrencies] = useState([])
     const [loading, setLoading] = useState(true)
@@ -74,12 +82,93 @@ export default function Accounts() {
     }
 
     const handleDelete = async (id) => {
+        if (!confirm('Вы уверены, что хотите удалить этот счёт? Это действие нельзя отменить.')) {
+            return;
+        }
         try {
             await deleteAccount(id);
             toast.success('Счёт удалён');
             fetchData();
         } catch (err) {
             toast.error(err.message || 'Ошибка удаления');
+        }
+    };
+
+    const handleOpenEditDialog = (account) => {
+        setEditingAccountId(account.id);
+        setEditForm({
+            name: account.name,
+            type: account.type
+        });
+        setEditDialogOpen(true);
+    };
+
+    const handleSaveEditAccount = async () => {
+        if (!editForm.name) {
+            toast.error('Заполните название счёта');
+            return;
+        }
+        try {
+            await updateAccount(editingAccountId, {
+                name: editForm.name,
+                type: editForm.type
+            });
+            toast.success('Счёт успешно обновлён');
+            setEditDialogOpen(false);
+            fetchData();
+        } catch (err) {
+            toast.error(err.message || 'Ошибка обновления счёта');
+        }
+    };
+
+    const handleOpenTransferDialog = (accountId) => {
+        setTransferForm({
+            fromAccountId: accountId,
+            toAccountId: null,
+            amount: ''
+        });
+        setTransferDialogOpen(true);
+    };
+
+    const handleSaveTransfer = async () => {
+        if (!transferForm.toAccountId || !transferForm.amount) {
+            toast.error('Заполните все поля');
+            return;
+        }
+
+        const amount = parseFloat(transferForm.amount);
+        if (amount <= 0) {
+            toast.error('Сумма должна быть больше нуля');
+            return;
+        }
+
+        const fromAccount = accounts.find(a => a.id === transferForm.fromAccountId);
+        if (!fromAccount || fromAccount.balance < amount) {
+            toast.error('Недостаточно средств на счёте');
+            return;
+        }
+
+        try {
+            // Обновляем счёт-источник
+            await updateAccount(transferForm.fromAccountId, {
+                name: fromAccount.name,
+                type: fromAccount.type,
+                balance: fromAccount.balance - amount
+            });
+
+            // Обновляем счёт-получатель
+            const toAccount = accounts.find(a => a.id === transferForm.toAccountId);
+            await updateAccount(transferForm.toAccountId, {
+                name: toAccount.name,
+                type: toAccount.type,
+                balance: toAccount.balance + amount
+            });
+
+            toast.success(`Перевод ${amount.toLocaleString()} ₽ выполнен успешно`);
+            setTransferDialogOpen(false);
+            fetchData();
+        } catch (err) {
+            toast.error(err.message || 'Ошибка при переводе');
         }
     };
 
@@ -205,7 +294,7 @@ export default function Accounts() {
                         <Card key={account.id} className="accounts__card">
                             <CardHeader>
                                 <div className="accounts__card-header">
-                                    <div className={`accounts__icon-wrapper`} style={{ backgroundColor: account.color }}>
+                                    <div className="accounts__icon-wrapper" style={{ backgroundColor: account.color }}>
                                         <Icon size={30} />
                                     </div>
                                     <div className="header-text">
@@ -219,11 +308,11 @@ export default function Accounts() {
                                     {account.balance.toLocaleString()} {getCurrencySymbol(account.currency)}
                                 </div>
                                 <div className="accounts__card-actions">
-                                    <Button variant="white" className="accounts__card-action-btn">
+                                    <Button variant="white" className="accounts__card-action-btn" onClick={() => handleOpenEditDialog(account)}>
                                         <Edit size={16} />
                                         Изменить
                                     </Button>
-                                    <Button variant="white" className="accounts__card-action-btn">
+                                    <Button variant="white" className="accounts__card-action-btn" onClick={() => handleOpenTransferDialog(account.id)}>
                                         <ArrowRightLeft size={16} />
                                         Перевести
                                     </Button>
@@ -238,10 +327,122 @@ export default function Accounts() {
             </div>
 
             {accounts.length === 0 && (
-                <div style={{ textAlign: 'center', padding: '2rem', color: '#666' }}>
+                <div className="accounts__empty-message">
                     Нет счетов. Добавьте первый счёт!
                 </div>
             )}
+
+            {/* Edit Dialog */}
+            <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+                <DialogContent aria-describedby={undefined}>
+                    <DialogHeader>
+                        <DialogTitle>Редактировать счёт</DialogTitle>
+                    </DialogHeader>
+                    <div className="account__form">
+                        <div className="account__form-field">
+                            <Label htmlFor="edit-account-name">Название счёта</Label>
+                            <Input
+                                id="edit-account-name"
+                                value={editForm.name}
+                                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                            />
+                        </div>
+                        <div className="account__form-field">
+                            <Label htmlFor="edit-account-type">Тип счёта</Label>
+                            <Select value={editForm.type} onValueChange={(value) => setEditForm({ ...editForm, type: value })}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Выберите тип" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="card">Банковская карта</SelectItem>
+                                    <SelectItem value="cash">Наличные</SelectItem>
+                                    <SelectItem value="savings">Сберегательный счёт</SelectItem>
+                                    <SelectItem value="investment">Инвестиционный счёт</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="account__form-buttons">
+                            <Button onClick={handleSaveEditAccount} className="flex-1">
+                                Сохранить
+                            </Button>
+                            <Button variant="outline" className="flex-1" onClick={() => setEditDialogOpen(false)}>
+                                Отмена
+                            </Button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* Transfer Dialog */}
+            <Dialog open={transferDialogOpen} onOpenChange={setTransferDialogOpen}>
+                <DialogContent aria-describedby={undefined}>
+                    <DialogHeader>
+                        <DialogTitle>Перевод между счётами</DialogTitle>
+                    </DialogHeader>
+                    <div className="account__form">
+                        <div className="account__form-field">
+                            <Label>Со счёта</Label>
+                            <div className="dialog-info-box">
+                                <p className="dialog-info-box__text">
+                                    {accounts.find(a => a.id === transferForm.fromAccountId)?.name}
+                                </p>
+                                <p className="dialog-info-box__subtitle">
+                                    Баланс: {accounts.find(a => a.id === transferForm.fromAccountId)?.balance.toLocaleString()} ₽
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="account__form-field">
+                            <Label htmlFor="transfer-to-account">На счёт</Label>
+                            <Select value={transferForm.toAccountId || ''} onValueChange={(value) => setTransferForm({ ...transferForm, toAccountId: value })}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Выберите счёт" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {accounts
+                                        .filter(a => a.id !== transferForm.fromAccountId)
+                                        .map(account => (
+                                            <SelectItem key={account.id} value={account.id}>
+                                                {account.name} ({account.balance.toLocaleString()} ₽)
+                                            </SelectItem>
+                                        ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div className="account__form-field">
+                            <Label htmlFor="transfer-amount">Сумма (₽)</Label>
+                            <Input
+                                id="transfer-amount"
+                                type="number"
+                                placeholder="0"
+                                value={transferForm.amount}
+                                onChange={(e) => setTransferForm({ ...transferForm, amount: e.target.value })}
+                            />
+                        </div>
+
+                        {transferForm.amount && (
+                            <div className="dialog-highlight-box">
+                                <p className="dialog-highlight-box__label">
+                                    К переводу:
+                                </p>
+                                <p className="dialog-highlight-box__value">
+                                    {parseFloat(transferForm.amount).toLocaleString('ru-RU')} ₽
+                                </p>
+                            </div>
+                        )}
+
+                        <div className="account__form-buttons">
+                            <Button onClick={handleSaveTransfer} className="flex-1">
+                                Перевести
+                            </Button>
+                            <Button variant="outline" className="flex-1" onClick={() => setTransferDialogOpen(false)}>
+                                Отмена
+                            </Button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

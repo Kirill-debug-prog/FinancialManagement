@@ -279,3 +279,88 @@
         }
     }
 }
+
+// Dialog info box styles
+.dialog-info-box {
+    padding: 0.75rem;
+    background-color: #f5f5f5;
+    border-radius: 0.5rem;
+
+    @include respond-down(sm) {
+        padding: 0.625rem;
+    }
+}
+
+.dialog-info-box__text {
+    margin: 0;
+    font-weight: bold;
+}
+
+.dialog-info-box__subtitle {
+    margin: 0.25rem 0 0 0;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+// Amount display box
+.dialog-amount-box {
+    padding: 0.75rem;
+    background-color: #e8f4f8;
+    border-radius: 0.5rem;
+
+    @include respond-down(sm) {
+        padding: 0.625rem;
+    }
+}
+
+.dialog-amount-box__value {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #0066cc;
+}
+
+// Highlight info box (for new amount preview)
+.dialog-highlight-box {
+    padding: 1rem;
+    background-color: #e8f4f8;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+
+    @include respond-down(sm) {
+        padding: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+}
+
+.dialog-highlight-box__label {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
+    color: #0066cc;
+}
+
+.dialog-highlight-box__value {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #0066cc;
+}
+
+// Warning box
+.dialog-warning-box {
+    padding: 1rem;
+    background-color: #fff3cd;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+
+    @include respond-down(sm) {
+        padding: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+}
+
+.dialog-warning-box__text {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #856404;
+}

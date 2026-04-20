@@ -9,7 +9,7 @@ import { Input } from '../../components/ui/input_data/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select/select";
 import { Badge } from "../../components/ui/badge/badge";
 import FinanceProductCard from '../../components/ui/FinanceProductCard/FinanceProductCard'
-import { getDeposits, createDeposit } from '../../api/deposits';
+import { getDeposits, createDeposit, deleteDeposit, updateDeposit } from '../../api/deposits';
 import './Deposits.scss'
 
 export default function Deposits() {
@@ -22,6 +22,10 @@ export default function Deposits() {
     const [depositStartDate, setDepositStartDate] = useState('')
     const [depositEndDate, setDepositEndDate] = useState('')
     const [depositCapitalization, setDepositCapitalization] = useState(false)
+
+    const [replenishDialogOpen, setReplenishDialogOpen] = useState(false)
+    const [replenishingDepositId, setReplenishingDepositId] = useState(null)
+    const [replenishForm, setReplenishForm] = useState({ amount: '', replenishmentDate: '' })
 
     const [depositsData, setDepositsData] = useState([])
     const [loading, setLoading] = useState(true)
@@ -71,6 +75,55 @@ export default function Deposits() {
             toast.error(err.message || 'Ошибка добавления вклада');
         }
     }
+
+    const handleCloseDeposit = async (depositId) => {
+        if (!confirm('Вы уверены, что хотите закрыть вклад? Это действие нельзя отменить.')) {
+            return;
+        }
+
+        try {
+            await deleteDeposit(depositId);
+            toast.success('Вклад успешно закрыт');
+            fetchData();
+        } catch (err) {
+            toast.error(err.message || 'Ошибка закрытия вклада');
+        }
+    }
+
+    const handleOpenReplenishDialog = (deposit) => {
+        setReplenishingDepositId(deposit.id);
+        setReplenishForm({
+            amount: '',
+            replenishmentDate: new Date().toISOString().split('T')[0]
+        });
+        setReplenishDialogOpen(true);
+    };
+
+    const handleSaveReplenish = async () => {
+        if (!replenishForm.amount || parseFloat(replenishForm.amount) <= 0) {
+            toast.error('Введите корректную сумму пополнения');
+            return;
+        }
+
+        const deposit = depositsData.find(d => d.id === replenishingDepositId);
+        if (!deposit) {
+            toast.error('Вклад не найден');
+            return;
+        }
+
+        try {
+            const newAmount = deposit.amount + parseFloat(replenishForm.amount);
+            await updateDeposit(replenishingDepositId, {
+                ...deposit,
+                amount: newAmount
+            });
+            toast.success(`Вклад пополнен на ${replenishForm.amount} ₽`);
+            setReplenishDialogOpen(false);
+            fetchData();
+        } catch (err) {
+            toast.error(err.message || 'Ошибка пополнения вклада');
+        }
+    };
 
     const calculateEarnings = (deposit) => {
         const startDate = new Date(deposit.startDate)
@@ -296,7 +349,9 @@ export default function Deposits() {
                                 typeLabel={getTypeLabel(deposit.type)}
                                 statusBadge={
                                     <>
-                                        {deposit.capitalization && <Badge variant="outline">С капитализацией</Badge>}
+                                        {deposit.capitalization && (
+                                            <Badge variant="outline">С капитализацией</Badge>
+                                        )}
                                         {getStatusBadge(deposit.status)}
                                     </>
                                 }
@@ -305,9 +360,11 @@ export default function Deposits() {
                                 earnings={earnings}
                                 startDate={deposit.startDate}
                                 endDate={deposit.endDate}
-                                actions={[
-                                    { label: "Пополнить", onClick: () => { } },
-                                    { label: "Закрыть", onClick: () => { } },
+                                actions={deposit.type !== 'fixed' ? [
+                                    { label: "Пополнить", onClick: () => handleOpenReplenishDialog(deposit) },
+                                    { label: "Закрыть", onClick: () => handleCloseDeposit(deposit.id) },
+                                ] : [
+                                    { label: "Закрыть", onClick: () => handleCloseDeposit(deposit.id) },
                                 ]}
                             />
                         )
@@ -317,6 +374,90 @@ export default function Deposits() {
                     )}
                 </div>
             </div>
+
+            <Dialog open={replenishDialogOpen} onOpenChange={setReplenishDialogOpen}>
+                <DialogContent aria-describedby={undefined}>
+                    <DialogHeader>
+                        <DialogTitle>Пополнить вклад</DialogTitle>
+                    </DialogHeader>
+                    <div className="credit-form">
+                        {depositsData.find(d => d.id === replenishingDepositId) && (
+                            <>
+                                <div className="credit-form__field">
+                                    <Label>Вклад</Label>
+                                    <div className="dialog-info-box">
+                                        <p className="dialog-info-box__text">
+                                            {depositsData.find(d => d.id === replenishingDepositId)?.name}
+                                        </p>
+                                        <p className="dialog-info-box__subtitle">
+                                            {depositsData.find(d => d.id === replenishingDepositId)?.bank}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="credit-form__field">
+                                    <Label>Текущая сумма</Label>
+                                    <div className="dialog-amount-box">
+                                        <p className="dialog-amount-box__value">
+                                            {depositsData.find(d => d.id === replenishingDepositId)?.amount.toLocaleString('ru-RU')} ₽
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="credit-form__field">
+                                    <Label htmlFor="replenish-amount">Сумма пополнения (₽)</Label>
+                                    <Input
+                                        id="replenish-amount"
+                                        placeholder="0"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        value={replenishForm.amount}
+                                        onChange={(e) => setReplenishForm({ ...replenishForm, amount: e.target.value })}
+                                    />
+                                </div>
+
+                                <div className="credit-form__field">
+                                    <Label htmlFor="replenish-date">Дата пополнения</Label>
+                                    <Input
+                                        id="replenish-date"
+                                        type="date"
+                                        value={replenishForm.replenishmentDate}
+                                        onChange={(e) => setReplenishForm({ ...replenishForm, replenishmentDate: e.target.value })}
+                                    />
+                                </div>
+
+                                {replenishForm.amount && (
+                                    <div className="dialog-highlight-box">
+                                        <p className="dialog-highlight-box__label">
+                                            Новая сумма вклада:
+                                        </p>
+                                        <p className="dialog-highlight-box__value">
+                                            {(depositsData.find(d => d.id === replenishingDepositId)?.amount + parseFloat(replenishForm.amount) || 0).toLocaleString('ru-RU')} ₽
+                                        </p>
+                                    </div>
+                                )}
+                            </>
+                        )}
+
+                        <div className="transaction-form__buttons">
+                            <Button
+                                className="transaction-form__button transaction-form__button--primary"
+                                onClick={handleSaveReplenish}
+                            >
+                                Пополнить вклад
+                            </Button>
+                            <Button
+                                variant="outline"
+                                className="transaction-form__button transaction-form__button--outline"
+                                onClick={() => setReplenishDialogOpen(false)}
+                            >
+                                Отмена
+                            </Button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

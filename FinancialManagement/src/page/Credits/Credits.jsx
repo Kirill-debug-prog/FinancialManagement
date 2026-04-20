@@ -9,19 +9,36 @@ import { Input } from '../../components/ui/input_data/input'
 import { Button } from "../../components/ui/button/button";
 import { Plus, AlertCircle } from 'lucide-react';
 import { toast } from "sonner";
-import { getCredits, createCredit } from '../../api/credits';
+import { getCredits, createCredit, updateCredit } from '../../api/credits';
 import { getDebts, createDebt, updateDebt } from '../../api/debts';
 import "./Credits.scss"
 
 export default function Credits() {
     const [dialogOpenCredit, setDialogOpenCredit] = useState(false)
     const [dialogOpenDebts, setDialogOpenDebts] = useState(false)
+    const [editDialogOpen, setEditDialogOpen] = useState(false)
+    const [editingCreditId, setEditingCreditId] = useState(null)
+    const [earlyRepaymentDialogOpen, setEarlyRepaymentDialogOpen] = useState(false)
+    const [repayingCreditId, setRepayingCreditId] = useState(null)
     const [creditName, setCreditName] = useState('')
     const [creditType, setCreditType] = useState('')
     const [creditTotalAmount, setCreditTotalAmount] = useState('')
     const [creditInterestRate, setCreditInterestRate] = useState('')
     const [creditMonthlyPayment, setCreditMonthlyPayment] = useState('')
     const [creditEndDate, setCreditEndDate] = useState('')
+
+    const [editForm, setEditForm] = useState({
+        name: '',
+        type: '',
+        totalAmount: '',
+        remainingAmount: '',
+        interestRate: '',
+        monthlyPayment: '',
+        nextPaymentDate: '',
+        endDate: '',
+        status: 'active',
+        paymentAmount: ''
+    })
 
     const [debtsName, setDebtsName] = useState('')
     const [debtAmount, setDebtAmount] = useState('')
@@ -114,6 +131,106 @@ export default function Credits() {
         }
     };
 
+    const handleOpenEditDialog = (credit) => {
+        setEditingCreditId(credit.id);
+        setEditForm({
+            name: credit.name,
+            type: credit.type,
+            totalAmount: String(credit.totalAmount),
+            remainingAmount: String(credit.remainingAmount),
+            interestRate: String(credit.interestRate),
+            monthlyPayment: String(credit.monthlyPayment),
+            nextPaymentDate: credit.nextPaymentDate
+                ? new Date(credit.nextPaymentDate).toISOString().split('T')[0]
+                : '',
+            endDate: credit.endDate
+                ? new Date(credit.endDate).toISOString().split('T')[0]
+                : '',
+            status: credit.status,
+            paymentAmount: ''
+        });
+        setEditDialogOpen(true);
+    };
+
+    const handleSaveEditCredit = async () => {
+        if (!editForm.name || !editForm.type) {
+            toast.error('Заполните обязательные поля');
+            return;
+        }
+
+        try {
+            // Вычисляем новый остаток, если была внесена сумма платежа
+            let newRemainingAmount = parseFloat(editForm.remainingAmount) || 0;
+            if (editForm.paymentAmount && editForm.paymentAmount <= newRemainingAmount) {
+                const paymentAmount = parseFloat(editForm.paymentAmount) || 0;
+                newRemainingAmount = Math.max(0, newRemainingAmount - paymentAmount);
+            }
+            else {
+                toast.error('Сумма платежа не может превышать текущий остаток');
+                return;
+            }
+
+            // Если остаток становится 0, автоматически закрываем кредит
+            let creditStatus = editForm.status;
+            if (newRemainingAmount === 0) {
+                creditStatus = 'closed';
+            }
+
+            await updateCredit(editingCreditId, {
+                name: editForm.name,
+                type: editForm.type,
+                totalAmount: parseFloat(editForm.totalAmount) || 0,
+                remainingAmount: newRemainingAmount,
+                interestRate: parseFloat(editForm.interestRate) || 0,
+                monthlyPayment: parseFloat(editForm.monthlyPayment) || 0,
+                nextPaymentDate: editForm.nextPaymentDate
+                    ? new Date(editForm.nextPaymentDate).toISOString()
+                    : null,
+                endDate: editForm.endDate
+                    ? new Date(editForm.endDate).toISOString()
+                    : null,
+                status: creditStatus
+            });
+            
+            if (newRemainingAmount === 0) {
+                toast.success('Кредит полностью погашен и закрыт! ✓');
+            } else {
+                toast.success('Кредит успешно обновлен');
+            }
+            
+            setEditDialogOpen(false);
+            fetchData();
+        } catch (err) {
+            toast.error(err.message || 'Ошибка обновления кредита');
+        }
+    };
+
+    const handleOpenEarlyRepaymentDialog = (credit) => {
+        setRepayingCreditId(credit.id);
+        setEarlyRepaymentDialogOpen(true);
+    };
+
+    const handleEarlyRepayment = async () => {
+        const credit = creditsData.find(c => c.id === repayingCreditId);
+        if (!credit) {
+            toast.error('Кредит не найден');
+            return;
+        }
+
+        try {
+            await updateCredit(repayingCreditId, {
+                ...credit,
+                remainingAmount: 0,
+                status: 'closed'
+            });
+            toast.success(`Кредит полностью погашен. Выплачено: ${credit.remainingAmount.toLocaleString('ru-RU')} ₽`);
+            setEarlyRepaymentDialogOpen(false);
+            fetchData();
+        } catch (err) {
+            toast.error(err.message || 'Ошибка досрочного погашения');
+        }
+    };
+
     const getStatusBadge = (status) => {
         switch (status) {
             case 'active':
@@ -125,7 +242,7 @@ export default function Credits() {
             case 'returned':
                 return <Badge variant="green">Возвращён</Badge>;
             case 'closed':
-                return <Badge variant="outline">Закрыт</Badge>;
+                return <Badge variant="red">Закрыт</Badge>;
             default:
                 return <Badge>{status}</Badge>;
         }
@@ -269,9 +386,9 @@ export default function Credits() {
                             nextPaymentDate={credit.nextPaymentDate}
                             endDate={credit.endDate}
                             actions={[
-                                { label: 'Погасить досрочно', onClick: () => { } },
+                                { label: 'Погасить досрочно', onClick: () => { handleOpenEarlyRepaymentDialog(credit) } },
                                 { label: 'График платежей', onClick: () => { } },
-                                { label: 'Изменить', onClick: () => { } },
+                                { label: 'Изменить', onClick: () => { handleOpenEditDialog(credit) }, disabled: credit.status === 'closed' },
                             ]}
                         />
                     ))}
@@ -435,6 +552,166 @@ export default function Credits() {
                     )}
                 </div>
             </div>
+
+            <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+                <DialogContent aria-describedby={undefined}>
+                    <DialogHeader>
+                        <DialogTitle>Редактировать кредит</DialogTitle>
+                    </DialogHeader>
+                    <div className="credit-form">
+                        <div className="credit-form__field">
+                            <Label htmlFor="edit-credit-name">Название *</Label>
+                            <Input
+                                id="edit-credit-name"
+                                value={editForm.name}
+                                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                            />
+                        </div>
+
+                        <div className="credit-form__row">
+                            <div className="credit-form__field">
+                                <Label htmlFor="edit-current-remaining">Текущий остаток</Label>
+                                <div className="dialog-amount-box">
+                                    <p className="dialog-amount-box__value">
+                                        {parseFloat(editForm.remainingAmount).toLocaleString('ru-RU')} ₽
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="credit-form__field">
+                                <Label htmlFor="edit-payment-amount">Сумма платежа (₽)</Label>
+                                <Input
+                                    id="edit-payment-amount"
+                                    type="number"
+                                    placeholder="0"
+                                    value={editForm.paymentAmount}
+                                    onChange={(e) => setEditForm({ ...editForm, paymentAmount: e.target.value })}
+                                />
+                            </div>
+                        </div>
+
+                        {editForm.paymentAmount && (
+                            <div className="dialog-highlight-box">
+                                <p className="dialog-highlight-box__label">Остаток после платежа:</p>
+                                <p className="dialog-highlight-box__value">
+                                    {Math.max(0, parseFloat(editForm.remainingAmount) - parseFloat(editForm.paymentAmount) || 0).toLocaleString('ru-RU')} ₽
+                                </p>
+                            </div>
+                        )}
+
+                        <div className="credit-form__row">
+                            <div className="credit-form__field">
+                                <Label htmlFor="edit-interest-rate">Процентная ставка (%)</Label>
+                                <Input
+                                    id="edit-interest-rate"
+                                    type="number"
+                                    step="0.1"
+                                    value={editForm.interestRate}
+                                    onChange={(e) => setEditForm({ ...editForm, interestRate: e.target.value })}
+                                />
+                            </div>
+                            <div className="credit-form__field">
+                                <Label htmlFor="edit-monthly-payment">Ежемесячный платёж</Label>
+                                <Input
+                                    id="edit-monthly-payment"
+                                    type="number"
+                                    value={editForm.monthlyPayment}
+                                    onChange={(e) => setEditForm({ ...editForm, monthlyPayment: e.target.value })}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="credit-form__row">
+                            <div className="credit-form__field">
+                                <Label htmlFor="edit-next-payment">Следующий платёж</Label>
+                                <Input
+                                    id="edit-next-payment"
+                                    type="date"
+                                    value={editForm.nextPaymentDate}
+                                    onChange={(e) => setEditForm({ ...editForm, nextPaymentDate: e.target.value })}
+                                />
+                            </div>
+                            <div className="credit-form__field">
+                                <Label htmlFor="edit-end-date">Дата окончания</Label>
+                                <Input
+                                    id="edit-end-date"
+                                    type="date"
+                                    value={editForm.endDate}
+                                    onChange={(e) => setEditForm({ ...editForm, endDate: e.target.value })}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="transaction-form__buttons">
+                            <Button
+                                className="transaction-form__button transaction-form__button--primary"
+                                onClick={handleSaveEditCredit}
+                            >
+                                Сохранить
+                            </Button>
+                            <Button
+                                variant="outline"
+                                className="transaction-form__button transaction-form__button--outline"
+                                onClick={() => setEditDialogOpen(false)}
+                            >
+                                Отмена
+                            </Button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={earlyRepaymentDialogOpen} onOpenChange={setEarlyRepaymentDialogOpen}>
+                <DialogContent aria-describedby={undefined}>
+                    <DialogHeader>
+                        <DialogTitle>Досрочное погашение кредита</DialogTitle>
+                    </DialogHeader>
+                    <div className="credit-form">
+                        {creditsData.find(c => c.id === repayingCreditId) && (
+                            <>
+                                <div className="credit-form__field">
+                                    <Label>Кредит</Label>
+                                    <div className="dialog-info-box">
+                                        <p className="dialog-info-box__text">
+                                            {creditsData.find(c => c.id === repayingCreditId)?.name}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="credit-form__field">
+                                    <Label>Остаток к погашению</Label>
+                                    <div className="dialog-amount-box">
+                                        <p className="dialog-amount-box__value">
+                                            {creditsData.find(c => c.id === repayingCreditId)?.remainingAmount.toLocaleString('ru-RU')} ₽
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="dialog-warning-box">
+                                    <p className="dialog-warning-box__text">
+                                        ⚠️ После подтверждения вся оставшаяся сумма кредита будет погашена, и статус кредита изменится на "Закрыт".
+                                    </p>
+                                </div>
+                            </>
+                        )}
+
+                        <div className="transaction-form__buttons">
+                            <Button
+                                className="transaction-form__button transaction-form__button--primary"
+                                onClick={handleEarlyRepayment}
+                            >
+                                Подтвердить погашение
+                            </Button>
+                            <Button
+                                variant="outline"
+                                className="transaction-form__button transaction-form__button--outline"
+                                onClick={() => setEarlyRepaymentDialogOpen(false)}
+                            >
+                                Отмена
+                            </Button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

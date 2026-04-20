@@ -167,6 +167,7 @@ export default function FinanceProductCard({
                                 variant="white"
                                 size="auto"
                                 onClick={action.onClick}
+                                disabled={action.disabled}
                             >
                                 {action.label}
                             </Button>
