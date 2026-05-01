@@ -2,89 +2,165 @@
 @use '../../assets/styles/variables.scss' as *;
 @use "sass:color";
 
-//! потом убрать
-.window {
-    display: grid;
-    grid-template-columns: 16rem 1fr;
-    overflow: hidden;
-    height: 100vh;
-}
-
 .dashboard {
     display: flex;
     flex-direction: column;
-    gap: $space-lg;
-    padding: $space-lg $space-md;
+    gap: $space-sm;
+    padding: $space-sm;
     overflow: auto;
+
+    @include respond(md) {
+        padding: $space-md;
+        gap: $space-md;
+    }
+
+    @include respond(lg) {
+        padding: $space-lg $space-md;
+        gap: $space-lg;
+    }
 
     /* Header */
     &__header {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        flex-wrap: wrap;
+        gap: $space-sm;
+
+        @include respond(md) {
+            gap: $space-md;
+        }
     }
 
     &__subtitle {
         color: $text-gray;
         @extend .text-xl;
         margin: 0;
+        font-size: 1rem;
+
+        @include respond(md) {
+            font-size: 1.125rem;
+        }
+
+        @include respond(lg) {
+            font-size: 1.25rem;
+        }
     }
 
     &__add-btn {
         display: flex;
         align-items: center;
+        justify-content: center;
         gap: $space-sm;
-
-        padding: $space-sm $space-md;
+        padding: 0.625rem 0.75rem;
         background-color: $blue;
         color: $white;
         border-radius: $radius-sm;
         border: none;
         cursor: pointer;
-
         transition: background-color 0.2s ease;
+        white-space: nowrap;
+        font-size: 0.875rem;
+        width: 100%;
 
         &:hover {
             background-color: color.adjust($blue, $lightness: -6%);
+        }
+
+        @include respond(md) {
+            width: auto;
+            padding: 0.75rem $space-md;
+        }
+
+        @include respond(lg) {
+            font-size: 1rem;
+            padding: $space-sm $space-md;
         }
     }
 
     /* Cards grid */
     &__cards {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(13.75rem, 1fr));
-        gap: $space-md;
+        grid-template-columns: 1fr;
+        gap: $space-sm;
+
+        @include respond(md) {
+            grid-template-columns: repeat(2, 1fr);
+            gap: $space-md;
+        }
+
+        @include respond(lg) {
+            grid-template-columns: repeat(auto-fit, minmax(13.75rem, 1fr));
+            gap: $space-md;
+        }
     }
 
     /* Charts grid */
     &__charts {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: $space-lg;
+        grid-template-columns: 1fr;
+        gap: $space-sm;
+
+        @include respond(lg) {
+            grid-template-columns: 1fr 1fr;
+            gap: $space-lg;
+        }
     }
 }
 
 .card {
     background-color: $white;
-    padding: $space-md;
-    border-radius: $radius-md;
+    padding: $space-xs;
+    border-radius: $radius-sm;
+    box-shadow: $shadow-sm;
+    transition: box-shadow 0.2s ease;
+
+    &:hover {
+        box-shadow: $shadow-md;
+    }
+
+    @include respond(md) {
+        padding: $space-sm;
+        border-radius: $radius-md;
+    }
+
+    @include respond(lg) {
+        padding: $space-md;
+        border-radius: $radius-md;
+    }
 
     &__header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         color: $text-gray;
-        margin-bottom: 1rem;
+        margin-bottom: 0.75rem;
+
+        @include respond(md) {
+            margin-bottom: 1rem;
+        }
     }
 
     &__title {
-        font-size: $font-size-base;
+        font-size: 0.875rem;
         font-weight: 500;
+
+        @include respond(md) {
+            font-size: $font-size-base;
+        }
     }
 
     &__value {
-        font-size: $font-size-lg;
+        font-size: 1rem;
         font-weight: 600;
+
+        @include respond(md) {
+            font-size: 1.125rem;
+        }
+
+        @include respond(lg) {
+            font-size: $font-size-lg;
+        }
 
         &--blue {
             color: $blue;
@@ -130,30 +206,51 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-
-    padding: 0.75rem;
+    gap: $space-sm;
+    padding: 0.5rem;
     background-color: $gray-50;
     border-radius: $radius-lg;
 
+    @include respond(md) {
+        padding: 0.75rem;
+        gap: $space-md;
+    }
+
     &__name {
-        margin-bottom: $space-sm;
+        margin-bottom: $space-xs;
+
+        @include respond(md) {
+            margin-bottom: $space-sm;
+        }
     }
 
     &__category {
-        font-size: $font-size-base;
+        font-size: 0.875rem;
         color: $text-gray;
+
+        @include respond(md) {
+            font-size: $font-size-base;
+        }
     }
 
     &__right {
         text-align: right;
 
         h4 {
-            margin-bottom: $space-sm;
+            margin-bottom: $space-xs;
+
+            @include respond(md) {
+                margin-bottom: $space-sm;
+            }
         }
 
         span {
-            font-size: $font-size-base;
+            font-size: 0.875rem;
             color: $text-gray;
+
+            @include respond(md) {
+                font-size: $font-size-base;
+            }
         }
     }
 }

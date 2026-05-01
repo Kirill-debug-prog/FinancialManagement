@@ -1,3 +1,5 @@
+@use '../../../assets/styles/variables.scss' as *;
+
 :root {
     --color-foreground: #0f172a;
     --color-muted: #f3f4f6;
@@ -11,6 +13,14 @@
     position: relative;
     width: 100%;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: $radius-md;
+
+    @include respond-down(md) {
+        border: 1px solid var(--color-border);
+        margin: 0 -0.5rem;
+        padding: 0 0.5rem;
+    }
 }
 
 .table {
@@ -19,6 +29,15 @@
     font-size: 0.875rem;
     border-collapse: collapse;
     color: var(--color-foreground);
+    min-width: 100%;
+
+    @include respond-down(md) {
+        font-size: 0.75rem;
+    }
+
+    @include respond-down(sm) {
+        font-size: 0.65rem;
+    }
 }
 
 .table-header>tr,
@@ -39,14 +58,35 @@
 .table-row {
     transition: background-color 0.12s ease;
     border-bottom: 0.0625rem solid var(--color-border);
+
+    @include respond-down(md) {
+        display: flex;
+        flex-wrap: wrap;
+        border-bottom: 1px solid var(--color-border);
+        padding: 0.5rem 0;
+        gap: 0.5rem;
+    }
+
+    @include respond-down(sm) {
+        flex-direction: column;
+        padding: 0.375rem 0;
+    }
 }
 
 .table-row:hover {
     background-color: var(--hover-bg);
+
+    @include respond-down(md) {
+        background-color: transparent;
+    }
 }
 
 .table-row[data-state="selected"] {
     background-color: var(--color-muted);
+
+    @include respond-down(md) {
+        background-color: rgba(243, 244, 246, 0.4);
+    }
 }
 
 .table-head {
@@ -57,6 +97,10 @@
     vertical-align: middle;
     font-weight: 600;
     white-space: nowrap;
+
+    @include respond-down(md) {
+        display: none;
+    }
 }
 
 .table-head:has([role="checkbox"]) {
@@ -67,10 +111,39 @@
     padding: 0.5rem;
     vertical-align: middle;
     white-space: nowrap;
+
+    @include respond-down(md) {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        vertical-align: baseline;
+        width: auto;
+    }
+
+    @include respond-down(sm) {
+        padding: 0.25rem 0;
+        display: block;
+        width: 100%;
+    }
 }
 
 .table-cell:has([role="checkbox"]) {
     padding-right: 0;
+}
+
+.table-cell::before {
+    @include respond-down(md) {
+        content: attr(data-label);
+        font-weight: 600;
+        margin-right: 0.5rem;
+        min-width: 8rem;
+        display: inline-block;
+    }
+
+    @include respond-down(sm) {
+        display: block;
+        margin-right: 0;
+        margin-bottom: 0.25rem;
+    }
 }
 
 .table-caption {
@@ -82,4 +155,8 @@
 
 .text-right {
     text-align: right;
+
+    @include respond-down(sm) {
+        text-align: left;
+    }
 }

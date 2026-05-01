@@ -19,30 +19,39 @@
     justify-content: space-between;
     align-items: flex-start;
     gap: $space-sm;
-
     background: none;
     border: none;
     cursor: pointer;
-
     font-size: 0.875rem;
     font-weight: 500;
     text-align: left;
-
     transition: background 0.2s ease;
 
     &:hover {
         text-decoration: underline;
     }
 
-    /* планшеты и выше */
     @include respond(md) {
         font-size: 1rem;
+        padding: $space-lg 0;
+    }
+
+    @include respond-down(sm) {
+        padding: $space-sm 0;
+        gap: $space-xs;
     }
 }
 
 .accordion__icon {
-    flex-shrink: 0; // чтобы иконка не сжималась
+    flex-shrink: 0;
     transition: transform 0.2s ease;
+    width: 20px;
+    height: 20px;
+
+    @include respond-down(sm) {
+        width: 18px;
+        height: 18px;
+    }
 }
 
 .accordion__item.is-open .accordion__icon {
@@ -58,8 +67,15 @@
     padding-bottom: $space-md;
     font-size: 0.875rem;
     color: $gray-600;
+    line-height: 1.5;
 
     @include respond(md) {
         font-size: 1rem;
+        padding-bottom: $space-lg;
+    }
+
+    @include respond-down(sm) {
+        padding-bottom: $space-sm;
+        font-size: 0.8125rem;
     }
 }

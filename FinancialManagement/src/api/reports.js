@@ -1,14 +1,24 @@
-import { api, getActiveProfileId } from './client';
+import { api } from './client';
+import { buildProfileUrl, buildQueryString } from './utils';
 
-export async function getMonthlyReport(year) {
-    const query = year ? `?year=${year}` : '';
-    return api.get(`/profiles/${getActiveProfileId()}/reports/monthly${query}`);
+/**
+ * Получить ежемесячный отчет по расходам/доходам
+ * @param {number|null} year Год для отчета (опционально)
+ * @returns {Promise<Object>} Объект с месячными данными
+ */
+export async function getMonthlyReport(year = null) {
+    const query = buildQueryString({ year });
+    return api.get(buildProfileUrl('reports', '/monthly') + query);
 }
 
-export async function getCategoryReport(type = 'Expense', dateFrom, dateTo) {
-    const params = new URLSearchParams();
-    params.set('type', type);
-    if (dateFrom) params.set('dateFrom', dateFrom);
-    if (dateTo) params.set('dateTo', dateTo);
-    return api.get(`/profiles/${getActiveProfileId()}/reports/categories?${params.toString()}`);
+/**
+ * Получить отчет по категориям с фильтрацией по датам
+ * @param {string} type Тип отчета ('Expense' для расходов, 'Income' для доходов)
+ * @param {string|null} dateFrom Начальная дата (ISO формат, опционально)
+ * @param {string|null} dateTo Конечная дата (ISO формат, опционально)
+ * @returns {Promise<Object>} Объект с данными по категориям
+ */
+export async function getCategoryReport(type = 'Expense', dateFrom = null, dateTo = null) {
+    const query = buildQueryString({ type, dateFrom, dateTo });
+    return api.get(buildProfileUrl('reports', '/categories') + query);
 }

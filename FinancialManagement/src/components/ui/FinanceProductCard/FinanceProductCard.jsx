@@ -161,16 +161,31 @@ export default function FinanceProductCard({
                 {/* Actions */}
                 {actions && actions.length > 0 && (
                     <div className="finance-card__actions">
-                        {actions.map((action, idx) => (
-                            <Button
-                                key={idx}
-                                variant="white"
-                                size="auto"
-                                onClick={action.onClick}
-                            >
-                                {action.label}
-                            </Button>
-                        ))}
+                        {actions.map((action, idx) => {
+                            if (action.variant === "icon") {
+                                return (
+                                    <Button
+                                        key={idx}
+                                        onClick={action.onClick}
+                                        variant="icon"
+                                        size="auto"
+                                    >
+                                        {action.icon}
+                                    </Button>
+                                )
+                            }
+                            return (
+                                <Button
+                                    key={idx}
+                                    variant="white"
+                                    size="auto"
+                                    onClick={action.onClick}
+                                    disabled={action.disabled}
+                                >
+                                    {action.label}
+                                </Button>
+                            )
+                        })}
                     </div>
                 )}
             </div>

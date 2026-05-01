@@ -1,11 +1,13 @@
+@use '../../assets/styles/base/typography' as *;
+@use '../../assets/styles/variables.scss' as *;
+
 .main-auth {
     display: flex;
     justify-content: center;
     align-items: center;
-
     width: 100%;
     min-height: 100vh;
-    padding: 1rem;
+    padding: $space-sm;
     background: linear-gradient(#D0EEFF, #FFF2E8);
 }
 
@@ -17,13 +19,21 @@
 .container {
     display: flex;
     flex-direction: column;
-    row-gap: 1rem;
+    row-gap: $space-md;
+
+    @include respond(md) {
+        row-gap: 1rem;
+    }
 }
 
 .data-container {
     display: flex;
     flex-direction: column;
-    row-gap: 0.25rem;
+    row-gap: $space-xs;
+
+    @include respond(md) {
+        row-gap: 0.25rem;
+    }
 }
 
 .data-container:nth-child(3) {
@@ -33,10 +43,15 @@
 .or-hr-wrapper {
     position: relative;
     text-align: center;
-    font-size: 1rem;
-    padding-block: 0.8125rem;
+    font-size: 0.875rem;
+    padding-block: 0.625rem;
     text-transform: uppercase;
     color: #6b7280;
+
+    @include respond(md) {
+        font-size: 1rem;
+        padding-block: 0.8125rem;
+    }
 }
 
 .or-hr {
@@ -51,5 +66,9 @@
     top: 50%;
     transform: translate(-50%, -50%);
     background: #fff;
-    padding: 0 0.5rem;
+    padding: 0 0.375rem;
+
+    @include respond(md) {
+        padding: 0 0.5rem;
+    }
 }
