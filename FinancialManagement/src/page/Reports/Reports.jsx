@@ -16,16 +16,58 @@ export function Reports() {
     const [categoryIncomeData, setCategoryIncomeData] = useState([])
     const [loading, setLoading] = useState(true)
 
-    const fetchData = async () => {
+    const getPeriodDates = (selectedPeriod) => {
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        
+        switch (selectedPeriod) {
+            case 'month': {
+                const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+                return { dateFrom: monthStart.toISOString(), dateTo: today.toISOString() };
+            }
+            case 'quarter': {
+                const quarter = Math.floor(today.getMonth() / 3);
+                const quarterStart = new Date(today.getFullYear(), quarter * 3, 1);
+                return { dateFrom: quarterStart.toISOString(), dateTo: today.toISOString() };
+            }
+            case 'year': {
+                const yearStart = new Date(today.getFullYear(), 0, 1);
+                return { dateFrom: yearStart.toISOString(), dateTo: today.toISOString() };
+            }
+            default:
+                return { dateFrom: null, dateTo: null };
+        }
+    };
+
+    const fetchData = async (selectedPeriod = period, selectedType = reportType) => {
         setLoading(true);
         try {
             const year = new Date().getFullYear();
-            const [monthly, expCats, incCats] = await Promise.all([
-                getMonthlyReport(year),
-                getCategoryReport('Expense'),
-                getCategoryReport('Income'),
-            ]);
-            setMonthlyData(monthly);
+            const { dateFrom, dateTo } = getPeriodDates(selectedPeriod);
+            
+            // Получаем данные по месяцам
+            const monthly = await getMonthlyReport(year);
+            
+            // Фильтруем по периоду если нужно
+            const filteredMonthly = selectedPeriod === 'year' 
+                ? monthly 
+                : monthly.filter(m => {
+                    const monthDate = new Date(m.month);
+                    return monthDate >= new Date(dateFrom) && monthDate <= new Date(dateTo);
+                });
+            
+            // Получаем данные по категориям
+            let expCats = [];
+            let incCats = [];
+            
+            if (selectedType === 'all' || selectedType === 'expense') {
+                expCats = await getCategoryReport('Expense', dateFrom, dateTo);
+            }
+            if (selectedType === 'all' || selectedType === 'income') {
+                incCats = await getCategoryReport('Income', dateFrom, dateTo);
+            }
+            
+            setMonthlyData(filteredMonthly);
             setCategoryExpenseData(expCats);
             setCategoryIncomeData(incCats);
         } catch (err) {
@@ -35,16 +77,22 @@ export function Reports() {
         }
     };
 
-    useEffect(() => { fetchData(); }, []);
+    useEffect(() => { 
+        fetchData(period, reportType); 
+    }, [period, reportType]);
 
     const handleExport = (format) => {
         toast.success(`Экспорт в формате ${format.toUpperCase()} начат`)
     }
 
-    const totalIncome = monthlyData.reduce((sum, m) => sum + m.income, 0)
-    const totalExpens = monthlyData.reduce((sum, m) => sum + m.expense, 0)
+    const totalIncome = monthlyData.reduce((sum, m) => sum + (m.income || 0), 0)
+    const totalExpens = monthlyData.reduce((sum, m) => sum + (m.expense || 0), 0)
     const avgMonthlyIncome = monthlyData.length ? totalIncome / monthlyData.length : 0
     const avgMonthlyExpense = monthlyData.length ? totalExpens / monthlyData.length : 0
+
+    // Фильтруем диаграммы в зависимости от выбранного типа отчета
+    const showExpenseChart = reportType === 'all' || reportType === 'expense'
+    const showIncomeChart = reportType === 'all' || reportType === 'income'
 
     if (loading) {
         return <div className="report"><p>Загрузка...</p></div>;
@@ -84,7 +132,6 @@ export function Reports() {
                                 </SelectTrigger>
 
                                 <SelectContent>
-                                    <SelectItem value="week">Неделя</SelectItem>
                                     <SelectItem value="month">Месяц</SelectItem>
                                     <SelectItem value="quarter">Квартал</SelectItem>
                                     <SelectItem value="year">Год</SelectItem>
@@ -172,8 +219,8 @@ export function Reports() {
                                 <YAxis />
                                 <Tooltip formatter={(value) => `${value.toLocaleString('ru-RU')} ₽`} />
                                 <Legend />
-                                <Bar dataKey="income" fill="#10b981" name="Доход" />
-                                <Bar dataKey="expense" fill="#ef4444" name="Расход" />
+                                {(reportType === 'all' || reportType === 'income') && <Bar dataKey="income" fill="#10b981" name="Доход" />}
+                                {(reportType === 'all' || reportType === 'expense') && <Bar dataKey="expense" fill="#ef4444" name="Расход" />}
                             </BarChart>
                         </ResponsiveContainer>
                     </CardContent>
@@ -203,7 +250,7 @@ export function Reports() {
                 )}
 
                 {/* Expense Categories */}
-                {categoryExpenseData.length > 0 && (
+                {showExpenseChart && categoryExpenseData.length > 0 && (
                     <Card className="expense-categories">
                         <CardHeader>
                             <CradTitle>Структура расходов</CradTitle>
@@ -233,7 +280,7 @@ export function Reports() {
                 )}
 
                 {/* Income Categories */}
-                {categoryIncomeData.length > 0 && (
+                {showIncomeChart && categoryIncomeData.length > 0 && (
                     <Card className="income-categories">
                         <CardHeader>
                             <CradTitle>Структура доходов</CradTitle>
@@ -263,7 +310,7 @@ export function Reports() {
                 )}
 
                 {/* Top Categories */}
-                {categoryExpenseData.length > 0 && (
+                {showExpenseChart && categoryExpenseData.length > 0 && (
                     <Card className="top-categories">
                         <CardHeader>
                             <CradTitle>Топ категорий расходов</CradTitle>
