@@ -9,8 +9,9 @@ import { Input } from '../../components/ui/input_data/input'
 import { Button } from "../../components/ui/button/button";
 import { Plus, AlertCircle } from 'lucide-react';
 import { toast } from "sonner";
-import { getCredits, createCredit, updateCredit } from '../../api/credits';
-import { getDebts, createDebt, updateDebt } from '../../api/debts';
+import { Trash2 } from 'lucide-react';
+import { getCredits, createCredit, updateCredit, deleteCredit } from '../../api/credits';
+import { getDebts, createDebt, updateDebt, deleteDebt } from '../../api/debts';
 import "./Credits.scss"
 
 export default function Credits() {
@@ -123,11 +124,38 @@ export default function Credits() {
 
     const handleMarkReturned = async (debtId) => {
         try {
-            await updateDebt(debtId, { status: 'returned' });
+            const debt = debtsData.find(d => d.id === debtId);
+            if (!debt) {
+                toast.error('Долг не найден');
+                return;
+            }
+
+            await updateDebt(debtId, {
+                name: debt.name,
+                amount: debt.amount,
+                person: debt.person,
+                date: debt.date,
+                returnDate: debt.returnDate,
+                status: 'returned'
+            });
+
             toast.success('Долг отмечен как возвращённый');
             fetchData();
         } catch (err) {
-            toast.error(err.message || 'Ошибка обновления');
+            toast.error(err.response?.data?.message || 'Ошибка обновления');
+        }
+    };
+
+    const handleDeleteDebt = async (debtId) => {
+        if (!window.confirm('Вы уверены, что хотите удалить этот долг? Это действие нельзя отменить.')) {
+            return;
+        }
+        try {
+            await deleteDebt(debtId);
+            toast.success('Долг успешно удалён');
+            fetchData();
+        } catch (err) {
+            toast.error(err.response?.data?.message || 'Ошибка удаления');
         }
     };
 
@@ -191,17 +219,31 @@ export default function Credits() {
                     : null,
                 status: creditStatus
             });
-            
+
             if (newRemainingAmount === 0) {
                 toast.success('Кредит полностью погашен и закрыт! ✓');
             } else {
                 toast.success('Кредит успешно обновлен');
             }
-            
+
             setEditDialogOpen(false);
             fetchData();
         } catch (err) {
             toast.error(err.message || 'Ошибка обновления кредита');
+        }
+    };
+
+    const handleDeleteCredit = async (id) => {
+        if (!window.confirm('Вы уверены, что хотите удалить этот кредит? Это действие нельзя отменить.')) {
+            return;
+        }
+        try {
+            await deleteCredit(id);
+            setCreditsData(prev => prev.filter(c => c.id !== id));
+            toast.success('Кредит успешно удалён');
+            fetchData();
+        } catch (err) {
+            toast.error(err.message || 'Ошибка удаления кредита');
         }
     };
 
@@ -389,6 +431,15 @@ export default function Credits() {
                                 { label: 'Погасить досрочно', onClick: () => { handleOpenEarlyRepaymentDialog(credit) } },
                                 { label: 'График платежей', onClick: () => { } },
                                 { label: 'Изменить', onClick: () => { handleOpenEditDialog(credit) }, disabled: credit.status === 'closed' },
+
+                                ...(credit.status === 'closed' ?
+                                    [{
+                                        icon: <Trash2 size={16} style={{ color: '#ff0000' }} />,
+                                        onClick: () => { handleDeleteCredit(credit.id) },
+                                        variant: 'icon',
+                                    }]
+                                    : []
+                                )
                             ]}
                         />
                     ))}
@@ -536,13 +587,30 @@ export default function Credits() {
                                     )}
 
                                     <div className="debt-card__actions">
-                                        <Button size="auto" variant="white">
-                                            Напомнить
-                                        </Button>
-                                        <Button size="auto" variant="white" onClick={() => handleMarkReturned(debt.id)}>
-                                            Получено
-                                        </Button>
-                                    </div>
+                                        {debt.status !== 'returned' ? (
+                                            <>
+                                                <Button size="auto" variant="white">
+                                                    Напомнить
+                                                </Button>
+
+                                                <Button
+                                                    size="auto"
+                                                    variant="white"
+                                                    onClick={() => handleMarkReturned(debt.id)}
+                                                >
+                                                    Получено
+                                                </Button>
+                                            </>
+                                        ) : (
+                                            <Button
+                                                size="sm"
+                                                variant="danger"
+                                                onClick={() => handleDeleteDebt(debt.id)}
+                                            >
+                                                <Trash2 size={16} style={{ color: '#ff0000' }} />
+                                            </Button>
+                                        )}
+                                    </div> 
                                 </div>
                             </CardContent>
                         </Card>

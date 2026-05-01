@@ -10,6 +10,7 @@ import { Badge } from '../../components/ui/badge/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select/select";
 import { getAccounts, createAccount, deleteAccount, updateAccount } from '../../api/accounts';
 import { getCurrencies } from '../../api/currencies';
+import { createTransaction } from '../../api/transactions';
 import { transformAccountFromBackend, getCurrencySymbol } from '../../api/transformers';
 import './Accounts.scss'
 
@@ -54,6 +55,15 @@ export default function Accounts() {
             toast.error('Заполните обязательные поля')
             return
         }
+        
+        const initialBalance = parseFloat(intialBalance) || 0;
+        
+        // Валидация на отрицательный баланс
+        if (initialBalance < 0) {
+            toast.error('Начальный баланс не может быть отрицательным')
+            return
+        }
+        
         try {
             const curr = currencies.find(c => c.code === currency);
             if (!curr) {
@@ -66,7 +76,7 @@ export default function Accounts() {
                 icon: iconMap[accountType] || '💳',
                 sortOrder: accounts.length,
                 currencyId: curr.id,
-                initialBalance: parseFloat(intialBalance) || 0,
+                initialBalance: initialBalance,
                 initialBalanceDate: new Date().toISOString(),
             });
             toast.success('Счёт успешно добавлен')
@@ -87,10 +97,16 @@ export default function Accounts() {
         }
         try {
             await deleteAccount(id);
+            setAccounts(prev => prev.filter(account => account.id !== id));
             toast.success('Счёт удалён');
             fetchData();
         } catch (err) {
-            toast.error(err.message || 'Ошибка удаления');
+            // Если есть связанные транзакции, предложим архивировать
+            if (err.message && err.message.includes('constraint')) {
+                toast.error('Невозможно удалить счет со связанными транзакциями. Используйте функцию архивирования.');
+            } else {
+                toast.error(err.message || 'Ошибка удаления счета');
+            }
         }
     };
 
@@ -149,22 +165,36 @@ export default function Accounts() {
         }
 
         try {
-            // Обновляем счёт-источник
-            await updateAccount(transferForm.fromAccountId, {
-                name: fromAccount.name,
-                type: fromAccount.type,
-                balance: fromAccount.balance - amount
-            });
-
-            // Обновляем счёт-получатель
             const toAccount = accounts.find(a => a.id === transferForm.toAccountId);
-            await updateAccount(transferForm.toAccountId, {
-                name: toAccount.name,
-                type: toAccount.type,
-                balance: toAccount.balance + amount
+            const curr = currencies.find(c => c.code === fromAccount.currency);
+            
+            if (!curr) {
+                toast.error('Валюта не найдена');
+                return;
+            }
+
+            // Создаём две транзакции для трансфера
+            // Расход из счета-источника (Expense для уменьшения баланса)
+            await createTransaction({
+                accountId: transferForm.fromAccountId,
+                type: 'expense',
+                amount: amount,
+                currencyId: curr.id,
+                date: new Date().toISOString(),
+                note: `Перевод на ${toAccount.name}`,
             });
 
-            toast.success(`Перевод ${amount.toLocaleString()} ₽ выполнен успешно`);
+            // Доход на счет-получатель (Income для увеличения баланса)
+            await createTransaction({
+                accountId: transferForm.toAccountId,
+                type: 'income',
+                amount: amount,
+                currencyId: curr.id,
+                date: new Date().toISOString(),
+                note: `Перевод со счета ${fromAccount.name}`,
+            });
+
+            toast.success(`Перевод ${amount.toLocaleString('ru-RU')} выполнен успешно`);
             setTransferDialogOpen(false);
             fetchData();
         } catch (err) {
