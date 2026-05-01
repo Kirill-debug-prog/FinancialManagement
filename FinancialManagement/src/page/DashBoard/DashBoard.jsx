@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Plus, TrendingUp, TrendingDown, Wallet, Calendar } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../../components/ui/dialog_/dialog';
@@ -8,6 +9,7 @@ import { toast } from 'sonner';
 import './Dashboard.scss';
 
 export default function Dashboard() {
+    const { t } = useTranslation();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [dashboardData, setDashboardData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -17,7 +19,7 @@ export default function Dashboard() {
             const data = await getDashboardData();
             setDashboardData(data);
         } catch (err) {
-            toast.error(err.message || 'Ошибка загрузки данных дашборда');
+            toast.error(err.message || t('common.message.error'));
         } finally {
             setLoading(false);
         }
@@ -37,7 +39,7 @@ export default function Dashboard() {
     const incomeExpenseData = dashboardData?.monthlyData ?? [];
 
     if (loading) {
-        return <div className="dashboard"><p>Загрузка...</p></div>;
+        return <div className="dashboard"><p>{t('common.message.loading')}</p></div>;
     }
 
     return (
@@ -45,15 +47,15 @@ export default function Dashboard() {
             {/* Header */}
             <div className="dashboard__header">
                 <div>
-                    <h1 className="dashboard__title">Главная панель</h1>
-                    <p className="dashboard__subtitle">Обзор ваших финансов</p>
+                    <h1 className="dashboard__title">{t('dashboard.title')}</h1>
+                    <p className="dashboard__subtitle">{t('dashboard.subtitle')}</p>
                 </div>
 
                 <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                     <DialogTrigger asChild>
                         <button className="dashboard__add-btn">
                             <Plus size={18} />
-                            Добавить операцию
+                            {t('dashboard.addTransaction')}
                         </button>
                     </DialogTrigger>
 

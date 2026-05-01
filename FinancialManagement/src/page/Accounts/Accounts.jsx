@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../../components/ui/dialog_/dialog';
 import { Plus, CreditCard, Wallet as WalletIcon, DollarSign, Euro, Edit, Trash2, ArrowRightLeft } from 'lucide-react';
@@ -15,6 +16,7 @@ import { transformAccountFromBackend, getCurrencySymbol } from '../../api/transf
 import './Accounts.scss'
 
 export default function Accounts() {
+    const { t } = useTranslation()
     const [dialogOpen, setDialogOpen] = useState(false)
     const [accountName, setAccountName] = useState('')
     const [accountType, setAccountType] = useState('')
@@ -38,7 +40,7 @@ export default function Accounts() {
             setAccounts(accs.map((a, i) => transformAccountFromBackend(a, i)));
             setCurrencies(currs);
         } catch (err) {
-            toast.error(err.message || 'Ошибка загрузки данных');
+            toast.error(err.message || t('common.message.loadError'));
         } finally {
             setLoading(false);
         }
@@ -52,7 +54,7 @@ export default function Accounts() {
 
     const handleAddAccount = async () => {
         if (!accountName || !accountType) {
-            toast.error('Заполните обязательные поля')
+            toast.error(t('accounts.messages.requiredFields'))
             return
         }
         
@@ -60,14 +62,14 @@ export default function Accounts() {
         
         // Валидация на отрицательный баланс
         if (initialBalance < 0) {
-            toast.error('Начальный баланс не может быть отрицательным')
+            toast.error(t('accounts.messages.initialBalanceNegative'))
             return
         }
         
         try {
             const curr = currencies.find(c => c.code === currency);
             if (!curr) {
-                toast.error('Валюта не найдена');
+                toast.error(t('accounts.messages.currencyNotFound'));
                 return;
             }
             const iconMap = { card: '💳', cash: '💵', savings: '🏦', investment: '📈' };
@@ -79,7 +81,7 @@ export default function Accounts() {
                 initialBalance: initialBalance,
                 initialBalanceDate: new Date().toISOString(),
             });
-            toast.success('Счёт успешно добавлен')
+            toast.success(t('accounts.messages.accountAdded'))
             setDialogOpen(false)
             setAccountName('')
             setAccountType('')
@@ -87,25 +89,25 @@ export default function Accounts() {
             setInitialBalance('')
             fetchData();
         } catch (err) {
-            toast.error(err.message || 'Ошибка создания счёта');
+            toast.error(err.message || t('accounts.messages.addError'));
         }
     }
 
     const handleDelete = async (id) => {
-        if (!confirm('Вы уверены, что хотите удалить этот счёт? Это действие нельзя отменить.')) {
+        if (!confirm(t('common.message.deleteConfirmAccount'))) {
             return;
         }
         try {
             await deleteAccount(id);
             setAccounts(prev => prev.filter(account => account.id !== id));
-            toast.success('Счёт удалён');
+            toast.success(t('accounts.messages.accountDeleted'));
             fetchData();
         } catch (err) {
             // Если есть связанные транзакции, предложим архивировать
             if (err.message && err.message.includes('constraint')) {
-                toast.error('Невозможно удалить счет со связанными транзакциями. Используйте функцию архивирования.');
+                toast.error(t('accounts.messages.deleteError'));
             } else {
-                toast.error(err.message || 'Ошибка удаления счета');
+                toast.error(err.message || t('common.message.error'));
             }
         }
     };
@@ -121,7 +123,7 @@ export default function Accounts() {
 
     const handleSaveEditAccount = async () => {
         if (!editForm.name) {
-            toast.error('Заполните название счёта');
+            toast.error(t('accounts.messages.fillName'));
             return;
         }
         try {
@@ -129,11 +131,11 @@ export default function Accounts() {
                 name: editForm.name,
                 type: editForm.type
             });
-            toast.success('Счёт успешно обновлён');
+            toast.success(t('accounts.messages.accountUpdated'));
             setEditDialogOpen(false);
             fetchData();
         } catch (err) {
-            toast.error(err.message || 'Ошибка обновления счёта');
+            toast.error(err.message || t('common.message.error'));
         }
     };
 
@@ -148,19 +150,19 @@ export default function Accounts() {
 
     const handleSaveTransfer = async () => {
         if (!transferForm.toAccountId || !transferForm.amount) {
-            toast.error('Заполните все поля');
+            toast.error(t('accounts.messages.transferFieldsRequired'));
             return;
         }
 
         const amount = parseFloat(transferForm.amount);
         if (amount <= 0) {
-            toast.error('Сумма должна быть больше нуля');
+            toast.error(t('accounts.messages.amountMustBePositive'));
             return;
         }
 
         const fromAccount = accounts.find(a => a.id === transferForm.fromAccountId);
         if (!fromAccount || fromAccount.balance < amount) {
-            toast.error('Недостаточно средств на счёте');
+            toast.error(t('accounts.messages.insufficientFunds'));
             return;
         }
 
@@ -169,7 +171,7 @@ export default function Accounts() {
             const curr = currencies.find(c => c.code === fromAccount.currency);
             
             if (!curr) {
-                toast.error('Валюта не найдена');
+                toast.error(t('accounts.messages.currencyNotFound'));
                 return;
             }
 
@@ -181,7 +183,7 @@ export default function Accounts() {
                 amount: amount,
                 currencyId: curr.id,
                 date: new Date().toISOString(),
-                note: `Перевод на ${toAccount.name}`,
+                note: `${t('accounts.messages.transferNoteFrom')} ${toAccount.name}`,
             });
 
             // Доход на счет-получатель (Income для увеличения баланса)
@@ -191,82 +193,82 @@ export default function Accounts() {
                 amount: amount,
                 currencyId: curr.id,
                 date: new Date().toISOString(),
-                note: `Перевод со счета ${fromAccount.name}`,
+                note: `${t('accounts.messages.transferNoteToFrom')} ${fromAccount.name}`,
             });
 
-            toast.success(`Перевод ${amount.toLocaleString('ru-RU')} выполнен успешно`);
+            toast.success(t('accounts.messages.transferSuccess', { amount: amount.toLocaleString('ru-RU') }));
             setTransferDialogOpen(false);
             fetchData();
         } catch (err) {
-            toast.error(err.message || 'Ошибка при переводе');
+            toast.error(err.message || t('common.message.error'));
         }
     };
 
     const getTypeLabel = (type) => {
         switch (type) {
             case 'card':
-                return 'Карта'
+                return t('accounts.types.card')
             case 'cash':
-                return 'Наличные'
+                return t('accounts.types.cash')
             case 'savings':
-                return 'Сбережения'
+                return t('accounts.types.savings')
             default:
                 return ''
         }
     }
 
     if (loading) {
-        return <div className="accounts"><p>Загрузка...</p></div>;
+        return <div className="accounts"><p>{t('common.message.loading')}</p></div>;
     }
 
     return (
         <div className="accounts">
             <div className="accounts__header">
                 <div>
-                    <h1 className="accounts__title">Счета и кошельки</h1>
-                    <p className="accounts__subtitle">Управление вашими счетами</p>
+                    <h1 className="accounts__title">{t('accounts.title')}</h1>
+                    <p className="accounts__subtitle">{t('accounts.subtitle')}</p>
                 </div>
 
                 <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                     <DialogTrigger asChild>
                         <button className="accounts__add-btn">
                             <Plus size={18} />
-                            Добавить счёт
+                            {t('accounts.addButton')}
                         </button>
                     </DialogTrigger>
 
                     <DialogContent aria-describedby={undefined}>
                         <DialogHeader>
-                            <DialogTitle>Новый счёт</DialogTitle>
+                            <DialogTitle>{t('accounts.addButton')}</DialogTitle>
                         </DialogHeader>
                         <div className="account__form">
                             <div className="account__form-field">
-                                <Label htmlFor="account-name">Название счёта *</Label>
+                                <Label htmlFor="account-name">{t('common.label.accountName')} *</Label>
                                 <Input
                                     id="account-name"
-                                    placeholder="Например: Основная карта"
+                                    placeholder={t('common.placeholder.accountName')}
                                     value={accountName}
                                     onChange={(e) => setAccountName(e.target.value)}
                                 />
 
                                 <div className="account__from-field">
-                                    <Label htmlFor="account-type">Тип счёта *</Label>
+                                    <Label htmlFor="account-type">{t('common.label.accountType')} *</Label>
                                     <Select value={accountType} onValueChange={setAccountType}>
                                         <SelectTrigger>
-                                            <SelectValue placeholder="Выберите тип" />
+                                            <SelectValue placeholder={t('common.placeholder.selectType')} />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="card">Банковская карта</SelectItem>
-                                            <SelectItem value="cash">Наличные</SelectItem>
-                                            <SelectItem value="savings">Сберегательный счёт</SelectItem>
-                                            <SelectItem value="investment">Инвестиционный счёт</SelectItem>
+                                            <SelectItem value="card">{t('accounts.types.bankCard')}</SelectItem>
+                                            <SelectItem value="cash">{t('accounts.types.cash')}</SelectItem>
+                                            <SelectItem value="savings">{t('accounts.types.savingsAccount')}</SelectItem>
+                                            <SelectItem value="investment">{t('accounts.types.investment')}</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
 
                                 <div className="account__form-row">
                                     <div className="account__form-field">
-                                        <Label htmlFor="currency">Валюта</Label>
+                                        <Label htmlFor="currency">{t('common.label.currency')}</Label>
                                         <Select value={currency} onValueChange={setCurrency}>
                                             <SelectTrigger>
                                                 <SelectValue />
@@ -281,7 +283,7 @@ export default function Accounts() {
                                         </Select>
                                     </div>
                                     <div className="account__form-field">
-                                        <Label htmlFor="initial-balance">Начальный баланс</Label>
+                                        <Label htmlFor="initial-balance">{t('accounts.form.initialBalance')}</Label>
                                         <Input
                                             id="initial-balance"
                                             type="number"
@@ -294,10 +296,10 @@ export default function Accounts() {
 
                                 <div className="account__form-buttons">
                                     <Button onClick={handleAddAccount} className="flex-1">
-                                        Добавить
+                                        {t('common.button.add')}
                                     </Button>
                                     <Button variant="outline" className="flex-1" onClick={() => setDialogOpen(false)}>
-                                        Отмена
+                                        {t('common.button.cancel')}
                                     </Button>
                                 </div>
                             </div>
@@ -308,11 +310,11 @@ export default function Accounts() {
 
             <Card className="accounts__balance">
                 <CardHeader>
-                    <CradTitle className="accounts__balance-title text-xl">Общий баланс</CradTitle>
+                    <CradTitle className="accounts__balance-title text-xl">{t('accounts.totalBalance')}</CradTitle>
                 </CardHeader>
                 <CardContent className="accounts__balance-content">
                     <p className="accounts__balance-amount font-semibold text-xl">{totlalBalance.toLocaleString()} ₽</p>
-                    <p className="accounts__balance-subtitle text-lg">Сумма по всем счетам в рублях</p>
+                    <p className="accounts__balance-subtitle text-lg">{t('accounts.balanceDescription')}</p>
                 </CardContent>
             </Card>
 
@@ -340,11 +342,11 @@ export default function Accounts() {
                                 <div className="accounts__card-actions">
                                     <Button variant="white" className="accounts__card-action-btn" onClick={() => handleOpenEditDialog(account)}>
                                         <Edit size={16} />
-                                        Изменить
+                                        {t('common.button.edit')}
                                     </Button>
                                     <Button variant="white" className="accounts__card-action-btn" onClick={() => handleOpenTransferDialog(account.id)}>
                                         <ArrowRightLeft size={16} />
-                                        Перевести
+                                        {t('accounts.transferButton')}
                                     </Button>
                                     <Button variant="white" className="accounts__card-action-btn" onClick={() => handleDelete(account.id)}>
                                         <Trash2 size={16} />
@@ -358,7 +360,7 @@ export default function Accounts() {
 
             {accounts.length === 0 && (
                 <div className="accounts__empty-message">
-                    Нет счетов. Добавьте первый счёт!
+                    {t('accounts.noAccounts')}
                 </div>
             )}
 
@@ -366,11 +368,11 @@ export default function Accounts() {
             <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
                 <DialogContent aria-describedby={undefined}>
                     <DialogHeader>
-                        <DialogTitle>Редактировать счёт</DialogTitle>
+                        <DialogTitle>{t('accounts.editAccount')}</DialogTitle>
                     </DialogHeader>
                     <div className="account__form">
                         <div className="account__form-field">
-                            <Label htmlFor="edit-account-name">Название счёта</Label>
+                            <Label htmlFor="edit-account-name">{t('common.label.accountName')}</Label>
                             <Input
                                 id="edit-account-name"
                                 value={editForm.name}
@@ -378,25 +380,25 @@ export default function Accounts() {
                             />
                         </div>
                         <div className="account__form-field">
-                            <Label htmlFor="edit-account-type">Тип счёта</Label>
+                            <Label htmlFor="edit-account-type">{t('common.label.accountType')}</Label>
                             <Select value={editForm.type} onValueChange={(value) => setEditForm({ ...editForm, type: value })}>
                                 <SelectTrigger>
-                                    <SelectValue placeholder="Выберите тип" />
+                                    <SelectValue placeholder={t('common.placeholder.selectType')} />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="card">Банковская карта</SelectItem>
-                                    <SelectItem value="cash">Наличные</SelectItem>
-                                    <SelectItem value="savings">Сберегательный счёт</SelectItem>
-                                    <SelectItem value="investment">Инвестиционный счёт</SelectItem>
+                                    <SelectItem value="card">{t('accounts.types.bankCard')}</SelectItem>
+                                    <SelectItem value="cash">{t('accounts.types.cash')}</SelectItem>
+                                    <SelectItem value="savings">{t('accounts.types.savingsAccount')}</SelectItem>
+                                    <SelectItem value="investment">{t('accounts.types.investment')}</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
                         <div className="account__form-buttons">
                             <Button onClick={handleSaveEditAccount} className="flex-1">
-                                Сохранить
+                                {t('common.button.save')}
                             </Button>
                             <Button variant="outline" className="flex-1" onClick={() => setEditDialogOpen(false)}>
-                                Отмена
+                                {t('common.button.cancel')}
                             </Button>
                         </div>
                     </div>
@@ -407,26 +409,26 @@ export default function Accounts() {
             <Dialog open={transferDialogOpen} onOpenChange={setTransferDialogOpen}>
                 <DialogContent aria-describedby={undefined}>
                     <DialogHeader>
-                        <DialogTitle>Перевод между счётами</DialogTitle>
+                        <DialogTitle>{t('accounts.transferDialog')}</DialogTitle>
                     </DialogHeader>
                     <div className="account__form">
                         <div className="account__form-field">
-                            <Label>Со счёта</Label>
+                            <Label>{t('accounts.fromAccount')}</Label>
                             <div className="dialog-info-box">
                                 <p className="dialog-info-box__text">
                                     {accounts.find(a => a.id === transferForm.fromAccountId)?.name}
                                 </p>
                                 <p className="dialog-info-box__subtitle">
-                                    Баланс: {accounts.find(a => a.id === transferForm.fromAccountId)?.balance.toLocaleString()} ₽
+                                    {t('common.label.balance')}: {accounts.find(a => a.id === transferForm.fromAccountId)?.balance.toLocaleString()} ₽
                                 </p>
                             </div>
                         </div>
 
                         <div className="account__form-field">
-                            <Label htmlFor="transfer-to-account">На счёт</Label>
+                            <Label htmlFor="transfer-to-account">{t('accounts.toAccount')}</Label>
                             <Select value={transferForm.toAccountId || ''} onValueChange={(value) => setTransferForm({ ...transferForm, toAccountId: value })}>
                                 <SelectTrigger>
-                                    <SelectValue placeholder="Выберите счёт" />
+                                    <SelectValue placeholder={t('common.placeholder.selectAccount')} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {accounts
@@ -441,7 +443,7 @@ export default function Accounts() {
                         </div>
 
                         <div className="account__form-field">
-                            <Label htmlFor="transfer-amount">Сумма (₽)</Label>
+                            <Label htmlFor="transfer-amount">{t('common.label.amount')} (₽)</Label>
                             <Input
                                 id="transfer-amount"
                                 type="number"
@@ -454,7 +456,7 @@ export default function Accounts() {
                         {transferForm.amount && (
                             <div className="dialog-highlight-box">
                                 <p className="dialog-highlight-box__label">
-                                    К переводу:
+                                    {t('accounts.transferAmount')}:
                                 </p>
                                 <p className="dialog-highlight-box__value">
                                     {parseFloat(transferForm.amount).toLocaleString('ru-RU')} ₽
@@ -464,10 +466,10 @@ export default function Accounts() {
 
                         <div className="account__form-buttons">
                             <Button onClick={handleSaveTransfer} className="flex-1">
-                                Перевести
+                                {t('accounts.transferButton')}
                             </Button>
                             <Button variant="outline" className="flex-1" onClick={() => setTransferDialogOpen(false)}>
-                                Отмена
+                                {t('common.button.cancel')}
                             </Button>
                         </div>
                     </div>

@@ -1,0 +1,408 @@
+{
+  "common": {
+    "button": {
+      "save": "Сохранить",
+      "saveChanges": "Сохранить изменения",
+      "cancel": "Отмена",
+      "add": "Добавить",
+      "delete": "Удалить",
+      "edit": "Редактировать",
+      "changePhoto": "Изменить фото",
+      "saveSettings": "Сохранить настройки",
+      "changePassword": "Изменить пароль",
+      "backup": "Создать копию",
+      "restore": "Восстановить данные",
+      "deleteAll": "Удалить все данные",
+      "deleteAccount": "Удалить аккаунт",
+      "close": "Закрыть",
+      "replenish": "Пополнить",
+      "closeDeposit": "Закрыть вклад",
+      "makePayment": "Произвести платёж",
+      "earlyRepayment": "Досрочное погашение",
+      "download": "Скачать",
+      "clear": "Очистить",
+      "transfer": "Переводить"
+    },
+    "placeholder": {
+      "name": "Иван",
+      "surname": "Петров",
+      "email": "ivan@example.com",
+      "phone": "+7 (999) 123-45-67",
+      "categoryName": "Название категории",
+      "accountName": "Название счета",
+      "creditName": "Название кредита",
+      "debtName": "Название долга",
+      "depositName": "Название вклада",
+      "amount": "Сумма",
+      "search": "Поиск...",
+      "description": "Описание",
+      "selectType": "Выберите тип",
+      "selectAccount": "Выберите счёт"
+    },
+    "label": {
+      "firstName": "Имя",
+      "lastName": "Фамилия",
+      "email": "Email",
+      "phone": "Телефон",
+      "theme": "Тема оформления",
+      "currency": "Основная валюта",
+      "language": "Язык интерфейса",
+      "accountName": "Название счета",
+      "accountType": "Тип счета",
+      "initialBalance": "Начальный баланс",
+      "balance": "Баланс",
+      "totalBalance": "Общий баланс",
+      "type": "Тип",
+      "amount": "Сумма",
+      "date": "Дата",
+      "startDate": "Дата начала",
+      "endDate": "Дата окончания",
+      "fromAccount": "Со счета",
+      "toAccount": "На счет",
+      "transferAmount": "Сумма перевода",
+      "interestRate": "Процентная ставка",
+      "monthlyPayment": "Ежемесячный платёж",
+      "description": "Описание",
+      "category": "Категория",
+      "person": "Человек",
+      "bank": "Банк",
+      "status": "Статус",
+      "account": "Счёт",
+      "actions": "Действия"
+    },
+    "message": {
+      "maxFileSize": "JPG, PNG. Макс. 2МБ",
+      "errorLoadingCategories": "Ошибка загрузки категорий",
+      "categoryAdded": "Категория добавлена",
+      "categoryDeleted": "Категория удалена",
+      "errorAddingCategory": "Ошибка добавления категории",
+      "errorDeletingCategory": "Ошибка удаления категории",
+      "profileUpdated": "Профиль обновлён",
+      "passwordChanged": "Пароль изменён",
+      "backupCreated": "Резервная копия создана",
+      "dataRestored": "Данные восстановлены",
+      "enterCategoryName": "Введите название категории",
+      "loading": "Загрузка...",
+      "error": "Ошибка",
+      "requiredFields": "Заполните обязательные поля",
+      "fillAllFields": "Заполните все поля",
+      "fillAllRequiredFields": "Пожалуйста, заполните все обязательные поля",
+      "success": "Успешно",
+      "deleteConfirm": "Вы уверены? Это действие нельзя отменить.",
+      "deleteConfirmAccount": "Вы уверены, что хотите удалить этот счёт? Это действие нельзя отменить.",
+      "deleteConfirmDeposit": "Вы уверены, что хотите закрыть вклад? Это действие нельзя отменить."
+    }
+  },
+  "navigation": {
+    "dashboard": "Главная",
+    "accounts": "Счета",
+    "transactions": "Операции",
+    "credits": "Кредиты",
+    "debts": "Долги",
+    "deposits": "Депозиты",
+    "reports": "Отчеты",
+    "settings": "Настройки",
+    "help": "Помощь"
+  },
+  "dashboard": {
+    "title": "Главная панель",
+    "subtitle": "Обзор ваших финансов",
+    "addTransaction": "Добавить операцию",
+    "totalBalance": "Общий баланс",
+    "totalIncome": "Общий доход",
+    "totalExpense": "Общие расходы",
+    "categoryExpenses": "Расходы по категориям",
+    "monthlyTrend": "Месячная динамика",
+    "recentTransactions": "Последние операции"
+  },
+  "accounts": {
+    "title": "Счета и кошельки",
+    "subtitle": "Управление вашими счетами",
+    "addButton": "Добавить счёт",
+    "editAccount": "Редактировать счёт",
+    "editButton": "Редактировать",
+    "deleteButton": "Удалить",
+    "transferButton": "Перевести",
+    "transferDialog": "Перевод между счётами",
+    "fromAccount": "Со счёта",
+    "toAccount": "На счёт",
+    "totalBalance": "Общий баланс",
+    "balanceDescription": "Сумма по всем счетам в рублях",
+    "noAccounts": "Нет счетов. Добавьте первый счёт!",
+    "transferAmount": "К переводу",
+    "form": {
+      "accountName": "Название счета",
+      "accountType": "Тип счета",
+      "initialBalance": "Начальный баланс",
+      "currency": "Валюта"
+    },
+    "types": {
+      "card": "Карта",
+      "cash": "Наличные",
+      "savings": "Сбережения",
+      "bankCard": "Банковская карта",
+      "savingsAccount": "Сберегательный счёт",
+      "investment": "Инвестиционный счёт"
+    },
+    "messages": {
+      "loadError": "Ошибка загрузки данных",
+      "accountAdded": "Счёт успешно добавлен",
+      "accountDeleted": "Счёт удалён",
+      "accountUpdated": "Счёт успешно обновлён",
+      "addError": "Ошибка создания счёта",
+      "deleteError": "Невозможно удалить счет со связанными транзакциями. Используйте функцию архивирования.",
+      "fillName": "Заполните название счёта",
+      "requiredFields": "Заполните обязательные поля",
+      "initialBalanceNegative": "Начальный баланс не может быть отрицательным",
+      "transferSuccess": "Перевод {{amount}} выполнен успешно",
+      "transferFieldsRequired": "Заполните все поля",
+      "amountMustBePositive": "Сумма должна быть больше нуля",
+      "insufficientFunds": "Недостаточно средств на счёте",
+      "currencyNotFound": "Валюта не найдена",
+      "transferNoteFrom": "Перевод на",
+      "transferNoteToFrom": "Перевод со счета"
+    },
+    "columns": {
+      "name": "Название",
+      "type": "Тип",
+      "balance": "Баланс",
+      "currency": "Валюта",
+      "actions": "Действия"
+    }
+  },
+  "transactions": {
+    "title": "Операции",
+    "subtitle": "История всех транзакций",
+    "addButton": "Добавить операцию",
+    "newTransaction": "Новая операция",
+    "filtersTitle": "Фильтры и поиск",
+    "allTransactions": "Все операции",
+    "allAccounts": "Все счета",
+    "notFound": "Операции не найдены",
+    "filterBy": "Фильтр",
+    "placeholder": {
+      "searchDescription": "Поиск по описанию или категории...",
+      "fromDate": "С даты",
+      "toDate": "До даты"
+    },
+    "filters": {
+      "type": "Тип операции",
+      "account": "Счет",
+      "dateFrom": "От",
+      "dateTo": "До",
+      "amountFrom": "Сумма от",
+      "amountTo": "Сумма до"
+    },
+    "types": {
+      "income": "Доход",
+      "incomes": "Доходы",
+      "expense": "Расход",
+      "expenses": "Расходы",
+      "transfer": "Перевод",
+      "transfers": "Переводы",
+      "initialBalance": "Нач. баланс"
+    },
+    "messages": {
+      "loadError": "Ошибка загрузки операций",
+      "deleted": "Операция удалена",
+      "exportStarted": "Экспорт начат"
+    },
+    "columns": {
+      "date": "Дата",
+      "type": "Тип",
+      "category": "Категория",
+      "description": "Описание",
+      "amount": "Сумма",
+      "account": "Счет"
+    },
+    "messages": {
+      "loadError": "Ошибка загрузки операций",
+      "deleteError": "Ошибка удаления операции",
+      "deleted": "Операция удалена"
+    }
+  },
+  "credits": {
+    "title": "Кредиты",
+    "subtitle": "Управление вашими кредитами",
+    "creditButton": "Добавить кредит",
+    "debtButton": "Добавить долг",
+    "form": {
+      "creditName": "Название кредита",
+      "creditType": "Тип кредита",
+      "creditTotalAmount": "Общая сумма",
+      "creditInterestRate": "Процентная ставка (%)",
+      "creditMonthlyPayment": "Ежемесячный платёж",
+      "creditEndDate": "Дата завершения"
+    },
+    "debtsForm": {
+      "debtsName": "Название долга",
+      "debtAmount": "Сумма",
+      "debtPerson": "Человек",
+      "debtStartDate": "Дата начала",
+      "debtReturnDate": "Дата возврата"
+    },
+    "editForm": {
+      "name": "Название",
+      "type": "Тип",
+      "totalAmount": "Общая сумма",
+      "remainingAmount": "Оставшаяся сумма",
+      "interestRate": "Процентная ставка",
+      "monthlyPayment": "Ежемесячный платёж",
+      "nextPaymentDate": "Дата следующего платежа",
+      "endDate": "Дата завершения",
+      "paymentAmount": "Сумма платежа"
+    },
+    "sections": {
+      "credits": "Кредиты",
+      "debts": "Долги"
+    },
+    "messages": {
+      "loadError": "Ошибка загрузки данных",
+      "creditAdded": "Кредит успешно добавлен",
+      "debtAdded": "Долг успешно добавлен",
+      "debtsNotFound": "Долги не найдены",
+      "creditError": "Ошибка добавления кредита",
+      "debtError": "Ошибка добавления долга",
+      "paymentMade": "Платёж выполнен успешно",
+      "paymentError": "Ошибка выполнения платежа",
+      "requiredFields": "Заполните обязательные поля",
+      "creditUpdated": "Кредит обновлён",
+      "creditDeleted": "Кредит удалён",
+      "debtDeleted": "Долг удалён"
+    },
+    "columns": {
+      "name": "Название",
+      "type": "Тип",
+      "amount": "Сумма",
+      "rate": "Ставка",
+      "payment": "Платёж",
+      "remaining": "Осталось",
+      "endDate": "Дата окончания",
+      "status": "Статус"
+    },
+    "status": {
+      "active": "Активен",
+      "closed": "Закрыт",
+      "overdue": "Просроченный"
+    }
+  },
+  "deposits": {
+    "title": "Депозиты",
+    "subtitle": "Управление вашими вкладами",
+    "addButton": "Добавить вклад",
+    "replenishButton": "Пополнить",
+    "closeButton": "Закрыть",
+    "form": {
+      "depositName": "Название вклада",
+      "depositType": "Тип вклада",
+      "depositBank": "Банк",
+      "depositAmount": "Сумма",
+      "depositRate": "Процентная ставка (%)",
+      "depositStartDate": "Дата начала",
+      "depositEndDate": "Дата окончания",
+      "depositCapitalization": "Капитализация"
+    },
+    "replenishForm": {
+      "amount": "Сумма пополнения",
+      "date": "Дата пополнения"
+    },
+    "messages": {
+      "loadError": "Ошибка загрузки вкладов",
+      "depositAdded": "Вклад успешно добавлен",
+      "depositClosed": "Вклад успешно закрыт",
+      "depositReplenished": "Вклад пополнен на {{amount}} ₽",
+      "replenishError": "Ошибка пополнения вклада",
+      "correctAmount": "Введите корректную сумму пополнения",
+      "depositNotFound": "Вклад не найден",
+      "requiredFields": "Заполните обязательные поля"
+    },
+    "types": {
+      "fixed": "Фиксированный",
+      "replenishable": "Пополняемый"
+    },
+    "status": {
+      "active": "Активен",
+      "closed": "Закрыт"
+    },
+    "columns": {
+      "name": "Название",
+      "bank": "Банк",
+      "amount": "Сумма",
+      "rate": "Ставка",
+      "type": "Тип",
+      "endDate": "Дата окончания",
+      "earnings": "Доходность",
+      "status": "Статус"
+    }
+  },
+  "reports": {
+    "title": "Отчеты",
+    "subtitle": "Анализ ваших финансов",
+    "incomeExpenseReport": "Отчет доход/расход",
+    "categoryReport": "Отчет по категориям",
+    "monthlyReport": "Ежемесячный отчет",
+    "yearlyReport": "Ежегодный отчет",
+    "exportToCSV": "Экспортировать в CSV",
+    "exportToPDF": "Экспортировать в PDF"
+  },
+  "settings": {
+    "title": "Настройки",
+    "subtitle": "Персонализация и конфигурация системы",
+    "tabs": {
+      "profile": "Профиль",
+      "categories": "Категории",
+      "appearance": "Внешний вид",
+      "notifications": "Уведомления",
+      "security": "Безопасность",
+      "data": "Данные"
+    },
+    "profile": {
+      "title": "Информация профиля",
+      "receiveNotifications": "Получать уведомления на почту"
+    },
+    "categories": {
+      "expenseTitle": "Категории расходов",
+      "incomeTitle": "Категории доходов",
+      "newExpenseDialog": "Новая категория расходов",
+      "newIncomeDialog": "Новая категория доходов",
+      "categoryName": "Название"
+    },
+    "appearance": {
+      "title": "Внешний вид и локализация",
+      "themeLight": "Светлая",
+      "themeDark": "Тёмная",
+      "themeAuto": "Системная",
+      "currencyRub": "Рубль (₽)",
+      "currencyUsd": "Доллар ($)",
+      "currencyEur": "Евро (€)"
+    },
+    "notifications": {
+      "title": "Настройки уведомлений",
+      "emailNotifications": "Email уведомления",
+      "emailDescription": "Получать уведомления на почту",
+      "pushNotifications": "Push уведомления",
+      "pushDescription": "Браузерные уведомления",
+      "budgetAlerts": "Превышение бюджета",
+      "budgetDescription": "Предупреждать о перерасходе",
+      "paymentReminders": "Напоминания о платежах",
+      "paymentDescription": "Уведомлять о предстоящих платежах",
+      "weeklyReport": "Еженедельный отчёт",
+      "reportDescription": "Сводка по финансам каждую неделю"
+    },
+    "security": {
+      "title": "Безопасность и доступ",
+      "currentPassword": "Текущий пароль",
+      "newPassword": "Новый пароль",
+      "confirmPassword": "Подтвердите пароль"
+    },
+    "data": {
+      "backupTitle": "Резервное копирование",
+      "backupDescription": "Создайте резервную копию всех ваших финансовых данных",
+      "dangerZone": "Опасная зона",
+      "deleteAllDataTitle": "Удалить все данные",
+      "deleteAllDataDescription": "Это действие удалит все ваши данные безвозвратно",
+      "deleteAccountTitle": "Удалить аккаунт",
+      "deleteAccountDescription": "Навсегда удалить ваш аккаунт и все связанные данные"
+    }
+  }
+}

@@ -1,0 +1,408 @@
+{
+  "common": {
+    "button": {
+      "save": "Save",
+      "saveChanges": "Save Changes",
+      "cancel": "Cancel",
+      "add": "Add",
+      "delete": "Delete",
+      "edit": "Edit",
+      "changePhoto": "Change Photo",
+      "saveSettings": "Save Settings",
+      "changePassword": "Change Password",
+      "backup": "Create Backup",
+      "restore": "Restore Data",
+      "deleteAll": "Delete All Data",
+      "deleteAccount": "Delete Account",
+      "close": "Close",
+      "replenish": "Replenish",
+      "closeDeposit": "Close Deposit",
+      "makePayment": "Make Payment",
+      "earlyRepayment": "Early Repayment",
+      "download": "Download",
+      "clear": "Clear",
+      "transfer": "Transfer"
+    },
+    "placeholder": {
+      "name": "John",
+      "surname": "Doe",
+      "email": "john@example.com",
+      "phone": "+1 (999) 123-45-67",
+      "categoryName": "Category name",
+      "accountName": "Account name",
+      "creditName": "Credit name",
+      "debtName": "Debt name",
+      "depositName": "Deposit name",
+      "amount": "Amount",
+      "search": "Search...",
+      "description": "Description",
+      "selectType": "Select type",
+      "selectAccount": "Select account"
+    },
+    "label": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "phone": "Phone",
+      "theme": "Theme",
+      "currency": "Primary Currency",
+      "language": "Interface Language",
+      "accountName": "Account Name",
+      "accountType": "Account Type",
+      "initialBalance": "Initial Balance",
+      "balance": "Balance",
+      "totalBalance": "Total Balance",
+      "type": "Type",
+      "amount": "Amount",
+      "date": "Date",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "fromAccount": "From Account",
+      "toAccount": "To Account",
+      "transferAmount": "Transfer Amount",
+      "interestRate": "Interest Rate",
+      "monthlyPayment": "Monthly Payment",
+      "description": "Description",
+      "category": "Category",
+      "person": "Person",
+      "bank": "Bank",
+      "status": "Status",
+      "account": "Account",
+      "actions": "Actions"
+    },
+    "message": {
+      "maxFileSize": "JPG, PNG. Max. 2MB",
+      "errorLoadingCategories": "Error loading categories",
+      "categoryAdded": "Category added",
+      "categoryDeleted": "Category deleted",
+      "errorAddingCategory": "Error adding category",
+      "errorDeletingCategory": "Error deleting category",
+      "profileUpdated": "Profile updated",
+      "passwordChanged": "Password changed",
+      "backupCreated": "Backup created",
+      "dataRestored": "Data restored",
+      "enterCategoryName": "Enter category name",
+      "loading": "Loading...",
+      "error": "Error",
+      "requiredFields": "Fill in required fields",
+      "fillAllFields": "Fill in all fields",
+      "fillAllRequiredFields": "Please fill in all required fields",
+      "success": "Success",
+      "deleteConfirm": "Are you sure? This action cannot be undone.",
+      "deleteConfirmAccount": "Are you sure you want to delete this account? This action cannot be undone.",
+      "deleteConfirmDeposit": "Are you sure you want to close this deposit? This action cannot be undone."
+    }
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "accounts": "Accounts",
+    "transactions": "Transactions",
+    "credits": "Credits",
+    "debts": "Debts",
+    "deposits": "Deposits",
+    "reports": "Reports",
+    "settings": "Settings",
+    "help": "Help"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Overview of your finances",
+    "addTransaction": "Add Transaction",
+    "totalBalance": "Total Balance",
+    "totalIncome": "Total Income",
+    "totalExpense": "Total Expenses",
+    "categoryExpenses": "Expenses by Category",
+    "monthlyTrend": "Monthly Trend",
+    "recentTransactions": "Recent Transactions"
+  },
+  "accounts": {
+    "title": "Accounts and Wallets",
+    "subtitle": "Manage your accounts",
+    "addButton": "Add Account",
+    "editAccount": "Edit Account",
+    "editButton": "Edit",
+    "deleteButton": "Delete",
+    "transferButton": "Transfer",
+    "transferDialog": "Transfer Between Accounts",
+    "fromAccount": "From Account",
+    "toAccount": "To Account",
+    "totalBalance": "Total Balance",
+    "balanceDescription": "Sum of all accounts in rubles",
+    "noAccounts": "No accounts. Add your first account!",
+    "transferAmount": "Amount to Transfer",
+    "form": {
+      "accountName": "Account Name",
+      "accountType": "Account Type",
+      "initialBalance": "Initial Balance",
+      "currency": "Currency"
+    },
+    "types": {
+      "card": "Card",
+      "cash": "Cash",
+      "savings": "Savings",
+      "bankCard": "Bank Card",
+      "savingsAccount": "Savings Account",
+      "investment": "Investment Account"
+    },
+    "messages": {
+      "loadError": "Error loading data",
+      "accountAdded": "Account successfully added",
+      "accountDeleted": "Account deleted",
+      "accountUpdated": "Account successfully updated",
+      "addError": "Error creating account",
+      "deleteError": "Cannot delete account with associated transactions. Use archive function.",
+      "fillName": "Fill in account name",
+      "requiredFields": "Fill in the required fields",
+      "initialBalanceNegative": "Initial balance cannot be negative",
+      "transferSuccess": "Transfer of {{amount}} completed successfully",
+      "transferFieldsRequired": "Fill in all fields",
+      "amountMustBePositive": "Amount must be greater than zero",
+      "insufficientFunds": "Insufficient funds in account",
+      "currencyNotFound": "Currency not found",
+      "transferNoteFrom": "Transfer to",
+      "transferNoteToFrom": "Transfer from account"
+    },
+    "columns": {
+      "name": "Name",
+      "type": "Type",
+      "balance": "Balance",
+      "currency": "Currency",
+      "actions": "Actions"
+    }
+  },
+  "transactions": {
+    "title": "Transactions",
+    "subtitle": "History of all transactions",
+    "addButton": "Add Transaction",
+    "newTransaction": "New Transaction",
+    "filtersTitle": "Filters and Search",
+    "allTransactions": "All Transactions",
+    "allAccounts": "All Accounts",
+    "notFound": "No transactions found",
+    "filterBy": "Filter",
+    "placeholder": {
+      "searchDescription": "Search by description or category...",
+      "fromDate": "From Date",
+      "toDate": "To Date"
+    },
+    "filters": {
+      "type": "Transaction Type",
+      "account": "Account",
+      "dateFrom": "From",
+      "dateTo": "To",
+      "amountFrom": "Amount From",
+      "amountTo": "Amount To"
+    },
+    "types": {
+      "income": "Income",
+      "incomes": "Incomes",
+      "expense": "Expense",
+      "expenses": "Expenses",
+      "transfer": "Transfer",
+      "transfers": "Transfers",
+      "initialBalance": "Initial Balance"
+    },
+    "messages": {
+      "loadError": "Error loading transactions",
+      "deleted": "Transaction deleted",
+      "exportStarted": "Export started"
+    },
+    "columns": {
+      "date": "Date",
+      "type": "Type",
+      "category": "Category",
+      "description": "Description",
+      "amount": "Amount",
+      "account": "Account"
+    },
+    "messages": {
+      "loadError": "Error loading transactions",
+      "deleteError": "Error deleting transaction",
+      "deleted": "Transaction deleted"
+    }
+  },
+  "credits": {
+    "title": "Credits",
+    "subtitle": "Manage your credits",
+    "creditButton": "Add Credit",
+    "debtButton": "Add Debt",
+    "form": {
+      "creditName": "Credit Name",
+      "creditType": "Credit Type",
+      "creditTotalAmount": "Total Amount",
+      "creditInterestRate": "Interest Rate (%)",
+      "creditMonthlyPayment": "Monthly Payment",
+      "creditEndDate": "End Date"
+    },
+    "debtsForm": {
+      "debtsName": "Debt Name",
+      "debtAmount": "Amount",
+      "debtPerson": "Person",
+      "debtStartDate": "Start Date",
+      "debtReturnDate": "Return Date"
+    },
+    "editForm": {
+      "name": "Name",
+      "type": "Type",
+      "totalAmount": "Total Amount",
+      "remainingAmount": "Remaining Amount",
+      "interestRate": "Interest Rate",
+      "monthlyPayment": "Monthly Payment",
+      "nextPaymentDate": "Next Payment Date",
+      "endDate": "End Date",
+      "paymentAmount": "Payment Amount"
+    },
+    "sections": {
+      "credits": "Credits",
+      "debts": "Debts"
+    },
+    "messages": {
+      "loadError": "Error loading data",
+      "creditAdded": "Credit successfully added",
+      "debtAdded": "Debt successfully added",
+      "debtsNotFound": "Debts not found",
+      "creditError": "Error adding credit",
+      "debtError": "Error adding debt",
+      "paymentMade": "Payment completed successfully",
+      "paymentError": "Error making payment",
+      "requiredFields": "Fill in required fields",
+      "creditUpdated": "Credit updated",
+      "creditDeleted": "Credit deleted",
+      "debtDeleted": "Debt deleted"
+    },
+    "columns": {
+      "name": "Name",
+      "type": "Type",
+      "amount": "Amount",
+      "rate": "Rate",
+      "payment": "Payment",
+      "remaining": "Remaining",
+      "endDate": "End Date",
+      "status": "Status"
+    },
+    "status": {
+      "active": "Active",
+      "closed": "Closed",
+      "overdue": "Overdue"
+    }
+  },
+  "deposits": {
+    "title": "Deposits",
+    "subtitle": "Manage your deposits",
+    "addButton": "Add Deposit",
+    "replenishButton": "Replenish",
+    "closeButton": "Close",
+    "form": {
+      "depositName": "Deposit Name",
+      "depositType": "Deposit Type",
+      "depositBank": "Bank",
+      "depositAmount": "Amount",
+      "depositRate": "Interest Rate (%)",
+      "depositStartDate": "Start Date",
+      "depositEndDate": "End Date",
+      "depositCapitalization": "Capitalization"
+    },
+    "replenishForm": {
+      "amount": "Replenishment Amount",
+      "date": "Replenishment Date"
+    },
+    "messages": {
+      "loadError": "Error loading deposits",
+      "depositAdded": "Deposit successfully added",
+      "depositClosed": "Deposit successfully closed",
+      "depositReplenished": "Deposit replenished by {{amount}} ₽",
+      "replenishError": "Error replenishing deposit",
+      "correctAmount": "Enter correct replenishment amount",
+      "depositNotFound": "Deposit not found",
+      "requiredFields": "Fill in required fields"
+    },
+    "types": {
+      "fixed": "Fixed",
+      "replenishable": "Replenishable"
+    },
+    "status": {
+      "active": "Active",
+      "closed": "Closed"
+    },
+    "columns": {
+      "name": "Name",
+      "bank": "Bank",
+      "amount": "Amount",
+      "rate": "Rate",
+      "type": "Type",
+      "endDate": "End Date",
+      "earnings": "Earnings",
+      "status": "Status"
+    }
+  },
+  "reports": {
+    "title": "Reports",
+    "subtitle": "Analyze your finances",
+    "incomeExpenseReport": "Income/Expense Report",
+    "categoryReport": "Category Report",
+    "monthlyReport": "Monthly Report",
+    "yearlyReport": "Yearly Report",
+    "exportToCSV": "Export to CSV",
+    "exportToPDF": "Export to PDF"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Personalization and system configuration",
+    "tabs": {
+      "profile": "Profile",
+      "categories": "Categories",
+      "appearance": "Appearance",
+      "notifications": "Notifications",
+      "security": "Security",
+      "data": "Data"
+    },
+    "profile": {
+      "title": "Profile Information",
+      "receiveNotifications": "Receive notifications by email"
+    },
+    "categories": {
+      "expenseTitle": "Expense Categories",
+      "incomeTitle": "Income Categories",
+      "newExpenseDialog": "New Expense Category",
+      "newIncomeDialog": "New Income Category",
+      "categoryName": "Name"
+    },
+    "appearance": {
+      "title": "Appearance and Localization",
+      "themeLight": "Light",
+      "themeDark": "Dark",
+      "themeAuto": "System",
+      "currencyRub": "Ruble (₽)",
+      "currencyUsd": "Dollar ($)",
+      "currencyEur": "Euro (€)"
+    },
+    "notifications": {
+      "title": "Notification Settings",
+      "emailNotifications": "Email Notifications",
+      "emailDescription": "Receive email notifications",
+      "pushNotifications": "Push Notifications",
+      "pushDescription": "Browser notifications",
+      "budgetAlerts": "Budget Exceeded",
+      "budgetDescription": "Warn about overspending",
+      "paymentReminders": "Payment Reminders",
+      "paymentDescription": "Notify about upcoming payments",
+      "weeklyReport": "Weekly Report",
+      "reportDescription": "Financial summary every week"
+    },
+    "security": {
+      "title": "Security and Access",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm Password"
+    },
+    "data": {
+      "backupTitle": "Backup",
+      "backupDescription": "Create a backup of all your financial data",
+      "dangerZone": "Danger Zone",
+      "deleteAllDataTitle": "Delete All Data",
+      "deleteAllDataDescription": "This action will permanently delete all your data",
+      "deleteAccountTitle": "Delete Account",
+      "deleteAccountDescription": "Permanently delete your account and all associated data"
+    }
+  }
+}

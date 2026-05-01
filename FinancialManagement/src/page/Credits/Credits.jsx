@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import FinanceProductCard from "../../components/ui/FinanceProductCard/FinanceProductCard";
 import { Badge } from "../../components/ui/badge/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../../components/ui/dialog_/dialog';
@@ -15,6 +16,7 @@ import { getDebts, createDebt, updateDebt, deleteDebt } from '../../api/debts';
 import "./Credits.scss"
 
 export default function Credits() {
+    const { t } = useTranslation();
     const [dialogOpenCredit, setDialogOpenCredit] = useState(false)
     const [dialogOpenDebts, setDialogOpenDebts] = useState(false)
     const [editDialogOpen, setEditDialogOpen] = useState(false)
@@ -57,7 +59,7 @@ export default function Credits() {
             setCreditsData(credits);
             setDebtsData(debts);
         } catch (err) {
-            toast.error(err.message || 'Ошибка загрузки данных');
+            toast.error(err.message || t('common.message.loadError'));
         } finally {
             setLoading(false);
         }
@@ -67,7 +69,7 @@ export default function Credits() {
 
     const handleAddCredit = async () => {
         if (!creditName || !creditType) {
-            toast.error('Заполните обязательные поля');
+            toast.error(t('common.message.requiredFields'));
             return;
         }
         try {
@@ -81,7 +83,7 @@ export default function Credits() {
                 endDate: creditEndDate ? new Date(creditEndDate).toISOString() : null,
                 status: 'active',
             });
-            toast.success('Кредит успешно добавлен');
+            toast.success(t('credits.messages.creditAdded'));
             setDialogOpenCredit(false);
             setCreditName('');
             setCreditType('');
@@ -91,13 +93,13 @@ export default function Credits() {
             setCreditEndDate('');
             fetchData();
         } catch (err) {
-            toast.error(err.message || 'Ошибка добавления кредита');
+            toast.error(err.message || t('credits.messages.creditError'));
         }
     };
 
     const handleAddDebt = async () => {
         if (!debtsName || !debtAmount) {
-            toast.error('Заполните обязательные поля');
+            toast.error(t('common.message.requiredFields'));
             return;
         }
         try {
@@ -109,7 +111,7 @@ export default function Credits() {
                 returnDate: debtReturnDate ? new Date(debtReturnDate).toISOString() : null,
                 status: 'pending',
             });
-            toast.success('Долг успешно добавлен');
+            toast.success(t('credits.messages.debtAdded'));
             setDialogOpenDebts(false);
             setDebtsName('');
             setDebtAmount('');
@@ -118,7 +120,7 @@ export default function Credits() {
             setDebtReturnDate('');
             fetchData();
         } catch (err) {
-            toast.error(err.message || 'Ошибка добавления долга');
+            toast.error(err.message || t('credits.messages.debtError'));
         }
     };
 
@@ -301,7 +303,7 @@ export default function Credits() {
     };
 
     if (loading) {
-        return <div className="credits"><p>Загрузка...</p></div>;
+        return <div className="credits"><p>{t('common.message.loading')}</p></div>;
     }
 
     return (
@@ -309,51 +311,51 @@ export default function Credits() {
             {/* Header */}
             <div className="credits__header">
                 <div>
-                    <h1 className="credits__title">Кредиты и долги</h1>
-                    <p className="credits__subtitle">Управление займами и обязательствами</p>
+                    <h1 className="credits__title">{t('credits.title')}</h1>
+                    <p className="credits__subtitle">{t('credits.subtitle')}</p>
                 </div>
 
                 <Dialog open={dialogOpenCredit} onOpenChange={setDialogOpenCredit}>
                     <DialogTrigger asChild>
                         <button className="dashboard__add-btn">
                             <Plus size={18} />
-                            Добавить кредит
+                            {t('credits.creditButton')}
                         </button>
                     </DialogTrigger>
 
                     <DialogContent aria-describedby={undefined}>
                         <DialogHeader>
-                            <DialogTitle>Новый кредит</DialogTitle>
+                            <DialogTitle>{t('credits.newCredit')}</DialogTitle>
                         </DialogHeader>
                         <div className="credit-form">
                             <div className="credit-form__field">
-                                <Label htmlFor="credit-name">Название *</Label>
+                                <Label htmlFor="credit-name">{t('common.label.name')} *</Label>
                                 <Input
                                     id="credit-name"
-                                    placeholder="Например: Кредит на авто"
+                                    placeholder={t('common.placeholder.creditName')}
                                     value={creditName}
                                     onChange={(e) => setCreditName(e.target.value)}
                                 />
                             </div>
 
                             <div className="credit-form__field">
-                                <Label htmlFor="credit-type">Тип кредита *</Label>
+                                <Label htmlFor="credit-type">{t('credits.form.creditType')} *</Label>
                                 <Select value={creditType} onValueChange={setCreditType}>
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Выберите тип" />
+                                        <SelectValue placeholder={t('common.placeholder.selectType')} />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="mortgage">Ипотека</SelectItem>
-                                        <SelectItem value="auto">Автокредит</SelectItem>
-                                        <SelectItem value="consumer">Потребительский</SelectItem>
-                                        <SelectItem value="personal">Личный долг</SelectItem>
+                                        <SelectItem value="mortgage">{t('credits.types.mortgage')}</SelectItem>
+                                        <SelectItem value="auto">{t('credits.types.auto')}</SelectItem>
+                                        <SelectItem value="consumer">{t('credits.types.consumer')}</SelectItem>
+                                        <SelectItem value="personal">{t('credits.types.personal')}</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
 
                             <div className="credit-form__row">
                                 <div className="credit-form__field">
-                                    <Label htmlFor="total-amount">Общая сумма</Label>
+                                    <Label htmlFor="total-amount">{t('credits.form.creditTotalAmount')}</Label>
                                     <Input
                                         id="total-amount"
                                         placeholder="0"
@@ -363,7 +365,7 @@ export default function Credits() {
                                     />
                                 </div>
                                 <div className="credit-form__field">
-                                    <Label htmlFor="interest-rate">Процентная ставка (%)</Label>
+                                    <Label htmlFor="interest-rate">{t('credits.form.creditInterestRate')}</Label>
                                     <Input
                                         id="interest-rate"
                                         placeholder="0"
@@ -377,7 +379,7 @@ export default function Credits() {
 
                             <div className="credit-form__row">
                                 <div className="credit-form__field">
-                                    <Label htmlFor="monthly-payment">Ежемесячный платёж</Label>
+                                    <Label htmlFor="monthly-payment">{t('credits.form.creditMonthlyPayment')}</Label>
                                     <Input
                                         id="monthly-payment"
                                         placeholder="0"
@@ -387,7 +389,7 @@ export default function Credits() {
                                     />
                                 </div>
                                 <div className="credit-form__field">
-                                    <Label htmlFor="end-date">Дата окончания</Label>
+                                    <Label htmlFor="end-date">{t('credits.form.creditEndDate')}</Label>
                                     <Input
                                         id="end-date"
                                         type="date"

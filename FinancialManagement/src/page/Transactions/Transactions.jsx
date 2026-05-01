@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CradTitle } from '../../components/ui/card/card';
 import { Button } from '../../components/ui/button/button';
@@ -15,6 +16,7 @@ import { transformTransactionFromBackend } from '../../api/transformers';
 import "./Transactions.scss"
 
 export default function Transactions() {
+    const { t } = useTranslation();
     const [dialogOpen, setDialogOpen] = useState(false)
     const [filterType, setFilterType] = useState('all')
     const [filterAccount, setFilterAccount] = useState('all')
@@ -32,7 +34,7 @@ export default function Transactions() {
             const data = await getTransactions(filters);
             setTransactions(data.map(t => transformTransactionFromBackend(t)));
         } catch (err) {
-            toast.error(err.message || 'Ошибка загрузки операций');
+            toast.error(err.message || t('transactions.messages.loadError'));
         } finally {
             setLoading(false);
         }
@@ -45,13 +47,13 @@ export default function Transactions() {
                 setAccounts(accs);
                 setLoading(false);
             } catch (err) {
-                toast.error('Ошибка загрузки данных');
+                toast.error(t('common.message.loadError'));
                 setLoading(false);
             }
         };
         loadData();
         fetchTransactions();
-    }, []);
+    }, [t]);
 
     const handleFilterChange = (newFilters) => {
         const filters = {};
@@ -80,25 +82,25 @@ export default function Transactions() {
     })
 
     const getTypeBadge = (type) => {
-        if (type === 'income') return <Badge variant="green">Доход</Badge>;
-        if (type === 'expense') return <Badge variant="red">Расход</Badge>;
-        if (type === 'transfer') return <Badge variant="blue">Перевод</Badge>;
-        if (type === 'initialBalance') return <Badge variant="outline">Нач. баланс</Badge>;
+        if (type === 'income') return <Badge variant="green">{t('transactions.types.income')}</Badge>;
+        if (type === 'expense') return <Badge variant="red">{t('transactions.types.expense')}</Badge>;
+        if (type === 'transfer') return <Badge variant="blue">{t('transactions.types.transfer')}</Badge>;
+        if (type === 'initialBalance') return <Badge variant="outline">{t('transactions.types.initialBalance')}</Badge>;
         return <Badge>{type}</Badge>;
     };
 
     const handleDelete = async (id) => {
         try {
             await deleteTransaction(id);
-            toast.success("Операция удалена");
+            toast.success(t('transactions.messages.deleted'));
             fetchTransactions();
         } catch (err) {
-            toast.error(err.message || 'Ошибка удаления');
+            toast.error(err.message || t('common.message.error'));
         }
     }
 
     const handleExport = () => {
-        toast.success('Экспорт начат');
+        toast.success(t('transactions.messages.exportStarted'));
     }
 
     const handleTransactionCreated = () => {
@@ -107,7 +109,7 @@ export default function Transactions() {
     };
 
     if (loading) {
-        return <div className="transactions"><p>Загрузка...</p></div>;
+        return <div className="transactions"><p>{t('common.message.loading')}</p></div>;
     }
 
     return (
@@ -115,8 +117,8 @@ export default function Transactions() {
             {/* Header */}
             <div className="transactions__header">
                 <div className="transactions__title-block">
-                    <h1 className="transactions__title">Операции</h1>
-                    <p className="transactions__subtitle">История всех транзакций</p>
+                    <h1 className="transactions__title">{t('transactions.title')}</h1>
+                    <p className="transactions__subtitle">{t('transactions.subtitle')}</p>
                 </div>
 
                 <div className="transactions__actions">
@@ -124,13 +126,13 @@ export default function Transactions() {
                         <DialogTrigger asChild>
                             <Button className="transactions__add-btn">
                                 <Plus className="icon icon--left" />
-                                Добавить операцию
+                                {t('transactions.addButton')}
                             </Button>
                         </DialogTrigger>
 
                         <DialogContent className="transactions__dialog">
                             <DialogHeader>
-                                <DialogTitle>Новая операция</DialogTitle>
+                                <DialogTitle>{t('transactions.newTransaction')}</DialogTitle>
                             </DialogHeader>
                             <TransactionForm onClose={() => setDialogOpen(false)} onCreated={handleTransactionCreated} />
                         </DialogContent>
@@ -141,14 +143,14 @@ export default function Transactions() {
             {/* Filters card */}
             <Card className="transactions__card">
                 <CardHeader>
-                    <CradTitle className="text-xl" style={{ color: "#666363" }}>Фильтры и поиск</CradTitle>
+                    <CradTitle className="text-xl" style={{ color: "#666363" }}>{t('transactions.filtersTitle')}</CradTitle>
                 </CardHeader>
                 <CardContent className="transactions__card-content">
                     <div className="transactions__filters">
                         <div className="transactions__search">
                             <Search className="transactions__search-icon" />
                             <Input
-                                placeholder="Поиск по описанию или категории..."
+                                placeholder={t('transactions.placeholder.searchDescription')}
                                 className="transactions__search-input"
                                 value={searchQuery}
                                 onChange={(e) => setsearchQuery(e.target.value)}
@@ -161,10 +163,10 @@ export default function Transactions() {
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">Все операции</SelectItem>
-                                    <SelectItem value="income">Доходы</SelectItem>
-                                    <SelectItem value="expense">Расходы</SelectItem>
-                                    <SelectItem value="transfer">Переводы</SelectItem>
+                                    <SelectItem value="all">{t('transactions.allTransactions')}</SelectItem>
+                                    <SelectItem value="income">{t('transactions.types.incomes')}</SelectItem>
+                                    <SelectItem value="expense">{t('transactions.types.expenses')}</SelectItem>
+                                    <SelectItem value="transfer">{t('transactions.types.transfers')}</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -175,10 +177,10 @@ export default function Transactions() {
                                 handleFilterChange({ accountId: value, dateFrom, dateTo });
                             }}>
                                 <SelectTrigger className="transactions__select-trigger">
-                                    <SelectValue placeholder="Выберите счёт" />
+                                    <SelectValue placeholder={t('common.placeholder.selectAccount')} />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">Все счета</SelectItem>
+                                    <SelectItem value="all">{t('transactions.allAccounts')}</SelectItem>
                                     {accounts.map(acc => (
                                         <SelectItem key={acc.id} value={acc.id}>
                                             {acc.name}
@@ -201,8 +203,8 @@ export default function Transactions() {
                                             dateTo,
                                         });
                                     }}
-                                    placeholder="С даты"
-                                    title="От даты"
+                                    placeholder={t('common.placeholder.fromDate')}
+                                    title={t('common.placeholder.fromDate')}
                                 />
                             </div>
 
@@ -220,8 +222,8 @@ export default function Transactions() {
                                             dateTo: e.target.value,
                                         });
                                     }}
-                                    placeholder="До даты"
-                                    title="До даты"
+                                    placeholder={t('common.placeholder.toDate')}
+                                    title={t('common.placeholder.toDate')}
                                 />
                             </div>
                         </div>
@@ -229,7 +231,7 @@ export default function Transactions() {
                         <div className="transactions__export">
                             <Button variant="white" onClick={handleExport}>
                                 <Download className="icon icon--left" />
-                                Экспорт
+                                {t('common.button.download')}
                             </Button>
                         </div>
                     </div>
@@ -243,13 +245,13 @@ export default function Transactions() {
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>Дата</TableHead>
-                                    <TableHead>Тип</TableHead>
-                                    <TableHead>Категория</TableHead>
-                                    <TableHead>Счёт</TableHead>
-                                    <TableHead>Описание</TableHead>
-                                    <TableHead className="text-right">Сумма</TableHead>
-                                    <TableHead className="text-right">Действия</TableHead>
+                                    <TableHead>{t('common.label.date')}</TableHead>
+                                    <TableHead>{t('common.label.type')}</TableHead>
+                                    <TableHead>{t('common.label.category')}</TableHead>
+                                    <TableHead>{t('common.label.account')}</TableHead>
+                                    <TableHead>{t('common.label.description')}</TableHead>
+                                    <TableHead className="text-right">{t('common.label.amount')}</TableHead>
+                                    <TableHead className="text-right">{t('common.label.actions')}</TableHead>
                                 </TableRow>
                             </TableHeader>
 
@@ -267,10 +269,10 @@ export default function Transactions() {
                                         </TableCell>
                                         <TableCell>
                                             <div className="transactions__row-actions">
-                                                <Button variant="transparent" className="transactions__card-btn" aria-label="Редактировать">
+                                                <Button variant="transparent" className="transactions__card-btn" aria-label={t('common.button.edit')}>
                                                     <Edit className="icon" />
                                                 </Button>
-                                                <Button variant="transparent" className="transactions__card-btn" aria-label="Удалить" onClick={() => handleDelete(t.id)}>
+                                                <Button variant="transparent" className="transactions__card-btn" aria-label={t('common.button.delete')} onClick={() => handleDelete(t.id)}>
                                                     <Trash2 className="icon" />
                                                 </Button>
                                             </div>
@@ -284,7 +286,7 @@ export default function Transactions() {
             </Card>
 
             {filteredTransactions.length === 0 && (
-                <div className="transactions__empty">Операции не найдены</div>
+                <div className="transactions__empty">{t('transactions.notFound')}</div>
             )}
         </div>
     );
