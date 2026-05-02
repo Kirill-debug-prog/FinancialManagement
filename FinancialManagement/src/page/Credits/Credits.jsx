@@ -27,6 +27,8 @@ export default function Credits() {
     const [creditInterestRate, setCreditInterestRate] = useState('')
     const [creditMonthlyPayment, setCreditMonthlyPayment] = useState('')
     const [creditEndDate, setCreditEndDate] = useState('')
+    const [creditErrors, setCreditErrors] = useState({})
+    const [debtErrors, setDebtErrors] = useState({})
 
     const [editForm, setEditForm] = useState({
         name: '',
@@ -51,6 +53,74 @@ export default function Credits() {
     const [debtsData, setDebtsData] = useState([])
     const [loading, setLoading] = useState(true)
 
+    // Функции валидации для кредитов
+    const validateCredit = () => {
+        const newErrors = {};
+        const totalAmount = parseFloat(creditTotalAmount);
+        const rate = parseFloat(creditInterestRate);
+        const payment = parseFloat(creditMonthlyPayment);
+
+        if (!creditName || creditName.trim().length === 0) {
+            newErrors.name = 'Название кредита не может быть пустым';
+        }
+        if (!creditType) {
+            newErrors.type = 'Выберите тип кредита';
+        }
+        if (isNaN(totalAmount) || totalAmount <= 0) {
+            newErrors.totalAmount = 'Сумма должна быть больше нуля';
+        }
+        if (totalAmount > 999_999_999) {
+            newErrors.totalAmount = 'Сумма не может превышать 999,999,999';
+        }
+        if (isNaN(rate) || rate < 0 || rate > 100) {
+            newErrors.rate = 'Процентная ставка должна быть от 0 до 100';
+        }
+        if (!payment && (isNaN(payment) || payment <= 0)) {
+            newErrors.payment = 'Ежемесячный платеж должен быть больше нуля';
+        }
+        if (creditEndDate) {
+            const endDate = new Date(creditEndDate);
+            const today = new Date();
+            if (endDate < today) {
+                newErrors.endDate = 'Дата конца не может быть в прошлом';
+            }
+        }
+        if (!creditEndDate) {
+            newErrors.endDate = 'Укажите дату окончания кредита';
+        }
+        return newErrors;
+    };
+
+    // Функции валидации для долгов
+    const validateDebt = () => {
+        const newErrors = {};
+        const amount = parseFloat(debtAmount);
+
+        if (!debtsName || debtsName.trim().length === 0) {
+            newErrors.name = 'Название долга не может быть пустым';
+        }
+        if (isNaN(amount) || amount <= 0) {
+            newErrors.amount = 'Сумма должна быть больше нуля';
+        }
+        if (amount > 999_999_999) {
+            newErrors.amount = 'Сумма не может превышать 999,999,999';
+        }
+        if (!debtPerson && debtPerson.trim().length === 0) {
+            newErrors.person = 'Имя должника не может быть пустым';
+        }
+        if (debtReturnDate) {
+            const returnDate = new Date(debtReturnDate);
+            const startDate = debtStartDate ? new Date(debtStartDate) : new Date();
+            if (returnDate < startDate) {
+                newErrors.returnDate = 'Дата возврата не может быть раньше даты начала';
+            }
+        }
+        if (!debtStartDate && !debtReturnDate) {
+            newErrors.startDate = 'Укажите дату начала';
+        }
+        return newErrors;
+    };
+
     const fetchData = async () => {
         try {
             const [credits, debts] = await Promise.all([getCredits(), getDebts()]);
@@ -66,10 +136,14 @@ export default function Credits() {
     useEffect(() => { fetchData(); }, []);
 
     const handleAddCredit = async () => {
-        if (!creditName || !creditType) {
-            toast.error('Заполните обязательные поля');
+        // Полная валидация
+        const errors = validateCredit();
+        if (Object.keys(errors).length > 0) {
+            setCreditErrors(errors);
+            toast.error('❌ ' + (Object.values(errors)[0]));
             return;
         }
+        setCreditErrors({});
         try {
             await createCredit({
                 name: creditName,
@@ -96,10 +170,14 @@ export default function Credits() {
     };
 
     const handleAddDebt = async () => {
-        if (!debtsName || !debtAmount) {
-            toast.error('Заполните обязательные поля');
+        // Полная валидация
+        const errors = validateDebt();
+        if (Object.keys(errors).length > 0) {
+            setDebtErrors(errors);
+            toast.error('❌ ' + (Object.values(errors)[0]));
             return;
         }
+        setDebtErrors({});
         try {
             await createDebt({
                 name: debtsName,
@@ -181,10 +259,14 @@ export default function Credits() {
     };
 
     const handleSaveEditCredit = async () => {
-        if (!editForm.name || !editForm.type) {
-            toast.error('Заполните обязательные поля');
+        // Полная валидация
+        const errors = validateCredit();
+        if (Object.keys(errors).length > 0) {
+            setCreditErrors(errors);
+            toast.error('❌ ' + (Object.values(errors)[0]));
             return;
         }
+        setCreditErrors({});
 
         try {
             // Вычисляем новый остаток, если была внесена сумма платежа
@@ -192,6 +274,10 @@ export default function Credits() {
             if (editForm.paymentAmount && editForm.paymentAmount <= newRemainingAmount) {
                 const paymentAmount = parseFloat(editForm.paymentAmount) || 0;
                 newRemainingAmount = Math.max(0, newRemainingAmount - paymentAmount);
+            }
+            else if (editForm.paymentAmount <= 0) {
+                toast.error('Сумма платежа должна быть больше нуля');
+                return;
             }
             else {
                 toast.error('Сумма платежа не может превышать текущий остаток');
@@ -327,18 +413,26 @@ export default function Credits() {
                         </DialogHeader>
                         <div className="credit-form">
                             <div className="credit-form__field">
-                                <Label htmlFor="credit-name">Название *</Label>
+                                <Label htmlFor="credit-name">Название * {creditErrors.name && <span className="form-error-icon">⚠️</span>}</Label>
                                 <Input
                                     id="credit-name"
                                     placeholder="Например: Кредит на авто"
                                     value={creditName}
-                                    onChange={(e) => setCreditName(e.target.value)}
+                                    onChange={(e) => {
+                                        setCreditName(e.target.value);
+                                        setCreditErrors(prev => ({ ...prev, name: '' }));
+                                    }}
+                                    className={creditErrors.name ? 'is-error' : ''}
                                 />
+                                {creditErrors.name && <span className="form-error">{creditErrors.name}</span>}
                             </div>
 
                             <div className="credit-form__field">
-                                <Label htmlFor="credit-type">Тип кредита *</Label>
-                                <Select value={creditType} onValueChange={setCreditType}>
+                                <Label htmlFor="credit-type">Тип кредита * {creditErrors.type && <span className="form-error-icon">⚠️</span>}</Label>
+                                <Select value={creditType} onValueChange={(val) => {
+                                    setCreditType(val);
+                                    setCreditErrors(prev => ({ ...prev, type: '' }));
+                                }}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Выберите тип" />
                                     </SelectTrigger>
@@ -349,59 +443,90 @@ export default function Credits() {
                                         <SelectItem value="personal">Личный долг</SelectItem>
                                     </SelectContent>
                                 </Select>
+                                {creditErrors.type && <span className="form-error">{creditErrors.type}</span>}
                             </div>
 
                             <div className="credit-form__row">
                                 <div className="credit-form__field">
-                                    <Label htmlFor="total-amount">Общая сумма</Label>
+                                    <Label htmlFor="total-amount">Общая сумма {creditErrors.totalAmount && <span className="form-error-icon">⚠️</span>}</Label>
                                     <Input
                                         id="total-amount"
                                         placeholder="0"
                                         type="number"
+                                        step="0.01"
+                                        min="0"
+                                        max="999999999"
                                         value={creditTotalAmount}
-                                        onChange={(e) => setCreditTotalAmount(e.target.value)}
+                                        onChange={(e) => {
+                                            setCreditTotalAmount(e.target.value);
+                                            setCreditErrors(prev => ({ ...prev, totalAmount: '' }));
+                                        }}
+                                        className={creditErrors.totalAmount ? 'is-error' : ''}
                                     />
+                                    {creditErrors.totalAmount && <span className="form-error">{creditErrors.totalAmount}</span>}
                                 </div>
                                 <div className="credit-form__field">
-                                    <Label htmlFor="interest-rate">Процентная ставка (%)</Label>
+                                    <Label htmlFor="interest-rate">Процентная ставка (%) {creditErrors.rate && <span className="form-error-icon">⚠️</span>}</Label>
                                     <Input
                                         id="interest-rate"
                                         placeholder="0"
                                         type="number"
                                         step="0.1"
+                                        min="0"
+                                        max="100"
                                         value={creditInterestRate}
-                                        onChange={(e) => setCreditInterestRate(e.target.value)}
+                                        onChange={(e) => {
+                                            setCreditInterestRate(e.target.value);
+                                            setCreditErrors(prev => ({ ...prev, rate: '' }));
+                                        }}
+                                        className={creditErrors.rate ? 'is-error' : ''}
                                     />
+                                    {creditErrors.rate && <span className="form-error">{creditErrors.rate}</span>}
                                 </div>
                             </div>
 
                             <div className="credit-form__row">
                                 <div className="credit-form__field">
-                                    <Label htmlFor="monthly-payment">Ежемесячный платёж</Label>
+                                    <Label htmlFor="monthly-payment">Ежемесячный платёж {creditErrors.payment && <span className="form-error-icon">⚠️</span>}</Label>
                                     <Input
                                         id="monthly-payment"
                                         placeholder="0"
                                         type="number"
+                                        step="0.01"
+                                        min="0"
                                         value={creditMonthlyPayment}
-                                        onChange={(e) => setCreditMonthlyPayment(e.target.value)}
+                                        onChange={(e) => {
+                                            setCreditMonthlyPayment(e.target.value);
+                                            setCreditErrors(prev => ({ ...prev, payment: '' }));
+                                        }}
+                                        className={creditErrors.payment ? 'is-error' : ''}
                                     />
+                                    {creditErrors.payment && <span className="form-error">{creditErrors.payment}</span>}
                                 </div>
                                 <div className="credit-form__field">
-                                    <Label htmlFor="end-date">Дата окончания</Label>
+                                    <Label htmlFor="end-date">Дата окончания {creditErrors.endDate && <span className="form-error-icon">⚠️</span>}</Label>
                                     <Input
                                         id="end-date"
                                         type="date"
                                         value={creditEndDate}
-                                        onChange={(e) => setCreditEndDate(e.target.value)}
+                                        onChange={(e) => {
+                                            setCreditEndDate(e.target.value);
+                                            setCreditErrors(prev => ({ ...prev, endDate: '' }));
+                                        }}
+                                        className={creditErrors.endDate ? 'is-error' : ''}
                                     />
+                                    {creditErrors.endDate && <span className="form-error">{creditErrors.endDate}</span>}
                                 </div>
                             </div>
 
                             <div className="transaction-form__buttons">
                                 <Button type="submit" className="transaction-form__button transaction-form__button--primary" onClick={handleAddCredit}>
-                                    Добавить
+                                    Добавить кредит
                                 </Button>
-                                <Button type="button" variant="outline" className="transaction-form__button transaction-form__button--outline" onClick={() => setDialogOpenCredit(false)}>
+                                <Button type="button" variant="outline" className="transaction-form__button transaction-form__button--outline" onClick={() => {
+                                    setDialogOpenCredit(false);
+                                    setCreditErrors({});
+                                }}>
                                     Отмена
                                 </Button>
                             </div>
@@ -428,9 +553,9 @@ export default function Credits() {
                             nextPaymentDate={credit.nextPaymentDate}
                             endDate={credit.endDate}
                             actions={[
-                                { label: 'Погасить досрочно', onClick: () => { handleOpenEarlyRepaymentDialog(credit) } },
+                                { label: 'Погасить досрочно', onClick: () => { handleOpenEarlyRepaymentDialog(credit) }, disabled: credit.status === 'closed' },
                                 { label: 'График платежей', onClick: () => { } },
-                                { label: 'Изменить', onClick: () => { handleOpenEditDialog(credit) }, disabled: credit.status === 'closed' },
+                                { label: 'Внести платеж', onClick: () => { handleOpenEditDialog(credit) }, disabled: credit.status === 'closed' },
 
                                 ...(credit.status === 'closed' ?
                                     [{
@@ -471,62 +596,94 @@ export default function Credits() {
                             </DialogHeader>
                             <div className="credit-form">
                                 <div className="credit-form__field">
-                                    <Label htmlFor="debts-name">Название *</Label>
+                                    <Label htmlFor="debts-name">Название * {debtErrors.name && <span className="form-error-icon">⚠️</span>}</Label>
                                     <Input
                                         id="debts-name"
                                         placeholder="Например: Занял коллеге"
                                         value={debtsName}
-                                        onChange={(e) => setDebtsName(e.target.value)}
+                                        onChange={(e) => {
+                                            setDebtsName(e.target.value);
+                                            setDebtErrors(prev => ({ ...prev, name: '' }));
+                                        }}
+                                        className={debtErrors.name ? 'is-error' : ''}
                                     />
+                                    {debtErrors.name && <span className="form-error">{debtErrors.name}</span>}
                                 </div>
 
                                 <div className="credit-form__field">
-                                    <Label htmlFor="debt-person">Кому</Label>
+                                    <Label htmlFor="debt-person">Кому {debtErrors.person && <span className="form-error-icon">⚠️</span>}</Label>
                                     <Input
                                         id="debt-person"
                                         placeholder="Имя человека"
                                         value={debtPerson}
-                                        onChange={(e) => setDebtPerson(e.target.value)}
+                                        onChange={(e) => {
+                                            setDebtPerson(e.target.value);
+                                            setDebtErrors(prev => ({ ...prev, person: '' }));
+                                        }}
+                                        className={debtErrors.person ? 'is-error' : ''}
                                     />
+                                    {debtErrors.person && <span className="form-error">{debtErrors.person}</span>}
                                 </div>
 
                                 <div className="credit-form__field">
-                                    <Label htmlFor="debt-total-amount">Сумма *</Label>
+                                    <Label htmlFor="debt-total-amount">Сумма * {debtErrors.amount && <span className="form-error-icon">⚠️</span>}</Label>
                                     <Input
                                         id="debt-total-amount"
                                         placeholder="0"
                                         type="number"
+                                        step="0.01"
+                                        min="0"
+                                        max="999999999"
                                         value={debtAmount}
-                                        onChange={(e) => setDebtAmount(e.target.value)}
+                                        onChange={(e) => {
+                                            setDebtAmount(e.target.value);
+                                            setDebtErrors(prev => ({ ...prev, amount: '' }));
+                                        }}
+                                        className={debtErrors.amount ? 'is-error' : ''}
                                     />
+                                    {debtErrors.amount && <span className="form-error">{debtErrors.amount}</span>}
                                 </div>
 
                                 <div className="credit-form__row">
                                     <div className="credit-form__field">
-                                        <Label htmlFor="debt-start-date">Дата выдачи</Label>
+                                        <Label htmlFor="debt-start-date">Дата выдачи * {debtErrors.startDate && <span className="form-error-icon">⚠️</span>}</Label>
                                         <Input
                                             id="debt-start-date"
                                             type="date"
                                             value={debtStartDate}
-                                            onChange={(e) => setDebtStartDate(e.target.value)}
+                                            onChange={(e) => {
+                                                setDebtStartDate(e.target.value);
+                                                setDebtErrors(prev => ({ ...prev, startDate: '' }));
+                                            }}
+                                            className={debtErrors.startDate ? 'is-error' : ''}
+
                                         />
+                                        {debtErrors.startDate && <span className="form-error">{debtErrors.startDate}</span>}
                                     </div>
                                     <div className="credit-form__field">
-                                        <Label htmlFor="debt-end-date">Срок возврата</Label>
+                                        <Label htmlFor="debt-end-date">Срок возврата {debtErrors.returnDate && <span className="form-error-icon">⚠️</span>}</Label>
                                         <Input
                                             id="debt-end-date"
                                             type="date"
                                             value={debtReturnDate}
-                                            onChange={(e) => setDebtReturnDate(e.target.value)}
+                                            onChange={(e) => {
+                                                setDebtReturnDate(e.target.value);
+                                                setDebtErrors(prev => ({ ...prev, returnDate: '' }));
+                                            }}
+                                            className={debtErrors.returnDate ? 'is-error' : ''}
                                         />
+                                        {debtErrors.returnDate && <span className="form-error">{debtErrors.returnDate}</span>}
                                     </div>
                                 </div>
 
                                 <div className="transaction-form__buttons">
                                     <Button type="submit" className="transaction-form__button transaction-form__button--primary" onClick={handleAddDebt}>
-                                        Добавить
+                                        Добавить долг
                                     </Button>
-                                    <Button type="button" variant="outline" className="transaction-form__button transaction-form__button--outline" onClick={() => setDialogOpenDebts(false)}>
+                                    <Button type="button" variant="outline" className="transaction-form__button transaction-form__button--outline" onClick={() => {
+                                        setDialogOpenDebts(false);
+                                        setDebtErrors({});
+                                    }}>
                                         Отмена
                                     </Button>
                                 </div>
@@ -610,7 +767,7 @@ export default function Credits() {
                                                 <Trash2 size={16} style={{ color: '#ff0000' }} />
                                             </Button>
                                         )}
-                                    </div> 
+                                    </div>
                                 </div>
                             </CardContent>
                         </Card>
@@ -628,11 +785,14 @@ export default function Credits() {
                     </DialogHeader>
                     <div className="credit-form">
                         <div className="credit-form__field">
-                            <Label htmlFor="edit-credit-name">Название *</Label>
+                            <Label htmlFor="edit-credit-name">Название</Label>
                             <Input
                                 id="edit-credit-name"
                                 value={editForm.name}
-                                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                                onChange={(e) => { 
+                                    setEditForm({ ...editForm, name: e.target.value });
+                                }}
+                                disabled
                             />
                         </div>
 
@@ -646,14 +806,19 @@ export default function Credits() {
                                 </div>
                             </div>
                             <div className="credit-form__field">
-                                <Label htmlFor="edit-payment-amount">Сумма платежа (₽)</Label>
+                                <Label htmlFor="edit-payment-amount">Сумма платежа (₽) * {creditErrors.payment && <span className="form-error-icon">⚠️</span>}</Label>
                                 <Input
                                     id="edit-payment-amount"
                                     type="number"
                                     placeholder="0"
                                     value={editForm.paymentAmount}
-                                    onChange={(e) => setEditForm({ ...editForm, paymentAmount: e.target.value })}
+                                    onChange={(e) => {
+                                        setEditForm({ ...editForm, paymentAmount: e.target.value })
+                                        setCreditErrors(prev => ({ ...prev, payment: '' }));
+                                    }}
+                                    className={creditErrors.payment ? 'is-error' : ''}
                                 />
+                                {creditErrors.payment && <span className="form-error">{creditErrors.payment}</span>}
                             </div>
                         </div>
 
@@ -666,38 +831,8 @@ export default function Credits() {
                             </div>
                         )}
 
+                        
                         <div className="credit-form__row">
-                            <div className="credit-form__field">
-                                <Label htmlFor="edit-interest-rate">Процентная ставка (%)</Label>
-                                <Input
-                                    id="edit-interest-rate"
-                                    type="number"
-                                    step="0.1"
-                                    value={editForm.interestRate}
-                                    onChange={(e) => setEditForm({ ...editForm, interestRate: e.target.value })}
-                                />
-                            </div>
-                            <div className="credit-form__field">
-                                <Label htmlFor="edit-monthly-payment">Ежемесячный платёж</Label>
-                                <Input
-                                    id="edit-monthly-payment"
-                                    type="number"
-                                    value={editForm.monthlyPayment}
-                                    onChange={(e) => setEditForm({ ...editForm, monthlyPayment: e.target.value })}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="credit-form__row">
-                            <div className="credit-form__field">
-                                <Label htmlFor="edit-next-payment">Следующий платёж</Label>
-                                <Input
-                                    id="edit-next-payment"
-                                    type="date"
-                                    value={editForm.nextPaymentDate}
-                                    onChange={(e) => setEditForm({ ...editForm, nextPaymentDate: e.target.value })}
-                                />
-                            </div>
                             <div className="credit-form__field">
                                 <Label htmlFor="edit-end-date">Дата окончания</Label>
                                 <Input
@@ -705,6 +840,7 @@ export default function Credits() {
                                     type="date"
                                     value={editForm.endDate}
                                     onChange={(e) => setEditForm({ ...editForm, endDate: e.target.value })}
+                                    disabled
                                 />
                             </div>
                         </div>

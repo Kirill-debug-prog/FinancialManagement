@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CradTitle } from '../../components/ui/ca
 import { Button } from '../../components/ui/button/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/table/table';
 import { Plus, Filter, Download, Edit, Trash2, Search } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../../components/ui/dialog_/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../../components/ui/dialog_/dialog';
 import { Input } from '../../components/ui/input_data/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select/select';
 import { Badge } from '../../components/ui/badge/badge';
@@ -16,6 +16,7 @@ import "./Transactions.scss"
 
 export default function Transactions() {
     const [dialogOpen, setDialogOpen] = useState(false)
+    const [editTransaction, setEditTransaction] = useState(null);
     const [filterType, setFilterType] = useState('all')
     const [filterAccount, setFilterAccount] = useState('all')
     const [searchQuery, setsearchQuery] = useState('')
@@ -103,7 +104,13 @@ export default function Transactions() {
 
     const handleTransactionCreated = () => {
         setDialogOpen(false);
+        setEditTransaction(null);
         fetchTransactions();
+    };
+
+    const handleTransactionEdited = (transaction) => {
+        setEditTransaction(transaction);
+        setDialogOpen(true);
     };
 
     if (loading) {
@@ -130,9 +137,12 @@ export default function Transactions() {
 
                         <DialogContent className="transactions__dialog">
                             <DialogHeader>
-                                <DialogTitle>Новая операция</DialogTitle>
+                                <DialogTitle>{editTransaction ? 'Редактировать операцию' : 'Новая операция'}</DialogTitle>
+                                <DialogDescription>
+                                    {editTransaction ? 'Отредактируйте данные операции' : 'Заполните данные новой операции'}
+                                </DialogDescription>
                             </DialogHeader>
-                            <TransactionForm onClose={() => setDialogOpen(false)} onCreated={handleTransactionCreated} />
+                            <TransactionForm onClose={() => setDialogOpen(false)} onCreated={handleTransactionCreated} initialData={editTransaction} />
                         </DialogContent>
                     </Dialog>
                 </div>
@@ -267,7 +277,7 @@ export default function Transactions() {
                                         </TableCell>
                                         <TableCell>
                                             <div className="transactions__row-actions">
-                                                <Button variant="transparent" className="transactions__card-btn" aria-label="Редактировать">
+                                                <Button variant="transparent" className="transactions__card-btn" aria-label="Редактировать" onClick={() => handleTransactionEdited(t)}>
                                                     <Edit className="icon" />
                                                 </Button>
                                                 <Button variant="transparent" className="transactions__card-btn" aria-label="Удалить" onClick={() => handleDelete(t.id)}>

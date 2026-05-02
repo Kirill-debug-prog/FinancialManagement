@@ -6,13 +6,14 @@ import { Input } from '../input_data/input'
 import Textarea from "../textarea/textarea";
 import { Button } from "../button/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../select/select";
+import { AlertCircle } from 'lucide-react';
 import { getCategories } from '../../../api/categories';
 import { getAccounts } from '../../../api/accounts';
 import { getCurrencies } from '../../../api/currencies';
-import { createTransaction } from '../../../api/transactions';
+import { createTransaction, updateTransaction } from '../../../api/transactions';
 import './transactionForm.scss'
 
-export default function TransactionForm({ onClose, onCreated }) {
+export default function TransactionForm({ onClose, onCreated, initialData }) {
     const [type, setType] = useState('expense')
     const [amount, setAmount] = useState('')
     const [category, setCategory] = useState('')
@@ -27,6 +28,7 @@ export default function TransactionForm({ onClose, onCreated }) {
     const [accounts, setAccounts] = useState([])
     const [currencies, setCurrencies] = useState([])
     const [loading, setLoading] = useState(false)
+    const [errors, setErrors] = useState({})
 
     useEffect(() => {
         const fetchData = async () => {
@@ -48,33 +50,132 @@ export default function TransactionForm({ onClose, onCreated }) {
         fetchData();
     }, []);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    useEffect(() => {
+        if (!initialData) return;
+
+        setAmount(initialData.amount || '');
+        setCategory(initialData.category || '');
+        setAccount(initialData.account || '');
+        setType(initialData.type || '');
+    }, [initialData]);
+
+    const getAccountBalance = (accountId) => {
+        const acc = accounts.find(a => a.id === accountId);
+        return acc ? acc.balance : 0;
+    };
+
+    const validateForm = () => {
+        const newErrors = {};
+        const amountNum = parseFloat(amount);
+        const selectedDate = new Date(date);
+        const today = new Date();
 
         if (type === 'transfer') {
-            if (!amount || !fromAccount || !toAccount) {
-                toast.error('Заполните обязательные поля');
-                return;
+
+            if (isNaN(amountNum) || amountNum <= 0) {
+                newErrors.amount = 'Сумма должна быть больше нуля';
+                return newErrors;
             }
-            if (fromAccount === toAccount) {
-                toast.error('Счета должны различаться');
-                return;
+
+            if (amountNum > 999_999_999) {
+                newErrors.amount = 'Сумма не может превышать 999,999,999';
+                return newErrors;
+            }
+
+            if(!account) {
+                newErrors.account = 'Пожалуйста, выберите счёт';
+                return newErrors;
+            }
+
+            // Проверка баланса для трансфера
+            const fromAccountBalance = getAccountBalance(fromAccount);
+            if (fromAccountBalance < amountNum) {
+                newErrors.amount = `Недостаточно средств. Баланс: ${fromAccountBalance.toLocaleString('ru-RU')} ₽, требуется: ${amountNum.toLocaleString('ru-RU')} ₽`;
+                return newErrors;
+            }
+
+            // Валидация даты
+            if (selectedDate > today) {
+                newErrors.date = 'Дата не может быть в будущем';
+                return newErrors;
             }
         } else {
-            if (!amount || !category || !account) {
-                toast.error('Заполните обязательные поля');
-                return;
+
+            // Валидация формата числа
+            if (isNaN(amountNum) || amountNum.toString() !== amount) {
+                newErrors.amount = 'Введите корректную сумму';
+                return newErrors;
+            }
+
+            if (amountNum <= 0) {
+                newErrors.amount = 'Сумма должна быть больше нуля';
+                return newErrors;
+            }
+
+            if (amountNum > 999_999_999) {
+                newErrors.amount = 'Сумма не может превышать 999,999,999';
+                return newErrors;
+            }
+            
+            if (!category) {
+                newErrors.category = 'Пожалуйста, выберите категорию';
+                return newErrors;
+            }
+
+            if(!account) {
+                newErrors.account = 'Пожалуйста, выберите счёт';
+                return newErrors;
+            }
+
+            // Проверка баланса для расходов
+            if (type === 'expense') {
+                const accountBalance = getAccountBalance(account);
+                if (accountBalance < amountNum) {
+                    newErrors.amount = `Недостаточно средств. Баланс: ${accountBalance.toLocaleString('ru-RU')} ₽, требуется: ${amountNum.toLocaleString('ru-RU')} ₽`;
+                    return newErrors;
+                }
+            }
+
+            // Валидация даты
+            if (selectedDate > today) {
+                newErrors.date = 'Дата не может быть в будущем';
+                return newErrors;
+            }
+
+            // Валидация описания
+            if (description.length > 1000) {
+                newErrors.description = 'Описание не может быть длиннее 1000 символов';
+                return newErrors;
             }
         }
 
+        return newErrors;
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        // Валидация перед отправкой
+        const validationErrors = validateForm();
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            if (validationErrors.general) {
+                toast.error(validationErrors.general);
+            } else {
+                const firstError = Object.values(validationErrors)[0];
+                toast.error('❌ ' + firstError);
+            }
+            return;
+        }
+
+        setErrors({});
         setLoading(true);
+
         try {
             if (type === 'transfer') {
-                const fromAcc = accounts.find(a => a.id === fromAccount);
                 const toAcc = accounts.find(a => a.id === toAccount);
                 const curr = currencies[0];
 
-                // Expense from source
                 await createTransaction({
                     accountId: fromAccount,
                     type: 'transfer',
@@ -84,70 +185,127 @@ export default function TransactionForm({ onClose, onCreated }) {
                     note: description || `Перевод на ${toAcc?.name || 'счёт'}`,
                 });
 
-                toast.success('Перевод создан');
+                toast.success('✅ Перевод создан успешно');
             } else {
-                const acc = accounts.find(a => a.id === account);
                 const curr = currencies[0];
 
-                await createTransaction({
-                    accountId: account,
-                    categoryId: category,
-                    type,
-                    amount: parseFloat(amount),
-                    currencyId: curr?.id,
-                    date: new Date(date).toISOString(),
-                    note: description,
-                });
-
-                toast.success('Операция успешно добавлена');
+                if (initialData?.id) {
+                    // Обновление
+                    await updateTransaction(initialData.id, {
+                        accountId: account,
+                        categoryId: category,
+                        type,
+                        amount: parseFloat(amount),
+                        currencyId: curr?.id,
+                        date: new Date(date).toISOString(),
+                        note: description,
+                    });
+                    toast.success('✅ Операция успешно обновлена');
+                } else {
+                    // Создание
+                    await createTransaction({
+                        accountId: account,
+                        categoryId: category,
+                        type,
+                        amount: parseFloat(amount),
+                        currencyId: curr?.id,
+                        date: new Date(date).toISOString(),
+                        note: description,
+                    });
+                    toast.success('✅ Операция успешно добавлена');
+                }
             }
 
             if (onCreated) onCreated();
             else onClose();
         } catch (err) {
-            toast.error(err.message || 'Ошибка создания операции');
+            // Обработка детальных ошибок от бэка
+            if (err.message) {
+                if (err.message.includes('Недостаточно средств')) {
+                    setErrors({ amount: err.message });
+                    toast.error('❌ ' + err.message);
+                } else if (err.message.includes('Категория')) {
+                    setErrors({ category: err.message });
+                    toast.error('❌ ' + err.message);
+                } else {
+                    toast.error('❌ ' + (err.message || 'Ошибка создания операции'));
+                }
+            } else {
+                toast.error('❌ Ошибка создания операции');
+            }
         } finally {
             setLoading(false);
         }
     }
 
     const currentCategories = type === 'income' ? incomeCategories : expenseCategories;
+    const selectedAccountBalance = account ? getAccountBalance(account) : 0;
+    const selectedFromAccountBalance = fromAccount ? getAccountBalance(fromAccount) : 0;
 
     return (
         <form onSubmit={handleSubmit} className="transaction-form">
-            <Tabs value={type} onValueChange={(v) => { setType(v); setCategory(''); setAccount(''); }}>
+            <Tabs value={type} onValueChange={(v) => { 
+                setType(v); 
+                setCategory(''); 
+                setAccount('');
+                setFromAccount('');
+                setToAccount('');
+                setErrors({});
+            }}>
                 <TabsList className="transaction-form__tabs-list">
                     <TabsTrigger value="expense" className="transaction-form__tab">Расход</TabsTrigger>
                     <TabsTrigger value="income" className="transaction-form__tab">Доход</TabsTrigger>
                     <TabsTrigger value="transfer" className="transaction-form__tab">Перевод</TabsTrigger>
                 </TabsList>
 
+                {/* EXPENSE TAB */}
                 <TabsContent value='expense' className="transaction-form__section">
                     <div className="transaction-form__row">
                         <div className="transaction-form__field">
-                            <Label htmlFor="amount">Сумма *</Label>
+                            <Label htmlFor="amount">Сумма * {errors.amount && <span className="form-error-icon">⚠️</span>}</Label>
                             <Input
                                 id="amount"
                                 type="number"
                                 placeholder="0"
+                                step="0.01"
+                                min="0"
+                                max="999999999"
                                 value={amount}
-                                onChange={(e) => setAmount(e.target.value)}
+                                onChange={(e) => {
+                                    setAmount(e.target.value);
+                                    setErrors(prev => ({ ...prev, amount: '' }));
+                                }}
+                                className={errors.amount ? 'is-error' : ''}
                             />
+                            {errors.amount && <span className="form-error">{errors.amount}</span>}
+                            {account && !errors.amount && (
+                                <div className={`balance-info ${selectedAccountBalance < parseFloat(amount || 0) && amount ? 'is-warning' : ''}`}>
+                                    💰 Баланс счета: <strong>{selectedAccountBalance.toLocaleString('ru-RU')} ₽</strong>
+                                </div>
+                            )}
                         </div>
                         <div className="transaction-form__field">
-                            <Label htmlFor="date">Дата *</Label>
+                            <Label htmlFor="date">Дата * {errors.date && <span className="form-error-icon">⚠️</span>}</Label>
                             <Input
                                 id="date"
                                 type="date"
                                 value={date}
-                                onChange={(e) => setDate(e.target.value)}
+                                onChange={(e) => {
+                                    setDate(e.target.value);
+                                    setErrors(prev => ({ ...prev, date: '' }));
+                                }}
+                                className={errors.date ? 'is-error' : ''}
                             />
+                            {errors.date && <span className="form-error">{errors.date}</span>}
                         </div>
                     </div>
 
                     <div className="transaction-form__field">
-                        <Label htmlFor="category">Категория *</Label>
-                        <Select value={category} onValueChange={setCategory}>
+                        <Label htmlFor="category">Категория * {errors.category && <span className="form-error-icon">⚠️</span>}</Label>
+                        <Select value={category} onValueChange={(val) => {
+                            setCategory(val);
+                            setErrors(prev => ({ ...prev, category: '' }));
+                        }}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Выберите категорию" />
                             </SelectTrigger>
@@ -157,11 +315,15 @@ export default function TransactionForm({ onClose, onCreated }) {
                                 ))}
                             </SelectContent>
                         </Select>
+                        {errors.category && <span className="form-error">{errors.category}</span>}
                     </div>
 
                     <div className="transaction-form__field">
                         <Label htmlFor="account">Счёт *</Label>
-                        <Select value={account} onValueChange={setAccount}>
+                        <Select value={account} onValueChange= {(val) => {
+                            setAccount(val);
+                            setErrors(prev => ({ ...prev, account: '' }));
+                        }}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Выберите счёт" />
                             </SelectTrigger>
@@ -171,46 +333,77 @@ export default function TransactionForm({ onClose, onCreated }) {
                                 ))}
                             </SelectContent>
                         </Select>
-
-                        <div className="transaction-form__field">
-                            <Label htmlFor="description">Описание </Label>
-                            <Textarea
-                                id="description"
-                                placeholder="Дополнительная информация..."
-                                value={description}
-                                onChange={(e) => setDescription(e.target.value)}
-                                rows={3}
-                            />
-                        </div>
+                        {errors.account && <span className="form-error">{errors.account}</span>}
                     </div>
+
+                    <div className="transaction-form__field">
+                        <Label htmlFor="description">Описание</Label>
+                        <Textarea
+                            id="description"
+                            placeholder="Дополнительная информация..."
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            rows={3}
+                            maxLength={1000}
+                        />
+                        <span className="text-secondary" style={{ fontSize: '0.75rem', color: '#999' }}>
+                            {description.length}/1000
+                        </span>
+                    </div>
+
+                    <Button 
+                        type="submit" 
+                        disabled={loading}
+                        className="transaction-form__submit"
+                        style={{ marginTop: '1rem' }}
+                    >
+                        {loading ? '⏳ Загрузка...' : 'Добавить расход'}
+                    </Button>
                 </TabsContent>
 
+                {/* INCOME TAB */}
                 <TabsContent value="income" className="transaction-form__section">
                     <div className="transaction-form__row">
                         <div className="transaction-form__field">
-                            <Label htmlFor="amount-income">Сумма *</Label>
+                            <Label htmlFor="amount-income">Сумма * {errors.amount && <span className="form-error-icon">⚠️</span>}</Label>
                             <Input
                                 id="amount-income"
                                 type="number"
                                 placeholder="0"
+                                step="0.01"
+                                min="0"
+                                max="999999999"
                                 value={amount}
-                                onChange={(e) => setAmount(e.target.value)}
+                                onChange={(e) => {
+                                    setAmount(e.target.value);
+                                    setErrors(prev => ({ ...prev, amount: '' }));
+                                }}
+                                className={errors.amount ? 'is-error' : ''}
                             />
+                            {errors.amount && <span className="form-error">{errors.amount}</span>}
                         </div>
                         <div className="transaction-form__field">
-                            <Label htmlFor="date-income">Дата *</Label>
+                            <Label htmlFor="date-income">Дата * {errors.date && <span className="form-error-icon">⚠️</span>}</Label>
                             <Input
                                 id="date-income"
                                 type="date"
                                 value={date}
-                                onChange={(e) => setDate(e.target.value)}
+                                onChange={(e) => {
+                                    setDate(e.target.value);
+                                    setErrors(prev => ({ ...prev, date: '' }));
+                                }}
+                                className={errors.date ? 'is-error' : ''}
                             />
+                            {errors.date && <span className="form-error">{errors.date}</span>}
                         </div>
                     </div>
 
                     <div className="transaction-form__field">
-                        <Label htmlFor="category-income">Категория *</Label>
-                        <Select value={category} onValueChange={setCategory}>
+                        <Label htmlFor="category-income">Категория * {errors.category && <span className="form-error-icon">⚠️</span>}</Label>
+                        <Select value={category} onValueChange={(val) => {
+                            setCategory(val);
+                            setErrors(prev => ({ ...prev, category: '' }));
+                        }}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Выберите категорию" />
                             </SelectTrigger>
@@ -220,11 +413,15 @@ export default function TransactionForm({ onClose, onCreated }) {
                                 ))}
                             </SelectContent>
                         </Select>
+                        {errors.category && <span className="form-error">{errors.category}</span>}
                     </div>
 
                     <div className="transaction-form__field">
                         <Label htmlFor="account-income">Счёт *</Label>
-                        <Select value={account} onValueChange={setAccount}>
+                        <Select value={account} onValueChange={(val) => {
+                            setAccount(val);
+                            setErrors(prev => ({ ...prev, account: '' }));
+                        }}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Выберите счёт" />
                             </SelectTrigger>
@@ -234,6 +431,7 @@ export default function TransactionForm({ onClose, onCreated }) {
                                 ))}
                             </SelectContent>
                         </Select>
+                        {errors.account && <span className="form-error">{errors.account}</span>}
                     </div>
 
                     <div className="transaction-form__field">
@@ -244,82 +442,134 @@ export default function TransactionForm({ onClose, onCreated }) {
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             rows={3}
+                            maxLength={1000}
                         />
+                        <span className="text-secondary" style={{ fontSize: '0.75rem', color: '#999' }}>
+                            {description.length}/1000
+                        </span>
                     </div>
+
+                    <Button 
+                        type="submit" 
+                        disabled={loading}
+                        className="transaction-form__submit"
+                        style={{ marginTop: '1rem' }}
+                    >
+                        {loading ? '⏳ Загрузка...' : 'Добавить доход'}
+                    </Button>
                 </TabsContent>
 
+                {/* TRANSFER TAB */}
                 <TabsContent value="transfer" className="transaction-form__section">
+                    <div className="transaction-form__field">
+                        <Label htmlFor="from-account">Со счета * {errors.account && <span className="form-error-icon">⚠️</span>}</Label>
+                        <Select value={fromAccount} onValueChange={(val) => {
+                            setFromAccount(val);
+                            setErrors(prev => ({ ...prev, account: '' }));
+                        }}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Выберите счет-отправитель" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {accounts.map(a => (
+                                    <SelectItem key={a.id} value={a.id}>
+                                        {a.name} ({a.balance.toLocaleString('ru-RU')} ₽)
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        {/* Показать баланс */}
+                        {fromAccount && (
+                            <div className={`balance-info ${selectedFromAccountBalance < parseFloat(amount || 0) && amount ? 'is-error' : ''}`}>
+                                💰 Баланс: <strong>{selectedFromAccountBalance.toLocaleString('ru-RU')} ₽</strong>
+                            </div>
+                        )}
+                        {errors.account && <span className="form-error">{errors.account}</span>}
+                    </div>
+
                     <div className="transaction-form__row">
                         <div className="transaction-form__field">
-                            <Label htmlFor="amount-transfer">Сумма *</Label>
+                            <Label htmlFor="amount-transfer">Сумма * {errors.amount && <span className="form-error-icon">⚠️</span>}</Label>
                             <Input
                                 id="amount-transfer"
                                 type="number"
                                 placeholder="0"
+                                step="0.01"
+                                min="0"
+                                max="999999999"
                                 value={amount}
-                                onChange={(e) => setAmount(e.target.value)}
+                                onChange={(e) => {
+                                    setAmount(e.target.value);
+                                    setErrors(prev => ({ ...prev, amount: '' }));
+                                }}
+                                className={errors.amount ? 'is-error' : ''}
                             />
+                            {errors.amount && <span className="form-error">{errors.amount}</span>}
                         </div>
                         <div className="transaction-form__field">
-                            <Label htmlFor="date-transfer">Дата *</Label>
+                            <Label htmlFor="date-transfer">Дата * {errors.date && <span className="form-error-icon">⚠️</span>}</Label>
                             <Input
                                 id="date-transfer"
                                 type="date"
                                 value={date}
-                                onChange={(e) => setDate(e.target.value)}
+                                onChange={(e) => {
+                                    setDate(e.target.value);
+                                    setErrors(prev => ({ ...prev, date: '' }));
+                                }}
+                                className={errors.date ? 'is-error' : ''}
                             />
+                            {errors.date && <span className="form-error">{errors.date}</span>}
                         </div>
                     </div>
 
                     <div className="transaction-form__field">
-                        <Label htmlFor="from-account">Со счёта *</Label>
-                        <Select value={fromAccount} onValueChange={setFromAccount}>
+                        <Label htmlFor="to-account">На счет * {errors.account && <span className="form-error-icon">⚠️</span>}</Label>
+                        <Select value={toAccount} onValueChange={(val) => {
+                            setToAccount(val);
+                            setErrors(prev => ({ ...prev, account: '' }));
+                        }}>
                             <SelectTrigger>
-                                <SelectValue placeholder="Выберите счёт" />
+                                <SelectValue placeholder="Выберите счет-получатель" />
                             </SelectTrigger>
                             <SelectContent>
-                                {accounts.map(a => (
-                                    <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>
-                                ))}
+                                {accounts
+                                    .filter(a => a.id !== fromAccount)
+                                    .map(a => (
+                                        <SelectItem key={a.id} value={a.id}>
+                                            {a.name}
+                                        </SelectItem>
+                                    ))
+                                }
                             </SelectContent>
                         </Select>
-                    </div>
-
-                    <div className="transaction-form__field">
-                        <Label htmlFor="to-account">На счёт *</Label>
-                        <Select value={toAccount} onValueChange={setToAccount}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Выберите счёт" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {accounts.map(a => (
-                                    <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                        {errors.account && <span className="form-error">{errors.account}</span>}
                     </div>
 
                     <div className="transaction-form__field">
                         <Label htmlFor="description-transfer">Описание</Label>
                         <Textarea
                             id="description-transfer"
-                            placeholder="Дополнительная информация..."
+                            placeholder="Причина перевода..."
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             rows={3}
+                            maxLength={500}
                         />
+                        <span className="text-secondary" style={{ fontSize: '0.75rem', color: '#999' }}>
+                            {description.length}/500
+                        </span>
                     </div>
+
+                    <Button 
+                        type="submit" 
+                        disabled={loading}
+                        className="transaction-form__submit"
+                        style={{ marginTop: '1rem' }}
+                    >
+                        {loading ? 'Загрузка...' : 'Выполнить перевод'}
+                    </Button>
                 </TabsContent>
             </Tabs>
-
-            <div className="transaction-form__buttons">
-                <Button type="submit" className="transaction-form__button transaction-form__button--primary" disabled={loading}>
-                    {loading ? 'Сохранение...' : 'Сохранить'}
-                </Button>
-                <Button type="button" variant="outline" className="transaction-form__button transaction-form__button--outline" onClick={onClose}>
-                    Отмена
-                </Button>
-            </div>
         </form>
-    )
+    );
 }
