@@ -20,13 +20,17 @@ export default function Accounts() {
     const [accountType, setAccountType] = useState('')
     const [currency, setCurrency] = useState('RUB')
     const [intialBalance, setInitialBalance] = useState('')
+    const [accountNameErrors, setAccountNameErrors] = useState('')
+    const [accountError, setAccountError] = useState({})
 
     const [editDialogOpen, setEditDialogOpen] = useState(false)
     const [editingAccountId, setEditingAccountId] = useState(null)
     const [editForm, setEditForm] = useState({ name: '', type: '' })
+    const [editNameErrors, setEditNameErrors] = useState('')
 
     const [transferDialogOpen, setTransferDialogOpen] = useState(false)
     const [transferForm, setTransferForm] = useState({ fromAccountId: null, toAccountId: null, amount: '' })
+    const [transferErrors, setTransferErrors] = useState({})
 
     const [accounts, setAccounts] = useState([])
     const [currencies, setCurrencies] = useState([])
@@ -51,19 +55,18 @@ export default function Accounts() {
         .reduce((total, account) => total + account.balance, 0)
 
     const handleAddAccount = async () => {
-        if (!accountName || !accountType) {
-            toast.error('Заполните обязательные поля')
-            return
+        // Полная валидация формы
+        const nameError = validateAccountName(accountName);
+        setAccountNameErrors(nameError);
+
+        const error = validateAccount();
+        if (Object.keys(error).length > 0) {
+            setAccountError(error);
+            toast.error('❌ ' + Object.values(error)[0]);
+            return;
         }
-        
-        const initialBalance = parseFloat(intialBalance) || 0;
-        
-        // Валидация на отрицательный баланс
-        if (initialBalance < 0) {
-            toast.error('Начальный баланс не может быть отрицательным')
-            return
-        }
-        
+        setAccountError({});
+
         try {
             const curr = currencies.find(c => c.code === currency);
             if (!curr) {
@@ -72,24 +75,67 @@ export default function Accounts() {
             }
             const iconMap = { card: '💳', cash: '💵', savings: '🏦', investment: '📈' };
             await createAccount({
-                name: accountName,
+                name: accountName.trim(),
                 icon: iconMap[accountType] || '💳',
                 sortOrder: accounts.length,
                 currencyId: curr.id,
-                initialBalance: initialBalance,
+                initialBalance: initialBalanceNum,
                 initialBalanceDate: new Date().toISOString(),
             });
-            toast.success('Счёт успешно добавлен')
-            setDialogOpen(false)
-            setAccountName('')
-            setAccountType('')
-            setCurrency('RUB')
-            setInitialBalance('')
+            toast.success('Счёт успешно добавлен');
+            setDialogOpen(false);
+            setAccountName('');
+            setAccountType('');
+            setCurrency('RUB');
+            setInitialBalance('');
+            setAccountNameErrors('');
             fetchData();
         } catch (err) {
-            toast.error(err.message || 'Ошибка создания счёта');
+            toast.error((err.message || 'Ошибка создания счёта'));
         }
-    }
+    };
+
+    // Валидация имени счета
+    const validateAccountName = (name) => {
+        const trimmed = name.trim();
+        if (!trimmed) {
+            return 'Название счёта не может быть пустым';
+        }
+        if (trimmed.length < 1) {
+            return 'Название счёта должно содержать хотя бы 1 символ';
+        }
+        if (trimmed.length > 100) {
+            return 'Название счёта не может быть длиннее 100 символов';
+        }
+        // Проверить на дубликаты
+        if (accounts.some(a => a.name.toLowerCase() === trimmed.toLowerCase())) {
+            return 'Счет с таким названием уже существует';
+        }
+        return '';
+    };
+
+    const validateAccount = () => {
+        const newErrors = {};
+
+        const num = Number(intialBalance);
+
+        if (intialBalance !== '' && Number.isNaN(num)) {
+            newErrors.initialBalance = 'Введите корректное число';
+        }
+        if (!Number.isNaN(num) && num < 0) {
+            newErrors.initialBalance = 'Начальный баланс не может быть отрицательным';
+        }
+        if (num > 999_999_999) {
+            newErrors.initialBalance = 'Начальный баланс не может превышать 999,999,999';
+        }
+        if (intialBalance === '' || num === 0) {
+            newErrors.initialBalance = 'Начальный баланс должен быть больше нуля';
+        }
+        if (!accountType) {
+            newErrors.accountType = 'Пожалуйста, выберите тип счёта';
+        }
+        return newErrors;
+    };
 
     const handleDelete = async (id) => {
         if (!confirm('Вы уверены, что хотите удалить этот счёт? Это действие нельзя отменить.')) {
@@ -116,25 +162,48 @@ export default function Accounts() {
             name: account.name,
             type: account.type
         });
+        setEditNameErrors('');
         setEditDialogOpen(true);
     };
 
     const handleSaveEditAccount = async () => {
-        if (!editForm.name) {
-            toast.error('Заполните название счёта');
+        // Валидация при редактировании
+        const nameError = validateEditAccountName(editForm.name, editingAccountId);
+        setEditNameErrors(nameError);
+
+        if (nameError) {
+            toast.error(nameError);
             return;
         }
+
         try {
             await updateAccount(editingAccountId, {
-                name: editForm.name,
+                name: editForm.name.trim(),
                 type: editForm.type
             });
-            toast.success('Счёт успешно обновлён');
+            toast.success('✅ Счёт успешно обновлён');
             setEditDialogOpen(false);
+            setEditNameErrors('');
             fetchData();
         } catch (err) {
-            toast.error(err.message || 'Ошибка обновления счёта');
+            toast.error('❌ ' + (err.message || 'Ошибка обновления счёта'));
         }
+    };
+
+    // Валидация имени счета при редактировании
+    const validateEditAccountName = (name, excludeId) => {
+        const trimmed = name.trim();
+        if (!trimmed) {
+            return 'Название счёта не может быть пустым';
+        }
+        if (trimmed.length > 100) {
+            return 'Название счёта не может быть длиннее 100 символов';
+        }
+        // Проверить на дубликаты (исключая текущий счет)
+        if (accounts.some(a => a.id !== excludeId && a.name.toLowerCase() === trimmed.toLowerCase())) {
+            return 'Счет с таким названием уже существует';
+        }
+        return '';
     };
 
     const handleOpenTransferDialog = (accountId) => {
@@ -143,38 +212,61 @@ export default function Accounts() {
             toAccountId: null,
             amount: ''
         });
+        setTransferErrors({});
         setTransferDialogOpen(true);
     };
 
     const handleSaveTransfer = async () => {
+        // Полная валидация трансфера
+        const newErrors = {};
+
         if (!transferForm.toAccountId || !transferForm.amount) {
-            toast.error('Заполните все поля');
-            return;
+            newErrors.general = 'Заполните все обязательные поля';
         }
 
         const amount = parseFloat(transferForm.amount);
-        if (amount <= 0) {
-            toast.error('Сумма должна быть больше нуля');
+
+        if (!transferForm.toAccountId){
+            newErrors.accounts = 'Пожалуйста, выберите счёт для перевода';
+        }
+        if (isNaN(amount) || amount <= 0) {
+            newErrors.amount = 'Сумма должна быть больше нуля';
+        }
+
+        if (amount > 999_999_999) {
+            newErrors.amount = 'Сумма не может превышать 999,999,999';
+        }
+
+        // Проверка баланса
+        const fromAccount = accounts.find(a => a.id === transferForm.fromAccountId);
+        if (fromAccount && amount > fromAccount.balance) {
+            newErrors.amount = `Недостаточно средств. Баланс: ${fromAccount.balance.toLocaleString('ru-RU')} ₽`;
+        }
+
+        if (transferForm.fromAccountId === transferForm.toAccountId) {
+            newErrors.accounts = 'Счета должны различаться';
+        }
+
+        if (Object.keys(newErrors).length > 0) {
+            setTransferErrors(newErrors);
+            const errorMsg = newErrors.general || newErrors.amount || newErrors.accounts || 'Ошибка в форме';
+            toast.error('❌ ' + errorMsg);
             return;
         }
 
-        const fromAccount = accounts.find(a => a.id === transferForm.fromAccountId);
-        if (!fromAccount || fromAccount.balance < amount) {
-            toast.error('Недостаточно средств на счёте');
-            return;
-        }
+        setTransferErrors({});
 
         try {
             const toAccount = accounts.find(a => a.id === transferForm.toAccountId);
             const curr = currencies.find(c => c.code === fromAccount.currency);
-            
+
             if (!curr) {
-                toast.error('Валюта не найдена');
+                toast.error('❌ Валюта не найдена');
                 return;
             }
 
             // Создаём две транзакции для трансфера
-            // Расход из счета-источника (Expense для уменьшения баланса)
+            // Расход из счета-источника
             await createTransaction({
                 accountId: transferForm.fromAccountId,
                 type: 'expense',
@@ -184,7 +276,7 @@ export default function Accounts() {
                 note: `Перевод на ${toAccount.name}`,
             });
 
-            // Доход на счет-получатель (Income для увеличения баланса)
+            // Доход на счет-получатель
             await createTransaction({
                 accountId: transferForm.toAccountId,
                 type: 'income',
@@ -194,11 +286,13 @@ export default function Accounts() {
                 note: `Перевод со счета ${fromAccount.name}`,
             });
 
-            toast.success(`Перевод ${amount.toLocaleString('ru-RU')} выполнен успешно`);
+            toast.success(`✅ Перевод ${amount.toLocaleString('ru-RU')} выполнен успешно`);
             setTransferDialogOpen(false);
+            setTransferForm({ fromAccountId: null, toAccountId: null, amount: '' });
+            setTransferErrors({});
             fetchData();
         } catch (err) {
-            toast.error(err.message || 'Ошибка при переводе');
+            toast.error('❌ ' + (err.message || 'Ошибка при переводе'));
         }
     };
 
@@ -241,17 +335,29 @@ export default function Accounts() {
                         </DialogHeader>
                         <div className="account__form">
                             <div className="account__form-field">
-                                <Label htmlFor="account-name">Название счёта *</Label>
+                                <Label htmlFor="account-name">
+                                    Название счёта * {accountNameErrors && <span className="form-error-icon">⚠️</span>}
+                                </Label>
                                 <Input
                                     id="account-name"
                                     placeholder="Например: Основная карта"
                                     value={accountName}
-                                    onChange={(e) => setAccountName(e.target.value)}
+                                    onChange={(e) => {
+                                        setAccountName(e.target.value);
+                                        setAccountNameErrors('');
+                                    }}
+                                    className={accountNameErrors ? 'is-error' : ''}
                                 />
+                                {accountNameErrors && (
+                                    <span className="form-error">{accountNameErrors}</span>
+                                )}
 
                                 <div className="account__from-field">
-                                    <Label htmlFor="account-type">Тип счёта *</Label>
-                                    <Select value={accountType} onValueChange={setAccountType}>
+                                    <Label htmlFor="account-type">Тип счёта * {accountError.accountType && <span className="form-error-icon">⚠️</span>}</Label>
+                                    <Select value={accountType} onValueChange={(val) => {
+                                        setAccountType(val);
+                                        setAccountError(prev => ({ ...prev, accountType: '' }));
+                                    }}>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Выберите тип" />
                                         </SelectTrigger>
@@ -262,6 +368,7 @@ export default function Accounts() {
                                             <SelectItem value="investment">Инвестиционный счёт</SelectItem>
                                         </SelectContent>
                                     </Select>
+                                    {accountError.accountType && <span className="form-error">{accountError.accountType}</span>}
                                 </div>
 
                                 <div className="account__form-row">
@@ -281,22 +388,33 @@ export default function Accounts() {
                                         </Select>
                                     </div>
                                     <div className="account__form-field">
-                                        <Label htmlFor="initial-balance">Начальный баланс</Label>
+                                        <Label htmlFor="initial-balance">Начальный баланс * {accountError.initialBalance && <span className="form-error-icon">⚠️</span>}</Label>
                                         <Input
                                             id="initial-balance"
                                             type="number"
                                             placeholder="0"
+                                            step="0.01"
+                                            min="0"
+                                            max="999999999"
                                             value={intialBalance}
-                                            onChange={(e) => setInitialBalance(e.target.value)}
+                                            onChange={(e) => {
+                                                setInitialBalance(e.target.value);
+                                                setAccountError(prev => ({ ...prev, initialBalance: '' }));
+                                            }}
+                                            className={accountError.initialBalance ? 'is-error' : ''}
                                         />
+                                        {accountError.initialBalance && <span className="form-error">{accountError.initialBalance}</span>}
                                     </div>
                                 </div>
 
                                 <div className="account__form-buttons">
                                     <Button onClick={handleAddAccount} className="flex-1">
-                                        Добавить
+                                        Добавить счёт
                                     </Button>
-                                    <Button variant="outline" className="flex-1" onClick={() => setDialogOpen(false)}>
+                                    <Button variant="outline" className="flex-1" onClick={() => {
+                                        setDialogOpen(false);
+                                        setAccountNameErrors('');
+                                    }}>
                                         Отмена
                                     </Button>
                                 </div>
@@ -370,12 +488,19 @@ export default function Accounts() {
                     </DialogHeader>
                     <div className="account__form">
                         <div className="account__form-field">
-                            <Label htmlFor="edit-account-name">Название счёта</Label>
+                            <Label htmlFor="edit-account-name">
+                                Название счёта {editNameErrors && <span className="form-error-icon">⚠️</span>}
+                            </Label>
                             <Input
                                 id="edit-account-name"
                                 value={editForm.name}
-                                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                                onChange={(e) => {
+                                    setEditForm({ ...editForm, name: e.target.value });
+                                    setEditNameErrors('');
+                                }}
+                                className={editNameErrors ? 'is-error' : ''}
                             />
+                            {editNameErrors && <span className="form-error">{editNameErrors}</span>}
                         </div>
                         <div className="account__form-field">
                             <Label htmlFor="edit-account-type">Тип счёта</Label>
@@ -395,7 +520,10 @@ export default function Accounts() {
                             <Button onClick={handleSaveEditAccount} className="flex-1">
                                 Сохранить
                             </Button>
-                            <Button variant="outline" className="flex-1" onClick={() => setEditDialogOpen(false)}>
+                            <Button variant="outline" className="flex-1" onClick={() => {
+                                setEditDialogOpen(false);
+                                setEditNameErrors('');
+                            }}>
                                 Отмена
                             </Button>
                         </div>
@@ -423,8 +551,14 @@ export default function Accounts() {
                         </div>
 
                         <div className="account__form-field">
-                            <Label htmlFor="transfer-to-account">На счёт</Label>
-                            <Select value={transferForm.toAccountId || ''} onValueChange={(value) => setTransferForm({ ...transferForm, toAccountId: value })}>
+                            <Label htmlFor="transfer-to-account">На счёт {transferErrors.accounts && <span className="form-error-icon">⚠️</span>}</Label>
+                            <Select
+                                value={transferForm.toAccountId || ''}
+                                onValueChange={(value) => {
+                                    setTransferForm({ ...transferForm, toAccountId: value });
+                                    setTransferErrors(prev => ({ ...prev, accounts: '' }));
+                                }}
+                            >
                                 <SelectTrigger>
                                     <SelectValue placeholder="Выберите счёт" />
                                 </SelectTrigger>
@@ -438,20 +572,31 @@ export default function Accounts() {
                                         ))}
                                 </SelectContent>
                             </Select>
+                            {transferErrors.accounts && <span className="form-error">{transferErrors.accounts}</span>}
                         </div>
 
                         <div className="account__form-field">
-                            <Label htmlFor="transfer-amount">Сумма (₽)</Label>
+                            <Label htmlFor="transfer-amount">
+                                Сумма (₽) * {transferErrors.amount && <span className="form-error-icon">⚠️</span>}
+                            </Label>
                             <Input
                                 id="transfer-amount"
                                 type="number"
                                 placeholder="0"
+                                step="0.01"
+                                min="0"
+                                max="999999999"
                                 value={transferForm.amount}
-                                onChange={(e) => setTransferForm({ ...transferForm, amount: e.target.value })}
+                                onChange={(e) => {
+                                    setTransferForm({ ...transferForm, amount: e.target.value });
+                                    setTransferErrors(prev => ({ ...prev, amount: '' }));
+                                }}
+                                className={transferErrors.amount ? 'is-error' : ''}
                             />
+                            {transferErrors.amount && <span className="form-error">{transferErrors.amount}</span>}
                         </div>
 
-                        {transferForm.amount && (
+                        {transferForm.amount && !transferErrors.amount && (
                             <div className="dialog-highlight-box">
                                 <p className="dialog-highlight-box__label">
                                     К переводу:
@@ -466,7 +611,10 @@ export default function Accounts() {
                             <Button onClick={handleSaveTransfer} className="flex-1">
                                 Перевести
                             </Button>
-                            <Button variant="outline" className="flex-1" onClick={() => setTransferDialogOpen(false)}>
+                            <Button variant="outline" className="flex-1" onClick={() => {
+                                setTransferDialogOpen(false);
+                                setTransferErrors({});
+                            }}>
                                 Отмена
                             </Button>
                         </div>

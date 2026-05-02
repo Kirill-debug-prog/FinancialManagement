@@ -45,3 +45,76 @@
     border-radius: 0.5rem;
     font-weight: 600;
 }
+
+/*Стили для валидации */
+
+.form-error {
+    font-size: 0.75rem;
+    color: #ef4444;
+    font-weight: 500;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+.form-error-icon {
+    margin-left: 0.5rem;
+    font-size: 1rem;
+}
+
+.is-error {
+    border-color: #ef4444 !important;
+    background-color: #fef2f2 !important;
+
+    &:focus {
+        border-color: #ef4444 !important;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+    }
+}
+
+.balance-info {
+    font-size: 0.875rem;
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    background-color: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #166534;
+    margin-top: 0.25rem;
+
+    strong {
+        font-weight: 600;
+        color: #15803d;
+    }
+
+    &.is-warning {
+        background-color: #fef3c7;
+        border-color: #fcd34d;
+        color: #92400e;
+
+        strong {
+            color: #d97706;
+        }
+    }
+
+    &.is-error {
+        background-color: #fef2f2;
+        border-color: #fecaca;
+        color: #991b1b;
+
+        strong {
+            color: #ef4444;
+        }
+    }
+}
+
+.transaction-form__submit {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+}

@@ -22,13 +22,80 @@ export default function Deposits() {
     const [depositStartDate, setDepositStartDate] = useState('')
     const [depositEndDate, setDepositEndDate] = useState('')
     const [depositCapitalization, setDepositCapitalization] = useState(false)
+    const [depositErrors, setDepositErrors] = useState({})
 
     const [replenishDialogOpen, setReplenishDialogOpen] = useState(false)
     const [replenishingDepositId, setReplenishingDepositId] = useState(null)
     const [replenishForm, setReplenishForm] = useState({ amount: '', replenishmentDate: '' })
+    const [replenishErrors, setReplenishErrors] = useState({})
 
     const [depositsData, setDepositsData] = useState([])
     const [loading, setLoading] = useState(true)
+
+    // Функции валидации для вклада
+    const validateDeposit = () => {
+        const newErrors = {};
+        const amount = parseFloat(depositAmount);
+        const rate = parseFloat(depositRate);
+
+        if (!dipositName || dipositName.trim().length === 0) {
+            newErrors.name = 'Название вклада не может быть пустым';
+        }
+        if (!depositType) {
+            newErrors.type = 'Выберите тип вклада';
+        }
+        if (isNaN(amount) || amount <= 0) {
+            newErrors.amount = 'Сумма должна быть больше нуля';
+        }
+        if (amount > 999_999_999) {
+            newErrors.amount = 'Сумма не может превышать 999,999,999';
+        }
+        if (isNaN(rate) || rate < 0 || rate > 100) {
+            newErrors.rate = 'Процентная ставка должна быть от 0 до 100';
+        }
+        if (!depositStartDate) {
+            newErrors.startDate = 'Укажите дату открытия вклада';
+        } else {
+            const startDate = new Date(depositStartDate);
+            const today = new Date();
+            if (startDate > today) {
+                newErrors.startDate = 'Дата открытия не может быть в будущем';
+            }
+        }
+        if (!depositEndDate) {
+            newErrors.endDate = 'Укажите дату окончания вклада';
+        } else if (depositStartDate) {
+            const startDate = new Date(depositStartDate);
+            const endDate = new Date(depositEndDate);
+            if (endDate < startDate) {
+                newErrors.endDate = 'Дата окончания не может быть раньше даты открытия';
+            }
+        }
+        return newErrors;
+    };
+
+    // Функции валидации для пополнения вклада
+    const validateReplenish = () => {
+        const newErrors = {};
+        const amount = parseFloat(replenishForm.amount);
+
+        if (isNaN(amount) || amount <= 0) {
+            newErrors.amount = 'Сумма должна быть больше нуля';
+        }
+        if (amount > 999_999_999) {
+            newErrors.amount = 'Сумма не может превышать 999,999,999';
+        }
+        if (!replenishForm.replenishmentDate) {
+            newErrors.date = 'Укажите дату пополнения';
+        } else {
+            const repDate = new Date(replenishForm.replenishmentDate);
+            const today = new Date();
+            if (repDate > today) {
+                newErrors.date = 'Дата пополнения не может быть в будущем';
+            }
+        }
+        return newErrors;
+    };
 
     const fetchData = async () => {
         try {
@@ -44,10 +111,14 @@ export default function Deposits() {
     useEffect(() => { fetchData(); }, []);
 
     const handleAddDeposit = async () => {
-        if (!dipositName) {
-            toast.error('Заполните обязательные поля')
-            return
+        // Полная валидация
+        const errors = validateDeposit();
+        if (Object.keys(errors).length > 0) {
+            setDepositErrors(errors);
+            toast.error('❌ ' + (Object.values(errors)[0]));
+            return;
         }
+        setDepositErrors({});
         try {
             await createDeposit({
                 name: dipositName,
@@ -100,10 +171,14 @@ export default function Deposits() {
     };
 
     const handleSaveReplenish = async () => {
-        if (!replenishForm.amount || parseFloat(replenishForm.amount) <= 0) {
-            toast.error('Введите корректную сумму пополнения');
+        // Полная валидация
+        const errors = validateReplenish();
+        if (Object.keys(errors).length > 0) {
+            setReplenishErrors(errors);
+            toast.error('❌ ' + (Object.values(errors)[0]));
             return;
         }
+        setReplenishErrors({});
 
         const deposit = depositsData.find(d => d.id === replenishingDepositId);
         if (!deposit) {
@@ -179,13 +254,18 @@ export default function Deposits() {
                         </DialogHeader>
                         <div className="deposits-form">
                             <div className="deposits-form__field">
-                                <Label htmlFor="deposits-name">Название *</Label>
+                                <Label htmlFor="deposits-name">Название * {depositErrors.name && <span className="form-error-icon">⚠️</span>}</Label>
                                 <Input
                                     id="deposits-name"
                                     placeholder="Например: Накопительный вклад"
                                     value={dipositName}
-                                    onChange={(e) => setDipositName(e.target.value)}
+                                    onChange={(e) => {
+                                        setDipositName(e.target.value);
+                                        setDepositErrors(prev => ({ ...prev, name: '' }));
+                                    }}
+                                    className={depositErrors.name ? 'is-error' : ''}
                                 />
+                                {depositErrors.name && <span className="form-error">{depositErrors.name}</span>}
                             </div>
 
                             <div className="deposits-form__field">
@@ -199,8 +279,11 @@ export default function Deposits() {
                             </div>
 
                             <div className="deposits-form__field">
-                                <Label htmlFor="deposits-type">Тип вклада *</Label>
-                                <Select value={depositType} onValueChange={setDepositType}>
+                                <Label htmlFor="deposits-type">Тип вклада * {depositErrors.type && <span className="form-error-icon">⚠️</span>}</Label>
+                                <Select value={depositType} onValueChange={(val) => {
+                                    setDepositType(val);
+                                    setDepositErrors(prev => ({ ...prev, type: '' }));
+                                }}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Выберите тип" />
                                     </SelectTrigger>
@@ -209,50 +292,76 @@ export default function Deposits() {
                                         <SelectItem value="replenishable">Пополняемый</SelectItem>
                                     </SelectContent>
                                 </Select>
+                                {depositErrors.type && <span className="form-error">{depositErrors.type}</span>}
                             </div>
 
                             <div className="deposits-form__row">
                                 <div className="deposits-form__field">
-                                    <Label htmlFor="deposit-total-amount">Сумма вклада</Label>
+                                    <Label htmlFor="deposit-total-amount">Сумма вклада {depositErrors.amount && <span className="form-error-icon">⚠️</span>}</Label>
                                     <Input
                                         id="deposit-total-amount"
                                         placeholder="0"
                                         type="number"
+                                        step="0.01"
+                                        min="0"
+                                        max="999999999"
                                         value={depositAmount}
-                                        onChange={(e) => setDepositAmount(e.target.value)}
+                                        onChange={(e) => {
+                                            setDepositAmount(e.target.value);
+                                            setDepositErrors(prev => ({ ...prev, amount: '' }));
+                                        }}
+                                        className={depositErrors.amount ? 'is-error' : ''}
                                     />
+                                    {depositErrors.amount && <span className="form-error">{depositErrors.amount}</span>}
                                 </div>
                                 <div className="deposits-form__field">
-                                    <Label htmlFor="deposit-interest-rate">Процентная ставка (%)</Label>
+                                    <Label htmlFor="deposit-interest-rate">Процентная ставка (%) {depositErrors.rate && <span className="form-error-icon">⚠️</span>}</Label>
                                     <Input
                                         id="deposit-interest-rate"
                                         placeholder="0"
                                         type="number"
                                         step="0.1"
+                                        min="0"
+                                        max="100"
                                         value={depositRate}
-                                        onChange={(e) => setDepositRate(e.target.value)}
+                                        onChange={(e) => {
+                                            setDepositRate(e.target.value);
+                                            setDepositErrors(prev => ({ ...prev, rate: '' }));
+                                        }}
+                                        className={depositErrors.rate ? 'is-error' : ''}
                                     />
+                                    {depositErrors.rate && <span className="form-error">{depositErrors.rate}</span>}
                                 </div>
                             </div>
 
                             <div className="deposits-form__row">
                                 <div className="deposits-form__field">
-                                    <Label htmlFor="deposit-start-date">Дата открытия *</Label>
+                                    <Label htmlFor="deposit-start-date">Дата открытия * {depositErrors.startDate && <span className="form-error-icon">⚠️</span>}</Label>
                                     <Input
                                         id="deposit-start-date"
                                         type="date"
                                         value={depositStartDate}
-                                        onChange={(e) => setDepositStartDate(e.target.value)}
+                                        onChange={(e) => {
+                                            setDepositStartDate(e.target.value);
+                                            setDepositErrors(prev => ({ ...prev, startDate: '' }));
+                                        }}
+                                        className={depositErrors.startDate ? 'is-error' : ''}
                                     />
+                                    {depositErrors.startDate && <span className="form-error">{depositErrors.startDate}</span>}
                                 </div>
                                 <div className="deposits-form__field">
-                                    <Label htmlFor="deposit-end-date">Дата окончания *</Label>
+                                    <Label htmlFor="deposit-end-date">Дата окончания * {depositErrors.endDate && <span className="form-error-icon">⚠️</span>}</Label>
                                     <Input
                                         id="deposit-end-date"
                                         type="date"
                                         value={depositEndDate}
-                                        onChange={(e) => setDepositEndDate(e.target.value)}
+                                        onChange={(e) => {
+                                            setDepositEndDate(e.target.value);
+                                            setDepositErrors(prev => ({ ...prev, endDate: '' }));
+                                        }}
+                                        className={depositErrors.endDate ? 'is-error' : ''}
                                     />
+                                    {depositErrors.endDate && <span className="form-error">{depositErrors.endDate}</span>}
                                 </div>
                             </div>
 
@@ -269,9 +378,12 @@ export default function Deposits() {
 
                             <div className="transaction-form__buttons">
                                 <Button type="submit" className="transaction-form__button transaction-form__button--primary" onClick={handleAddDeposit}>
-                                    Добавить
+                                    ➕ Добавить вклад
                                 </Button>
-                                <Button type="button" variant="outline" className="transaction-form__button transaction-form__button--outline" onClick={() => setDialogOpen(false)}>
+                                <Button type="button" variant="outline" className="transaction-form__button transaction-form__button--outline" onClick={() => {
+                                    setDialogOpen(false);
+                                    setDepositErrors({});
+                                }}>
                                     Отмена
                                 </Button>
                             </div>
@@ -405,26 +517,37 @@ export default function Deposits() {
                                 </div>
 
                                 <div className="credit-form__field">
-                                    <Label htmlFor="replenish-amount">Сумма пополнения (₽)</Label>
+                                    <Label htmlFor="replenish-amount">Сумма пополнения (₽) * {replenishErrors.amount && <span className="form-error-icon">⚠️</span>}</Label>
                                     <Input
                                         id="replenish-amount"
                                         placeholder="0"
                                         type="number"
                                         min="0"
                                         step="0.01"
+                                        max="999999999"
                                         value={replenishForm.amount}
-                                        onChange={(e) => setReplenishForm({ ...replenishForm, amount: e.target.value })}
+                                        onChange={(e) => {
+                                            setReplenishForm({ ...replenishForm, amount: e.target.value });
+                                            setReplenishErrors(prev => ({ ...prev, amount: '' }));
+                                        }}
+                                        className={replenishErrors.amount ? 'is-error' : ''}
                                     />
+                                    {replenishErrors.amount && <span className="form-error">{replenishErrors.amount}</span>}
                                 </div>
 
                                 <div className="credit-form__field">
-                                    <Label htmlFor="replenish-date">Дата пополнения</Label>
+                                    <Label htmlFor="replenish-date">Дата пополнения {replenishErrors.date && <span className="form-error-icon">⚠️</span>}</Label>
                                     <Input
                                         id="replenish-date"
                                         type="date"
                                         value={replenishForm.replenishmentDate}
-                                        onChange={(e) => setReplenishForm({ ...replenishForm, replenishmentDate: e.target.value })}
+                                        onChange={(e) => {
+                                            setReplenishForm({ ...replenishForm, replenishmentDate: e.target.value });
+                                            setReplenishErrors(prev => ({ ...prev, date: '' }));
+                                        }}
+                                        className={replenishErrors.date ? 'is-error' : ''}
                                     />
+                                    {replenishErrors.date && <span className="form-error">{replenishErrors.date}</span>}
                                 </div>
 
                                 {replenishForm.amount && (
