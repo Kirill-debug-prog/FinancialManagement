@@ -34,10 +34,41 @@
     @include respond(md) {
         row-gap: 0.25rem;
     }
+
+    &--error {
+        input {
+            border-color: #ef4444;
+            border-width: 2px;
+
+            &:focus {
+                outline: none;
+                border-color: #dc2626;
+                box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+            }
+        }
+    }
 }
 
 .data-container:nth-child(3) {
     justify-content: flex-start;
+}
+
+.form-error {
+    display: block;
+    color: #ef4444;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    margin-top: 0.25rem;
+    font-weight: 500;
+}
+
+.password-hint {
+    display: block;
+    color: #6b7280;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    margin-top: 0.25rem;
+    font-weight: 400;
 }
 
 .or-hr-wrapper {
