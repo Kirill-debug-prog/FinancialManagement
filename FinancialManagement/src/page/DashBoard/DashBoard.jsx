@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Plus, TrendingUp, TrendingDown, Wallet, Calendar } from 'lucide-react';
+import { Plus, TrendingUp, TrendingDown, Wallet, Calendar, RefreshCw } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../../components/ui/dialog_/dialog';
 import TransactionForm from '../../components/ui/TransactionForm/TransactionForm';
 import { getDashboardData } from '../../api/dashboard';
+import { invalidateTransactionsCache } from '../../api/cacheInvalidation';
 import { toast } from 'sonner';
 import './Dashboard.scss';
 
@@ -27,6 +28,7 @@ export default function Dashboard() {
 
     const handleTransactionCreated = () => {
         setDialogOpen(false);
+        invalidateTransactionsCache();
         fetchData();
     };
 

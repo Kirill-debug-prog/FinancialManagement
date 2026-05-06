@@ -7,11 +7,12 @@ import { Card, CardHeader, CardContent } from "../../components/ui/card/card";
 import { Label } from '../../components/ui/label/label';
 import { Input } from '../../components/ui/input_data/input'
 import { Button } from "../../components/ui/button/button";
-import { Plus, AlertCircle } from 'lucide-react';
+import { Plus, AlertCircle, RefreshCw } from 'lucide-react';
 import { toast } from "sonner";
 import { Trash2 } from 'lucide-react';
 import { getCredits, createCredit, updateCredit, deleteCredit } from '../../api/credits';
 import { getDebts, createDebt, updateDebt, deleteDebt } from '../../api/debts';
+import { invalidateCreditsDebtsCache } from '../../api/cacheInvalidation';
 import "./Credits.scss"
 
 export default function Credits() {
@@ -60,12 +61,6 @@ export default function Credits() {
         const rate = parseFloat(creditInterestRate);
         const payment = parseFloat(creditMonthlyPayment);
 
-        if (!creditName || creditName.trim().length === 0) {
-            newErrors.name = 'Название кредита не может быть пустым';
-        }
-        if (!creditType) {
-            newErrors.type = 'Выберите тип кредита';
-        }
         if (isNaN(totalAmount) || totalAmount <= 0) {
             newErrors.totalAmount = 'Сумма должна быть больше нуля';
         }
@@ -75,7 +70,7 @@ export default function Credits() {
         if (isNaN(rate) || rate < 0 || rate > 100) {
             newErrors.rate = 'Процентная ставка должна быть от 0 до 100';
         }
-        if (!payment && (isNaN(payment) || payment <= 0)) {
+        if (!payment || payment <= 0) {
             newErrors.payment = 'Ежемесячный платеж должен быть больше нуля';
         }
         if (creditEndDate) {
@@ -163,6 +158,7 @@ export default function Credits() {
             setCreditInterestRate('');
             setCreditMonthlyPayment('');
             setCreditEndDate('');
+            invalidateCreditsDebtsCache();
             fetchData();
         } catch (err) {
             toast.error(err.message || 'Ошибка добавления кредита');
@@ -194,6 +190,7 @@ export default function Credits() {
             setDebtPerson('');
             setDebtStartDate('');
             setDebtReturnDate('');
+            invalidateCreditsDebtsCache();
             fetchData();
         } catch (err) {
             toast.error(err.message || 'Ошибка добавления долга');
@@ -218,6 +215,7 @@ export default function Credits() {
             });
 
             toast.success('Долг отмечен как возвращённый');
+            invalidateCreditsDebtsCache();
             fetchData();
         } catch (err) {
             toast.error(err.response?.data?.message || 'Ошибка обновления');
@@ -231,6 +229,7 @@ export default function Credits() {
         try {
             await deleteDebt(debtId);
             toast.success('Долг успешно удалён');
+            invalidateCreditsDebtsCache();
             fetchData();
         } catch (err) {
             toast.error(err.response?.data?.message || 'Ошибка удаления');
@@ -313,6 +312,7 @@ export default function Credits() {
             }
 
             setEditDialogOpen(false);
+            invalidateCreditsDebtsCache();
             fetchData();
         } catch (err) {
             toast.error(err.message || 'Ошибка обновления кредита');
@@ -327,6 +327,7 @@ export default function Credits() {
             await deleteCredit(id);
             setCreditsData(prev => prev.filter(c => c.id !== id));
             toast.success('Кредит успешно удалён');
+            invalidateCreditsDebtsCache();
             fetchData();
         } catch (err) {
             toast.error(err.message || 'Ошибка удаления кредита');
@@ -353,6 +354,7 @@ export default function Credits() {
             });
             toast.success(`Кредит полностью погашен. Выплачено: ${credit.remainingAmount.toLocaleString('ru-RU')} ₽`);
             setEarlyRepaymentDialogOpen(false);
+            invalidateCreditsDebtsCache();
             fetchData();
         } catch (err) {
             toast.error(err.message || 'Ошибка досрочного погашения');

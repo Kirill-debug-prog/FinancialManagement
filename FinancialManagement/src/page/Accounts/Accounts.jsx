@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../../components/ui/dialog_/dialog';
-import { Plus, CreditCard, Wallet as WalletIcon, DollarSign, Euro, Edit, Trash2, ArrowRightLeft } from 'lucide-react';
+import { Plus, CreditCard, Wallet as WalletIcon, DollarSign, Euro, Edit, Trash2, ArrowRightLeft, RefreshCw } from 'lucide-react';
 import { Card, CardContent, CardHeader, CradTitle } from '../../components/ui/card/card'
 import { Button } from '../../components/ui/button/button';
 import { Label } from '../../components/ui/label/label';
@@ -12,6 +12,8 @@ import { getAccounts, createAccount, deleteAccount, updateAccount } from '../../
 import { getCurrencies } from '../../api/currencies';
 import { createTransaction } from '../../api/transactions';
 import { transformAccountFromBackend, getCurrencySymbol } from '../../api/transformers';
+import { invalidateAccountsCache } from '../../api/cacheInvalidation';
+import { usePageFilters } from '../../hooks/useAppState';
 import './Accounts.scss'
 
 export default function Accounts() {
@@ -79,7 +81,7 @@ export default function Accounts() {
                 icon: iconMap[accountType] || '💳',
                 sortOrder: accounts.length,
                 currencyId: curr.id,
-                initialBalance: initialBalanceNum,
+                initialBalance: Number(intialBalance),
                 initialBalanceDate: new Date().toISOString(),
             });
             toast.success('Счёт успешно добавлен');
@@ -89,6 +91,7 @@ export default function Accounts() {
             setCurrency('RUB');
             setInitialBalance('');
             setAccountNameErrors('');
+            invalidateAccountsCache();
             fetchData();
         } catch (err) {
             toast.error((err.message || 'Ошибка создания счёта'));
@@ -145,6 +148,7 @@ export default function Accounts() {
             await deleteAccount(id);
             setAccounts(prev => prev.filter(account => account.id !== id));
             toast.success('Счёт удалён');
+            invalidateAccountsCache();
             fetchData();
         } catch (err) {
             // Если есть связанные транзакции, предложим архивировать
@@ -184,6 +188,7 @@ export default function Accounts() {
             toast.success('✅ Счёт успешно обновлён');
             setEditDialogOpen(false);
             setEditNameErrors('');
+            invalidateAccountsCache();
             fetchData();
         } catch (err) {
             toast.error('❌ ' + (err.message || 'Ошибка обновления счёта'));
@@ -290,6 +295,7 @@ export default function Accounts() {
             setTransferDialogOpen(false);
             setTransferForm({ fromAccountId: null, toAccountId: null, amount: '' });
             setTransferErrors({});
+            invalidateAccountsCache();
             fetchData();
         } catch (err) {
             toast.error('❌ ' + (err.message || 'Ошибка при переводе'));

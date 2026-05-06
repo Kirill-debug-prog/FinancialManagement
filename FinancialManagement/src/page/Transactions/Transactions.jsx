@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CradTitle } from '../../components/ui/card/card';
 import { Button } from '../../components/ui/button/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/table/table';
-import { Plus, Filter, Download, Edit, Trash2, Search } from 'lucide-react';
+import { Plus, Filter, Download, Edit, Trash2, Search, RefreshCw } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../../components/ui/dialog_/dialog';
 import { Input } from '../../components/ui/input_data/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select/select';
@@ -12,6 +12,8 @@ import TransactionForm from "../../components/ui/TransactionForm/TransactionForm
 import { getTransactions, deleteTransaction } from '../../api/transactions';
 import { getAccounts } from '../../api/accounts';
 import { transformTransactionFromBackend } from '../../api/transformers';
+import { invalidateTransactionsCache } from '../../api/cacheInvalidation';
+import { usePageFilters, useDebounce } from '../../hooks/useAppState';
 import "./Transactions.scss"
 
 export default function Transactions() {
@@ -92,6 +94,7 @@ export default function Transactions() {
         try {
             await deleteTransaction(id);
             toast.success("Операция удалена");
+            invalidateTransactionsCache();
             fetchTransactions();
         } catch (err) {
             toast.error(err.message || 'Ошибка удаления');
@@ -105,6 +108,7 @@ export default function Transactions() {
     const handleTransactionCreated = () => {
         setDialogOpen(false);
         setEditTransaction(null);
+        invalidateTransactionsCache();
         fetchTransactions();
     };
 

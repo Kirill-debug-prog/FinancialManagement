@@ -12,6 +12,7 @@ import { Switch } from "../../components/ui/switch/switch";
 import { Separator } from "../../components/ui/separator/separator";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../../components/ui/dialog_/dialog';
 import { getCategories, createCategory, deleteCategory } from '../../api/categories';
+import { invalidateCategoriesCache } from '../../api/cacheInvalidation';
 import { transformCategoryFromBackend } from '../../api/transformers';
 import './Settings.scss';
 
@@ -71,6 +72,7 @@ export default function Setting() {
             toast.success('Категория добавлена');
             setNewCatName('');
             setAddCatDialogOpen(false);
+            invalidateCategoriesCache();
             fetchCategories();
         } catch (err) {
             toast.error(err.message || 'Ошибка добавления категории');
@@ -81,6 +83,7 @@ export default function Setting() {
         try {
             await deleteCategory(id);
             toast.success('Категория удалена');
+            invalidateCategoriesCache();
             fetchCategories();
         } catch (err) {
             toast.error(err.message || 'Ошибка удаления категории');

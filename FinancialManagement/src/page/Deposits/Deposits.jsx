@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Badge } from "../../components/ui/badge/badge";
 import FinanceProductCard from '../../components/ui/FinanceProductCard/FinanceProductCard'
 import { getDeposits, createDeposit, deleteDeposit, updateDeposit } from '../../api/deposits';
+import { invalidateCreditsDebtsCache } from '../../api/cacheInvalidation';
 import './Deposits.scss'
 
 export default function Deposits() {
@@ -141,6 +142,7 @@ export default function Deposits() {
             setDepositStartDate('');
             setDepositEndDate('');
             setDepositCapitalization(false);
+            invalidateCreditsDebtsCache();
             fetchData();
         } catch (err) {
             toast.error(err.message || 'Ошибка добавления вклада');
@@ -155,6 +157,7 @@ export default function Deposits() {
         try {
             await deleteDeposit(depositId);
             toast.success('Вклад успешно закрыт');
+            invalidateCreditsDebtsCache();
             fetchData();
         } catch (err) {
             toast.error(err.message || 'Ошибка закрытия вклада');
@@ -194,6 +197,7 @@ export default function Deposits() {
             });
             toast.success(`Вклад пополнен на ${replenishForm.amount} ₽`);
             setReplenishDialogOpen(false);
+            invalidateCreditsDebtsCache();
             fetchData();
         } catch (err) {
             toast.error(err.message || 'Ошибка пополнения вклада');
