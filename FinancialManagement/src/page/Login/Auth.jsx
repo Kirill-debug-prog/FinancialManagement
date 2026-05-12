@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Card, CardHeader, CradTitle, CardDescription } from "../../components/ui/card/card";
-import './Auth.css'
+import './Auth.scss'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs/tabs";
 import { Label } from "../../components/ui/label/label";
 import { Input } from "../../components/ui/input_data/input";
@@ -11,6 +11,45 @@ import { login, register } from '../../api/auth';
 import { getProfiles } from '../../api/profiles';
 import { setActiveProfileId } from '../../api/client';
 
+const emailRegex = /^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+const MIN_PASSWORD_LENGTH = 8;
+const MAX_PASSWORD_LENGTH = 128;
+const MAX_EMAIL_LENGTH = 254;
+
+const validateEmail = (email) => {
+    if (!email.trim()) {
+        return 'Email обязателен';
+    }
+    const trimmedEmail = email.trim();
+    if (trimmedEmail.length > MAX_EMAIL_LENGTH) {
+        return `Email не может быть длиннее ${MAX_EMAIL_LENGTH} символов`;
+    }
+    if (!emailRegex.test(trimmedEmail)) {
+        return 'Введите корректный email адрес (например: user@example.com)';
+    }
+    return null;
+};
+
+const validatePassword = (password) => {
+    if (!password) {
+        return 'Пароль обязателен';
+    }
+    if (password.length < MIN_PASSWORD_LENGTH) {
+        return `Пароль должен содержать не менее ${MIN_PASSWORD_LENGTH} символов`;
+    }
+    if (password.length > MAX_PASSWORD_LENGTH) {
+        return `Пароль не может быть длиннее ${MAX_PASSWORD_LENGTH} символов`;
+    }
+    return null;
+};
+
+const validatePasswordMatch = (password, confirmPassword) => {
+    if (password !== confirmPassword) {
+        return 'Пароли не совпадают';
+    }
+    return null;
+};
+
 function Auth({ onLogin }) {
     const [loginEmail, setLoginEmail] = useState("");
     const [loginPassword, setLoginPassword] = useState("");
@@ -18,31 +57,66 @@ function Auth({ onLogin }) {
     const [registerPassword, setRegisterPassword] = useState("");
     const [registerConfirmPassword, setRegisterConfirmPassword] = useState("");
     const [loading, setLoading] = useState(false);
+    const [loginErrors, setLoginErrors] = useState({ email: '', password: '' });
+    const [registerErrors, setRegisterErrors] = useState({ 
+        email: '', 
+        password: '', 
+        confirmPassword: '' 
+    });
 
     const navigate = useNavigate()
 
     const handleLoginSubmit = async (event) => {
         event.preventDefault();
-        if (!loginEmail || !loginPassword) {
-            toast.error('Пожалуйста, заполните все поля');
+        const emailError = validateEmail(loginEmail);
+        const passwordError = validatePassword(loginPassword);
+
+        const newErrors = {
+            email: emailError || '',
+            password: passwordError || ''
+        };
+
+        setLoginErrors(newErrors);
+
+        if (emailError || passwordError) {
             return;
         }
+
         setLoading(true);
         try {
-            await login(loginEmail, loginPassword);
+            // Trim email перед отправкой
+            const trimmedEmail = loginEmail.trim();
+            await login(trimmedEmail, loginPassword);
             const profiles = await getProfiles();
             if (profiles && profiles.length > 0) {
                 setActiveProfileId(profiles[0].id);
-                toast.success('Вы успешно вошли в систему');
+                toast.success('✅ Вы успешно вошли в систему');
+                setLoginEmail('');
+                setLoginPassword('');
+                setLoginErrors({ email: '', password: '' });
                 onLogin(false);
                 navigate('/app/dashboard');
             } else {
-                toast.success('Вы успешно вошли в систему');
+                toast.success('✅ Вы успешно вошли в систему');
+                setLoginEmail('');
+                setLoginPassword('');
+                setLoginErrors({ email: '', password: '' });
                 onLogin(true);
                 navigate('/welcome');
             }
         } catch (err) {
-            toast.error(err.message || 'Ошибка входа');
+            console.error('Login error:', err);
+            const errorMsg = err.message || 'Ошибка входа';
+            
+            // Определяем, какое поле содержит ошибку
+            if (errorMsg.toLowerCase().includes('email') || errorMsg.toLowerCase().includes('not found') || errorMsg.toLowerCase().includes('не найден')) {
+                setLoginErrors(prev => ({ ...prev, email: 'Email не найден в системе' }));
+                toast.error('Email не зарегистрирован');
+            } else {
+                // Все остальные ошибки - это ошибки пароля
+                setLoginErrors(prev => ({ ...prev, password: 'Неверный пароль' }));
+                toast.error('Неверный пароль или email');
+            }
         } finally {
             setLoading(false);
         }
@@ -50,25 +124,99 @@ function Auth({ onLogin }) {
 
     const handleRegisterSubmit = async (event) => {
         event.preventDefault();
-        if (!registerEmail || !registerPassword || !registerConfirmPassword) {
-            toast.error('Пожалуйста, заполните все поля');
+
+        // Валидация
+        const emailError = validateEmail(registerEmail);
+        const passwordError = validatePassword(registerPassword);
+        const confirmPasswordError = validatePasswordMatch(registerPassword, registerConfirmPassword);
+
+        const newErrors = {
+            email: emailError || '',
+            password: passwordError || '',
+            confirmPassword: confirmPasswordError || ''
+        };
+
+        setRegisterErrors(newErrors);
+
+        if (emailError || passwordError || confirmPasswordError) {
             return;
         }
-        if (registerPassword !== registerConfirmPassword) {
-            toast.error('Пароли не совпадают');
-            return;
-        }
+
         setLoading(true);
         try {
-            await register(registerEmail, registerPassword, registerConfirmPassword);
-            await login(registerEmail, registerPassword);
+            // Trim email перед отправкой
+            const trimmedEmail = registerEmail.trim();
+            await register(trimmedEmail, registerPassword, registerConfirmPassword);
+            await login(trimmedEmail, registerPassword);
             toast.success('Регистрация прошла успешно');
+            setRegisterEmail('');
+            setRegisterPassword('');
+            setRegisterConfirmPassword('');
+            setRegisterErrors({ email: '', password: '', confirmPassword: '' });
             onLogin(true);
             navigate('/welcome');
         } catch (err) {
-            toast.error(err.message || 'Ошибка регистрации');
+            console.error('Register error:', err);
+            const errorMsg = err.message || 'Ошибка регистрации';
+
+            // Определяем, какое поле содержит ошибку
+            if (errorMsg.toLowerCase().includes('email') || errorMsg.toLowerCase().includes('already') || errorMsg.toLowerCase().includes('существует')) {
+                setRegisterErrors(prev => ({ ...prev, email: 'Email уже зарегистрирован' }));
+                toast.error('Этот email уже используется');
+            } else if (errorMsg.toLowerCase().includes('пароль') || errorMsg.toLowerCase().includes('password')) {
+                setRegisterErrors(prev => ({ ...prev, password: errorMsg }));
+                toast.error(errorMsg);
+            } else {
+                toast.error(errorMsg);
+            }
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleLoginEmailChange = (value) => {
+        setLoginEmail(value);
+        // Очищаем ошибку при вводе
+        if (loginErrors.email) {
+            setLoginErrors(prev => ({ ...prev, email: '' }));
+        }
+    };
+
+    const handleLoginPasswordChange = (value) => {
+        setLoginPassword(value);
+        // Очищаем ошибку при вводе
+        if (loginErrors.password) {
+            setLoginErrors(prev => ({ ...prev, password: '' }));
+        }
+    };
+
+    const handleRegisterEmailChange = (value) => {
+        setRegisterEmail(value);
+        // Очищаем ошибку при вводе
+        if (registerErrors.email) {
+            setRegisterErrors(prev => ({ ...prev, email: '' }));
+        }
+    };
+
+    const handleRegisterPasswordChange = (value) => {
+        setRegisterPassword(value);
+        // Очищаем ошибки при вводе
+        if (registerErrors.password) {
+            setRegisterErrors(prev => ({ ...prev, password: '' }));
+        }
+        // Пересчитываем ошибку совпадения паролей если оно было заполнено
+        if (registerConfirmPassword && registerErrors.confirmPassword) {
+            if (value === registerConfirmPassword) {
+                setRegisterErrors(prev => ({ ...prev, confirmPassword: '' }));
+            }
+        }
+    };
+
+    const handleRegisterConfirmPasswordChange = (value) => {
+        setRegisterConfirmPassword(value);
+        // Очищаем ошибку при вводе
+        if (registerErrors.confirmPassword) {
+            setRegisterErrors(prev => ({ ...prev, confirmPassword: '' }));
         }
     };
 
@@ -88,24 +236,40 @@ function Auth({ onLogin }) {
                     </TabsList>
 
                     <TabsContent value="login" >
-                        <form className="container" onSubmit={handleLoginSubmit}>
-                            <div className="data-container">
+                        <form className="container" onSubmit={handleLoginSubmit} noValidate>
+                            <div className={`data-container ${loginErrors.email ? 'data-container--error' : ''}`}>
                                 <Label className="login-lable" htmlFor="login-email">Email</Label>
                                 <Input className="login-input"
                                     type="email"
                                     id="login-email"
                                     placeholder="your@email.com"
                                     value={loginEmail}
-                                    onChange={(e) => setLoginEmail(e.target.value)} />
+                                    autoComplete="email"
+                                    onChange={(e) => handleLoginEmailChange(e.target.value)}
+                                    aria-invalid={!!loginErrors.email}
+                                    aria-describedby={loginErrors.email ? "login-email-error" : undefined} />
+                                {loginErrors.email && (
+                                    <span id="login-email-error" className="form-error">
+                                        {loginErrors.email}
+                                    </span>
+                                )}
                             </div>
-                            <div className="data-container">
-                                <Label className="login-lable" htmlFor="login-register">Парль</Label>
+                            <div className={`data-container ${loginErrors.password ? 'data-container--error' : ''}`}>
+                                <Label className="login-lable" htmlFor="login-register">Пароль</Label>
                                 <Input className="login-input"
                                     type="password"
                                     id="login-register"
                                     placeholder="••••••••"
                                     value={loginPassword}
-                                    onChange={(e) => setLoginPassword(e.target.value)} />
+                                    autoComplete="current-password"
+                                    onChange={(e) => handleLoginPasswordChange(e.target.value)}
+                                    aria-invalid={!!loginErrors.password}
+                                    aria-describedby={loginErrors.password ? "login-password-error" : undefined} />
+                                {loginErrors.password && (
+                                    <span id="login-password-error" className="form-error">
+                                        {loginErrors.password}
+                                    </span>
+                                )}
                             </div>
                             <div className="data-container">
                                 <Button className="forgot-password-button" variant="transparent" type="button">Забыли пароль?</Button>
@@ -127,33 +291,58 @@ function Auth({ onLogin }) {
                     </TabsContent>
 
                     <TabsContent value="register">
-                        <form className="container" onSubmit={handleRegisterSubmit}>
-                            <div className="data-container">
+                        <form className="container" onSubmit={handleRegisterSubmit} noValidate>
+                            <div className={`data-container ${registerErrors.email ? 'data-container--error' : ''}`}>
                                 <Label className="register-lable" htmlFor="register-email">Email</Label>
                                 <Input className="register-input"
                                     type="email"
                                     id="register-email"
                                     placeholder="your@email.com"
                                     value={registerEmail}
-                                    onChange={(e) => setRegisterEmail(e.target.value)} />
+                                    autoComplete="email"
+                                    onChange={(e) => handleRegisterEmailChange(e.target.value)}
+                                    aria-invalid={!!registerErrors.email}
+                                    aria-describedby={registerErrors.email ? "register-email-error" : undefined} />
+                                {registerErrors.email && (
+                                    <span id="register-email-error" className="form-error">
+                                        {registerErrors.email}
+                                    </span>
+                                )}
                             </div>
-                            <div className="data-container">
-                                <Label className="register-lable" htmlFor="register-register">Парль</Label>
+                            <div className={`data-container ${registerErrors.password ? 'data-container--error' : ''}`}>
+                                <Label className="register-lable" htmlFor="register-password">Пароль</Label>
                                 <Input className="register-input"
                                     type="password"
-                                    id="register-register"
+                                    id="register-password"
                                     placeholder="••••••••"
                                     value={registerPassword}
-                                    onChange={(e) => setRegisterPassword(e.target.value)} />
+                                    autoComplete="new-password"
+                                    onChange={(e) => handleRegisterPasswordChange(e.target.value)}
+                                    aria-invalid={!!registerErrors.password}
+                                    aria-describedby={registerErrors.password ? "register-password-error" : undefined} />
+                                <span className="password-hint">Минимум {MIN_PASSWORD_LENGTH} символов</span>
+                                {registerErrors.password && (
+                                    <span id="register-password-error" className="form-error">
+                                        {registerErrors.password}
+                                    </span>
+                                )}
                             </div>
-                            <div className="data-container">
-                                <Label className="register-lable" htmlFor="register-register">Подтвердить пароль</Label>
+                            <div className={`data-container ${registerErrors.confirmPassword ? 'data-container--error' : ''}`}>
+                                <Label className="register-lable" htmlFor="register-confirm-password">Подтвердить пароль</Label>
                                 <Input className="register-input"
                                     type="password"
-                                    id="register-register"
+                                    id="register-confirm-password"
                                     placeholder="••••••••"
                                     value={registerConfirmPassword}
-                                    onChange={(e) => setRegisterConfirmPassword(e.target.value)} />
+                                    autoComplete="new-password"
+                                    onChange={(e) => handleRegisterConfirmPasswordChange(e.target.value)}
+                                    aria-invalid={!!registerErrors.confirmPassword}
+                                    aria-describedby={registerErrors.confirmPassword ? "register-confirm-error" : undefined} />
+                                {registerErrors.confirmPassword && (
+                                    <span id="register-confirm-error" className="form-error">
+                                        {registerErrors.confirmPassword}
+                                    </span>
+                                )}
                             </div>
                             <div className="data-container">
                                 <Button className="register-button" variant="black" type="submit" disabled={loading}>

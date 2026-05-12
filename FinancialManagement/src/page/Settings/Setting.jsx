@@ -16,9 +16,9 @@ import { transformCategoryFromBackend } from '../../api/transformers';
 import './Settings.scss';
 
 export default function Setting() {
-    const [emailNotifications, setEmailNotifications] = useState(true);
-    const [pushNotifications, setPushNotifications] = useState(true);
-    const [budgetAlerts, setBudgetAlerts] = useState(true);
+    const [emailNotifications, setEmailNotifications] = useState(false);
+    const [pushNotifications, setPushNotifications] = useState(false);
+    const [budgetAlerts, setBudgetAlerts] = useState(false);
     const [theme, setTheme] = useState('light');
     const [currency, setCurrency] = useState('RUB');
     const [language, setLanguage] = useState('ru');
@@ -348,7 +348,7 @@ export default function Setting() {
                                     <Label>Напоминания о платежах</Label>
                                     <p className="muted">Уведомлять о предстоящих платежах</p>
                                 </div>
-                                <Switch defaultChecked />
+                                <Switch defaultUnchecked/>
                             </div>
 
                             <Separator />
@@ -358,7 +358,7 @@ export default function Setting() {
                                     <Label>Еженедельный отчёт</Label>
                                     <p className="muted">Сводка по финансам каждую неделю</p>
                                 </div>
-                                <Switch defaultChecked />
+                                <Switch defaultUnchecked />
                             </div>
                         </CardContent>
                     </Card>

@@ -29,12 +29,12 @@ const menuItems = [
     // { route: '/app/admin', label: 'Админ-панель', icon: Shield },
 ];
 
-export default function AppSidebar({onLogout}) {
+export default function AppSidebar({onLogout, isOpen, onNavigate}) {
 
     const navigate = useNavigate();
 
     return (
-        <aside className="sidebar">
+        <aside className={`sidebar ${isOpen ? 'sidebar--open' : ''}`}>
             <div className="sidebar__container">
                 <div className="sidebar__header">
                     <h1 className="sidebar__title">Финансовый помощник</h1>
@@ -49,6 +49,7 @@ export default function AppSidebar({onLogout}) {
                                 <li key={item.route}>
                                     <NavLink
                                         to={item.route}
+                                        onClick={() => onNavigate && onNavigate()}
                                         className={({ isActive }) =>
                                             `sidebar__item ${isActive ? 'sidebar__item--active' : ''}`
                                         }

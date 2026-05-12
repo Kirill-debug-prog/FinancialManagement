@@ -1,0 +1,105 @@
+@use '../../assets/styles/base/typography' as *;
+@use '../../assets/styles/variables.scss' as *;
+
+.main-auth {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+    padding: $space-sm;
+    background: linear-gradient(#D0EEFF, #FFF2E8);
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 25.75rem;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    row-gap: $space-md;
+
+    @include respond(md) {
+        row-gap: 1rem;
+    }
+}
+
+.data-container {
+    display: flex;
+    flex-direction: column;
+    row-gap: $space-xs;
+
+    @include respond(md) {
+        row-gap: 0.25rem;
+    }
+
+    &--error {
+        input {
+            border-color: #ef4444;
+            border-width: 2px;
+
+            &:focus {
+                outline: none;
+                border-color: #dc2626;
+                box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+            }
+        }
+    }
+}
+
+.data-container:nth-child(3) {
+    justify-content: flex-start;
+}
+
+.form-error {
+    display: block;
+    color: #ef4444;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    margin-top: 0.25rem;
+    font-weight: 500;
+}
+
+.password-hint {
+    display: block;
+    color: #6b7280;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    margin-top: 0.25rem;
+    font-weight: 400;
+}
+
+.or-hr-wrapper {
+    position: relative;
+    text-align: center;
+    font-size: 0.875rem;
+    padding-block: 0.625rem;
+    text-transform: uppercase;
+    color: #6b7280;
+
+    @include respond(md) {
+        font-size: 1rem;
+        padding-block: 0.8125rem;
+    }
+}
+
+.or-hr {
+    border: none;
+    border-top: 0.0625rem solid #d1d5db;
+    margin: 0;
+}
+
+.or-hr-label {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    padding: 0 0.375rem;
+
+    @include respond(md) {
+        padding: 0 0.5rem;
+    }
+}

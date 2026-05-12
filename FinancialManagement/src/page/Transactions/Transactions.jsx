@@ -4,25 +4,33 @@ import { Card, CardContent, CardHeader, CradTitle } from '../../components/ui/ca
 import { Button } from '../../components/ui/button/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/table/table';
 import { Plus, Filter, Download, Edit, Trash2, Search } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../../components/ui/dialog_/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../../components/ui/dialog_/dialog';
 import { Input } from '../../components/ui/input_data/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select/select';
 import { Badge } from '../../components/ui/badge/badge';
 import TransactionForm from "../../components/ui/TransactionForm/TransactionForm"
 import { getTransactions, deleteTransaction } from '../../api/transactions';
+import { getAccounts } from '../../api/accounts';
 import { transformTransactionFromBackend } from '../../api/transformers';
 import "./Transactions.scss"
 
 export default function Transactions() {
     const [dialogOpen, setDialogOpen] = useState(false)
+    const [editTransaction, setEditTransaction] = useState(null);
     const [filterType, setFilterType] = useState('all')
+    const [filterAccount, setFilterAccount] = useState('all')
     const [searchQuery, setsearchQuery] = useState('')
+    const [dateFrom, setDateFrom] = useState('')
+    const [dateTo, setDateTo] = useState('')
+    const [minAmount, setMinAmount] = useState('')
+    const [maxAmount, setMaxAmount] = useState('')
     const [transactions, setTransactions] = useState([])
+    const [accounts, setAccounts] = useState([])
     const [loading, setLoading] = useState(true)
 
-    const fetchTransactions = async () => {
+    const fetchTransactions = async (filters = {}) => {
         try {
-            const data = await getTransactions();
+            const data = await getTransactions(filters);
             setTransactions(data.map(t => transformTransactionFromBackend(t)));
         } catch (err) {
             toast.error(err.message || 'Ошибка загрузки операций');
@@ -31,13 +39,45 @@ export default function Transactions() {
         }
     };
 
-    useEffect(() => { fetchTransactions(); }, []);
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const accs = await getAccounts();
+                setAccounts(accs);
+                setLoading(false);
+            } catch (err) {
+                toast.error('Ошибка загрузки данных');
+                setLoading(false);
+            }
+        };
+        loadData();
+        fetchTransactions();
+    }, []);
+
+    const handleFilterChange = (newFilters) => {
+        const filters = {};
+        if (newFilters.accountId && newFilters.accountId !== 'all') {
+            filters.accountId = newFilters.accountId;
+        }
+        if (newFilters.dateFrom) {
+            filters.dateFrom = new Date(newFilters.dateFrom).toISOString();
+        }
+        if (newFilters.dateTo) {
+            filters.dateTo = new Date(newFilters.dateTo).toISOString();
+        }
+        fetchTransactions(filters);
+    };
 
     const filteredTransactions = transactions.filter(t => {
         const matchesType = filterType === "all" || t.type === filterType
+        const matchesAccount = filterAccount === "all" || t.accountId === filterAccount
         const matchesSearch = t.description.toLocaleLowerCase().includes(searchQuery.toLocaleLowerCase()) ||
             t.category.toLocaleLowerCase().includes(searchQuery.toLocaleLowerCase())
-        return matchesType && matchesSearch
+        const minAmountNum = minAmount ? parseFloat(minAmount) : 0
+        const maxAmountNum = maxAmount ? parseFloat(maxAmount) : Infinity
+        const matchesAmount = t.amount >= minAmountNum && t.amount <= maxAmountNum
+
+        return matchesType && matchesAccount && matchesSearch && matchesAmount
     })
 
     const getTypeBadge = (type) => {
@@ -64,7 +104,13 @@ export default function Transactions() {
 
     const handleTransactionCreated = () => {
         setDialogOpen(false);
+        setEditTransaction(null);
         fetchTransactions();
+    };
+
+    const handleTransactionEdited = (transaction) => {
+        setEditTransaction(transaction);
+        setDialogOpen(true);
     };
 
     if (loading) {
@@ -91,9 +137,12 @@ export default function Transactions() {
 
                         <DialogContent className="transactions__dialog">
                             <DialogHeader>
-                                <DialogTitle>Новая операция</DialogTitle>
+                                <DialogTitle>{editTransaction ? 'Редактировать операцию' : 'Новая операция'}</DialogTitle>
+                                <DialogDescription>
+                                    {editTransaction ? 'Отредактируйте данные операции' : 'Заполните данные новой операции'}
+                                </DialogDescription>
                             </DialogHeader>
-                            <TransactionForm onClose={() => setDialogOpen(false)} onCreated={handleTransactionCreated} />
+                            <TransactionForm onClose={() => setDialogOpen(false)} onCreated={handleTransactionCreated} initialData={editTransaction} />
                         </DialogContent>
                     </Dialog>
                 </div>
@@ -128,6 +177,63 @@ export default function Transactions() {
                                     <SelectItem value="transfer">Переводы</SelectItem>
                                 </SelectContent>
                             </Select>
+                        </div>
+
+                        <div className="transactions__select">
+                            <Select value={filterAccount} onValueChange={(value) => {
+                                setFilterAccount(value);
+                                handleFilterChange({ accountId: value, dateFrom, dateTo });
+                            }}>
+                                <SelectTrigger className="transactions__select-trigger">
+                                    <SelectValue placeholder="Выберите счёт" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">Все счета</SelectItem>
+                                    {accounts.map(acc => (
+                                        <SelectItem key={acc.id} value={acc.id}>
+                                            {acc.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div className="transactions__date-range">
+                            <div className="transactions__select">
+                                <Input
+                                    type="date"
+                                    value={dateFrom}
+                                    onChange={(e) => {
+                                        setDateFrom(e.target.value);
+                                        handleFilterChange({
+                                            accountId: filterAccount,
+                                            dateFrom: e.target.value,
+                                            dateTo,
+                                        });
+                                    }}
+                                    placeholder="С даты"
+                                    title="От даты"
+                                />
+                            </div>
+
+                            <span className="transactions__date-range-separator">—</span>
+
+                            <div className="transactions__select">
+                                <Input
+                                    type="date"
+                                    value={dateTo}
+                                    onChange={(e) => {
+                                        setDateTo(e.target.value);
+                                        handleFilterChange({
+                                            accountId: filterAccount,
+                                            dateFrom,
+                                            dateTo: e.target.value,
+                                        });
+                                    }}
+                                    placeholder="До даты"
+                                    title="До даты"
+                                />
+                            </div>
                         </div>
 
                         <div className="transactions__export">
@@ -171,7 +277,7 @@ export default function Transactions() {
                                         </TableCell>
                                         <TableCell>
                                             <div className="transactions__row-actions">
-                                                <Button variant="transparent" className="transactions__card-btn" aria-label="Редактировать">
+                                                <Button variant="transparent" className="transactions__card-btn" aria-label="Редактировать" onClick={() => handleTransactionEdited(t)}>
                                                     <Edit className="icon" />
                                                 </Button>
                                                 <Button variant="transparent" className="transactions__card-btn" aria-label="Удалить" onClick={() => handleDelete(t.id)}>

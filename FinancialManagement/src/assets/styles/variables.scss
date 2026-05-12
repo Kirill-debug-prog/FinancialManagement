@@ -67,10 +67,12 @@ $shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
     Breakpoints (mobile-first)
 ================================ */
 
-$bp-sm: 480px;
-$bp-md: 768px;
-$bp-lg: 1024px;
-$bp-xl: 1440px;
+$bp-xs: 0px;      // Mobile
+$bp-sm: 480px;    // Small mobile
+$bp-md: 768px;    // Tablet
+$bp-lg: 1024px;   // Desktop
+$bp-xl: 1440px;   // Large desktop
+$bp-2xl: 1920px;  // Extra large
 
 
 /* ================================
@@ -78,26 +80,65 @@ $bp-xl: 1440px;
 ================================ */
 
 @mixin respond($breakpoint) {
-    @if $breakpoint ==sm {
+    @if $breakpoint == xs {
+        @media (min-width: $bp-xs) {
+            @content;
+        }
+    }
+
+    @if $breakpoint == sm {
         @media (min-width: $bp-sm) {
             @content;
         }
     }
 
-    @if $breakpoint ==md {
+    @if $breakpoint == md {
         @media (min-width: $bp-md) {
             @content;
         }
     }
 
-    @if $breakpoint ==lg {
+    @if $breakpoint == lg {
         @media (min-width: $bp-lg) {
             @content;
         }
     }
 
-    @if $breakpoint ==xl {
+    @if $breakpoint == xl {
         @media (min-width: $bp-xl) {
+            @content;
+        }
+    }
+
+    @if $breakpoint == 2xl {
+        @media (min-width: $bp-2xl) {
+            @content;
+        }
+    }
+}
+
+/* Mobile-first down (only when needed) */
+@mixin respond-down($breakpoint) {
+    @if $breakpoint == sm {
+        @media (max-width: ($bp-sm - 1px)) {
+            @content;
+        }
+    }
+
+    @if $breakpoint == md {
+        @media (max-width: ($bp-md - 1px)) {
+            @content;
+        }
+    }
+
+    @if $breakpoint == lg {
+        @media (max-width: ($bp-lg - 1px)) {
+            @content;
+        }
+    }
+
+    @if $breakpoint == xl {
+        @media (max-width: ($bp-xl - 1px)) {
             @content;
         }
     }

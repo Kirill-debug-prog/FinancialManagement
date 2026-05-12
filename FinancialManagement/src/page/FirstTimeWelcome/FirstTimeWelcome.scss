@@ -15,42 +15,100 @@
     justify-content: flex-start;
     align-items: center;
     height: auto;
+    width: 100%;
+    min-height: 100vh;
     background: linear-gradient(#D0EEFF, #FFF2E8);
+    padding: $space-sm;
 }
 
 .welcome__hero {
-    max-width: 56rem;
     width: 100%;
+    max-width: 56rem;
     text-align: center;
-    margin-top: 3rem;
+    margin-top: $space-sm;
+    padding: 0 $space-sm;
+
+    @include respond(md) {
+        margin-top: 1.5rem;
+        padding: 0;
+    }
+
+    @include respond(lg) {
+        margin-top: 3rem;
+    }
 }
 
 .welcome__icon-wrap {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 5rem;
-    height: 5rem;
-    border-radius: 1rem;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 0.625rem 0.9375rem rgba(0, 0, 0, 0.1);
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+
+    @include respond(md) {
+        width: 4rem;
+        height: 4rem;
+        border-radius: 0.875rem;
+        margin-bottom: 1.25rem;
+        box-shadow: 0 0.625rem 0.9375rem rgba(0, 0, 0, 0.1);
+    }
+
+    @include respond(lg) {
+        width: 5rem;
+        height: 5rem;
+        border-radius: 1rem;
+        margin-bottom: 1.5rem;
+    }
 }
 
 .welcome__icon {
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
     color: white;
+
+    @include respond(md) {
+        width: 2rem;
+        height: 2rem;
+    }
+
+    @include respond(lg) {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
 }
 
 .welcome__title {
     color: #111827;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+
+    @include respond(md) {
+        font-size: 1.75rem;
+        margin-bottom: 1rem;
+    }
+
+    @include respond(lg) {
+        font-size: 2rem;
+    }
 }
 
 .welcome__description {
     color: var(--text-grey);
     width: auto;
     text-align: center;
+    font-size: 0.875rem;
+
+    @include respond(md) {
+        font-size: 1rem;
+    }
+
+    @include respond(lg) {
+        font-size: 1.125rem;
+    }
 }
 
 .welcome-text {
@@ -60,10 +118,22 @@
 
 .welcome__features {
     position: relative;
-    height: 16rem;
-    margin-bottom: 0.5rem;
-    width: 36rem;
+    width: 100%;
     max-width: 56rem;
+    height: 12rem;
+    margin: $space-md 0 $space-sm;
+    padding: 0 $space-sm;
+
+    @include respond(md) {
+        height: 14rem;
+        margin: $space-lg 0 $space-md;
+    }
+
+    @include respond(lg) {
+        height: 16rem;
+        margin-bottom: 0.5rem;
+        padding: 0;
+    }
 }
 
 .welcome__feature {
@@ -76,6 +146,7 @@
     opacity: 0;
     transform: scale(0.8);
     transition: opacity 0.5s ease, transform 0.5s ease;
+    padding: $space-sm;
 }
 
 .welcome__feature--active {
@@ -88,52 +159,102 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 5rem;
-    height: 5rem;
-    border-radius: 1rem;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 0.625rem 0.9375rem rgba(0, 0, 0, 0.1),
-                0 0.25rem 0.375rem rgba(0, 0, 0, 0.05);
-}
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
 
-.welcome__icon {
-    width: 2.5rem;
-    height: 2.5rem;
-    color: var(--color-block);
+    @include respond(md) {
+        width: 4rem;
+        height: 4rem;
+        border-radius: 0.875rem;
+        margin-bottom: 1.25rem;
+    }
+
+    @include respond(lg) {
+        width: 5rem;
+        height: 5rem;
+        border-radius: 1rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 0.625rem 0.9375rem rgba(0, 0, 0, 0.1),
+                    0 0.25rem 0.375rem rgba(0, 0, 0, 0.05);
+    }
 }
 
 .welcome__feature-title {
     color: #111827;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
     text-align: center;
+    font-size: 1rem;
+    font-weight: 600;
+
+    @include respond(md) {
+        font-size: 1.125rem;
+        margin-bottom: 0.625rem;
+    }
+
+    @include respond(lg) {
+        font-size: 1.25rem;
+        margin-bottom: 0.75rem;
+    }
 }
 
 .welcome__feature-description {
     color: var(--text-grey);
-    max-width: 20rem;
     text-align: center;
+    font-size: 0.75rem;
+    line-height: 1.4;
+
+    @include respond(md) {
+        font-size: 0.875rem;
+        max-width: 18rem;
+    }
+
+    @include respond(lg) {
+        font-size: 1rem;
+        max-width: 20rem;
+    }
 }
 
 .welcome__indicators {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 3rem;
+    gap: 0.4rem;
+    margin-bottom: $space-lg;
+
+    @include respond(md) {
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+    }
+
+    @include respond(lg) {
+        margin-bottom: 3rem;
+    }
 }
 
 .welcome__indicator {
-    width: 0.5rem;
-    height: 0.5rem;
+    width: 0.4rem;
+    height: 0.4rem;
     border-radius: 9999px;
     background-color: #D1D5DB;
     cursor: pointer;
     transition: all 0.3s ease;
+
+    @include respond(md) {
+        width: 0.5rem;
+        height: 0.5rem;
+    }
 }
 
 .welcome__indicator--active {
-    width: 2rem;
+    width: 1.5rem;
     background-color: #2563EB;
+
+    @include respond(md) {
+        width: 2rem;
+    }
 }
 
 .bg-gradient-blue {
@@ -155,11 +276,21 @@
 .welcome__descriptions-block {
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: 0.75rem;
     justify-content: center;
     align-items: center;
     width: 100%;
+    max-width: 56rem;
     height: auto;
+    padding: 0 $space-sm;
+
+    @include respond(md) {
+        gap: 1rem;
+    }
+
+    @include respond(lg) {
+        padding: 0;
+    }
 }
 
 .description-block {
@@ -167,26 +298,49 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    row-gap: 0.625rem;
-
-    flex: 1 1 15rem;
-    min-width: 12rem;
-    max-width: 18rem;
+    row-gap: 0.5rem;
+    flex: 1 1 11rem;
+    min-width: 10rem;
+    max-width: 16rem;
     height: auto;
-    padding: 0.6875rem 1rem;
-
+    padding: 0.5rem 0.75rem;
     background-color: var(--color-block);
-    border-radius: 1.25rem;
-
-    font-size: var(--main-font-size);
+    border-radius: 1rem;
+    font-size: 0.875rem;
     font-family: var(--main-font-family);
+
+    @include respond(md) {
+        flex: 1 1 13rem;
+        max-width: 17rem;
+        padding: 0.625rem 0.875rem;
+        border-radius: 1.125rem;
+        font-size: 0.9375rem;
+    }
+
+    @include respond(lg) {
+        flex: 1 1 15rem;
+        max-width: 18rem;
+        padding: 0.6875rem 1rem;
+        border-radius: 1.25rem;
+        font-size: 1rem;
+    }
 }
 
 .block-check {
-    width: 3.75rem;
+    width: 2.75rem;
     height: auto;
-    padding: 0.875rem;
-    border-radius: 3.125rem;
+    padding: 0.625rem;
+    border-radius: 2rem;
+
+    @include respond(md) {
+        width: 3.125rem;
+        padding: 0.75rem;
+    }
+
+    @include respond(lg) {
+        width: 3.75rem;
+        padding: 0.875rem;
+    }
 }
 
 .color-green {
@@ -210,9 +364,31 @@
     padding: 0;
 }
 
+.block-title {
+    font-weight: 600;
+    font-size: 0.875rem;
+
+    @include respond(md) {
+        font-size: 0.9375rem;
+    }
+
+    @include respond(lg) {
+        font-size: 1rem;
+    }
+}
+
 .block-description {
     text-align: center;
     color: var(--text-grey);
+    font-size: 0.75rem;
+
+    @include respond(md) {
+        font-size: 0.8125rem;
+    }
+
+    @include respond(lg) {
+        font-size: 0.875rem;
+    }
 }
 
 .welcome__btn-block {
@@ -220,18 +396,44 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    width: 100%;
+    gap: 1rem;
 }
 
 .welcome__btn-next {
-    width: 11.3125rem;
-    height: 4.3125rem;
-    padding: 1rem 1.5rem;
-    margin-top: 2.1875rem;
+    width: auto;
+    min-width: 10rem;
+    height: 2.75rem;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+
+    @include respond(md) {
+        height: 3rem;
+        padding: 0.875rem 1.5rem;
+        font-size: 0.9375rem;
+    }
+
+    @include respond(lg) {
+        width: 11.3125rem;
+        height: 4.3125rem;
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+    }
 }
 
 .welcome__time-text {
-    margin: 1.5625rem 0 1.875rem 0;
-    font-size: var(--main-font-size);
+    margin: 1rem 0 1.25rem;
+    font-size: 0.875rem;
     font-family: var(--main-font-family);
     color: var(--text-grey);
+
+    @include respond(md) {
+        font-size: 0.9375rem;
+        margin: 1.25rem 0 1.5rem;
+    }
+
+    @include respond(lg) {
+        font-size: 1rem;
+        margin: 1.5625rem 0 1.875rem;
+    }
 }

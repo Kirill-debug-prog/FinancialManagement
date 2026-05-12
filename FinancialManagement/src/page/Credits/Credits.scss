@@ -2,13 +2,6 @@
 @use '../../assets/styles/variables.scss' as *;
 @use "sass:color";
 
-.window {
-    display: grid;
-    grid-template-columns: 16rem 1fr;
-    overflow: hidden;
-    height: 100vh;
-}
-
 .credits {
     display: flex;
     flex-direction: column;
@@ -16,34 +9,69 @@
     padding: $space-lg $space-md;
     overflow: auto;
 
+    @include respond-down(md) {
+        padding: $space-md;
+        gap: $space-md;
+    }
+
+    @include respond-down(sm) {
+        padding: $space-sm;
+        gap: $space-sm;
+    }
+
     &__header {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        flex-wrap: wrap;
+        gap: $space-md;
+
+        @include respond-down(md) {
+            flex-direction: column;
+            gap: $space-sm;
+        }
     }
 
     &__subtitle {
         color: $text-gray;
         @extend .text-xl;
         margin: 0;
+
+        @include respond-down(md) {
+            font-size: 1.125rem;
+        }
+
+        @include respond-down(sm) {
+            font-size: 1rem;
+        }
     }
 
     &__add-btn {
         display: flex;
         align-items: center;
+        justify-content: center;
         gap: $space-sm;
-
         padding: $space-sm $space-md;
         background-color: $blue;
         color: $white;
         border-radius: $radius-sm;
         border: none;
         cursor: pointer;
-
         transition: background-color 0.2s ease;
+        white-space: nowrap;
 
         &:hover {
             background-color: color.adjust($blue, $lightness: -6%);
+        }
+
+        @include respond-down(md) {
+            width: 100%;
+            padding: 0.75rem $space-md;
+        }
+
+        @include respond-down(sm) {
+            font-size: 0.875rem;
+            padding: 0.625rem 0.75rem;
         }
     }
 }
@@ -55,22 +83,45 @@
     row-gap: $space-sm;
     margin-top: $space-md;
 
+    @include respond-down(sm) {
+        margin-top: $space-sm;
+    }
+
     &__row {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: $space-md;
+
+        @include respond-down(md) {
+            grid-template-columns: 1fr;
+            gap: $space-sm;
+        }
     }
 
     &__field {
         display: flex;
         flex-direction: column;
         gap: $space-sm;
+
+        @include respond-down(sm) {
+            gap: $space-xs;
+        }
     }
 
     &__buttons {
         display: flex;
         gap: $space-md;
         padding-top: $space-md;
+
+        @include respond-down(md) {
+            flex-direction: column;
+            gap: $space-sm;
+        }
+
+        @include respond-down(sm) {
+            gap: $space-xs;
+            padding-top: $space-sm;
+        }
     }
 
     &__button {
@@ -82,6 +133,11 @@
         padding: $space-sm $space-md;
         border-radius: $radius-sm;
         font-weight: 600;
+
+        @include respond-down(sm) {
+            padding: $space-sm $space-xs;
+            font-size: 0.875rem;
+        }
     }
 }
 
@@ -91,8 +147,24 @@
     justify-content: flex-start;
     row-gap: $space-lg;
 
+    @include respond-down(md) {
+        row-gap: $space-md;
+    }
+
+    @include respond-down(sm) {
+        row-gap: $space-sm;
+    }
+
     &__title {
         @extend .text-xl;
+
+        @include respond-down(md) {
+            font-size: 1.125rem;
+        }
+
+        @include respond-down(sm) {
+            font-size: 1rem;
+        }
     }
 
     &__position {
@@ -100,6 +172,14 @@
         justify-content: flex-start;
         flex-direction: column;
         row-gap: $space-lg;
+
+        @include respond-down(md) {
+            row-gap: $space-md;
+        }
+
+        @include respond-down(sm) {
+            row-gap: $space-sm;
+        }
     }
 }
 
@@ -109,14 +189,28 @@
     justify-content: flex-start;
     row-gap: $space-xs;
 
+    @include respond-down(sm) {
+        row-gap: $space-xs;
+    }
+
     &__header {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        flex-wrap: wrap;
+        gap: $space-sm;
     }
 
     &__title {
         @extend .text-xl;
+
+        @include respond-down(md) {
+            font-size: 1.125rem;
+        }
+
+        @include respond-down(sm) {
+            font-size: 1rem;
+        }
     }
 
     &__grid {
@@ -127,44 +221,86 @@
         @include respond(md) {
             grid-template-columns: repeat(2, 1fr);
         }
+
+        @include respond-down(sm) {
+            gap: $space-sm;
+        }
     }
 }
 
 .debt-card {
     box-shadow: none;
     border: 1px solid $color-border;
+    border-radius: $radius-md;
+    padding: $space-md;
+
+    @include respond-down(md) {
+        padding: $space-sm;
+        border-radius: $radius-sm;
+    }
+
+    @include respond-down(sm) {
+        padding: $space-xs;
+    }
 
     &__header {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
         gap: $space-md;
+
+        @include respond-down(sm) {
+            gap: $space-sm;
+            flex-wrap: wrap;
+        }
     }
 
     &__person {
         margin-top: $space-xs;
         color: $text-gray;
         @extend .text-base;
+
+        @include respond-down(sm) {
+            font-size: 0.875rem;
+        }
     }
 
     &__content {
         display: flex;
         flex-direction: column;
         row-gap: $space-sm;
+
+        @include respond-down(sm) {
+            row-gap: $space-xs;
+        }
     }
 
     &__row {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        gap: $space-sm;
+
+        @include respond-down(sm) {
+            flex-wrap: wrap;
+        }
     }
 
     &__label {
         color: $text-gray;
+
+        @include respond-down(sm) {
+            font-size: 0.875rem;
+        }
     }
 
     &__value {
         font-weight: 500;
+        white-space: nowrap;
+
+        @include respond-down(sm) {
+            font-size: 0.875rem;
+        }
     }
 
     &__alert {
@@ -175,12 +311,24 @@
         border-radius: $radius-sm;
         background-color: #fef2f2;
         color: $red;
+        margin-top: $space-sm;
+
+        @include respond-down(sm) {
+            padding: $space-xs;
+            font-size: 0.875rem;
+        }
     }
 
     &__actions {
         display: flex;
         gap: $space-sm;
         margin-top: $space-sm;
+
+        @include respond-down(sm) {
+            flex-direction: column;
+            gap: $space-xs;
+            margin-top: $space-xs;
+        }
 
         button {
             flex: 1;
@@ -190,4 +338,93 @@
 
 .card-content {
     padding: 0 !important;
+}
+
+.dialog-info-box {
+    padding: 0.75rem;
+    background-color: #f5f5f5;
+    border-radius: 0.5rem;
+
+    @include respond-down(sm) {
+        padding: 0.625rem;
+    }
+}
+
+.dialog-info-box__text {
+    margin: 0;
+    font-weight: bold;
+}
+
+.dialog-info-box__subtitle {
+    margin: 0.25rem 0 0 0;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+// Amount display box
+.dialog-amount-box {
+    padding: 0.75rem;
+    background-color: #e8f4f8;
+    border-radius: 0.5rem;
+
+    @include respond-down(sm) {
+        padding: 0.625rem;
+    }
+}
+
+.dialog-amount-box__value {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #0066cc;
+}
+
+// Warning box
+.dialog-warning-box {
+    padding: 1rem;
+    background-color: #fff3cd;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+
+    @include respond-down(sm) {
+        padding: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+}
+
+.dialog-warning-box__text {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #856404;
+}
+
+/* Стили для валидации в формах */
+
+.form-error {
+    font-size: 0.75rem;
+    color: #ef4444;
+    font-weight: 500;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+.form-error-icon {
+    margin-left: 0.5rem;
+    font-size: 1rem;
+}
+
+.is-error {
+    border-color: #ef4444 !important;
+    background-color: #fef2f2 !important;
+
+    &:focus {
+        border-color: #ef4444 !important;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+    }
+}
+
+.account__form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }

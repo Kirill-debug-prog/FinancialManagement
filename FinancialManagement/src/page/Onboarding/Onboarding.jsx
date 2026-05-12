@@ -2,7 +2,7 @@ import { Card, CardHeader, CradTitle, CardContent } from '../../components/ui/ca
 import { CurrencyInputs, Input } from '../../components/ui/input_data/input';
 import { Progress } from '../../components/ui/progress/progress'
 import { CheckCircle, Wallet, DollarSign, Tag, TrendingUp } from 'lucide-react';
-import '../Onboarding/Onboarding.css'
+import '../Onboarding/Onboarding.scss'
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Label } from '../../components/ui/label/label';
