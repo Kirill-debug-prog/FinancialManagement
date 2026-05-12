@@ -2,15 +2,19 @@
 .vs/
 
 # .NET
+# Сборка
 bin/
 obj/
+appsettings.Development.json
+
+#Visual Studio
 *.user
 *.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-nul
+.vs/
+*.vspscc
+
+#Secrets
+appsettings.Development.json
 
 # Node
 node_modules/
