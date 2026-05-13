@@ -52,11 +52,23 @@ namespace Reports.Infrastructure.Migrations
                 schema: "reports",
                 table: "report_jobs",
                 column: "Status");
+
+            // Cross-schema FK: reports.report_jobs → users.Users
+            migrationBuilder.Sql(@"
+                ALTER TABLE reports.report_jobs
+                    ADD CONSTRAINT ""FK_report_jobs_Users_RequestedBy""
+                    FOREIGN KEY (""RequestedBy"") REFERENCES users.""Users"" (""Id"") ON DELETE CASCADE;
+            ");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql(@"
+                ALTER TABLE reports.report_jobs
+                    DROP CONSTRAINT IF EXISTS ""FK_report_jobs_Users_RequestedBy"";
+            ");
+
             migrationBuilder.DropTable(
                 name: "report_jobs",
                 schema: "reports");

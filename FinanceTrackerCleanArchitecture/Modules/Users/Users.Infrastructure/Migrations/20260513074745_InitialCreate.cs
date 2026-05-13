@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -11,8 +11,11 @@ namespace Users.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(name: "users");
+
             migrationBuilder.CreateTable(
                 name: "Users",
+                schema: "users",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -28,6 +31,7 @@ namespace Users.Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Profiles",
+                schema: "users",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -43,6 +47,7 @@ namespace Users.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_Profiles_Users_UserId",
                         column: x => x.UserId,
+                        principalSchema: "users",
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -50,6 +55,7 @@ namespace Users.Infrastructure.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_Profiles_UserId",
+                schema: "users",
                 table: "Profiles",
                 column: "UserId");
         }
@@ -57,11 +63,8 @@ namespace Users.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Profiles");
-
-            migrationBuilder.DropTable(
-                name: "Users");
+            migrationBuilder.DropTable(name: "Profiles", schema: "users");
+            migrationBuilder.DropTable(name: "Users", schema: "users");
         }
     }
 }

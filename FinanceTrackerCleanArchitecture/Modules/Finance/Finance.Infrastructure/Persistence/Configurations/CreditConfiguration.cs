@@ -16,6 +16,7 @@ public class CreditConfiguration : IEntityTypeConfiguration<Credit>
     builder.Property(c => c.InterestRate).HasColumnType("decimal(5,2)");
     builder.Property(c => c.IsClosed).IsRequired();
     builder.Property(c => c.ProfileId).IsRequired();
+    builder.HasIndex(c => c.ProfileId);
     builder.HasOne(c => c.Currency).WithMany().HasForeignKey(c => c.CurrencyId);
   }
 }

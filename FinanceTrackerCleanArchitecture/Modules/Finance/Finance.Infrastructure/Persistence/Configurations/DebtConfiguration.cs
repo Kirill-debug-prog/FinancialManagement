@@ -15,6 +15,7 @@ public class DebtConfiguration : IEntityTypeConfiguration<Debt>
     builder.Property(d => d.DueDate).IsRequired(false);
     builder.Property(d => d.IsRepaid).IsRequired();
     builder.Property(d => d.ProfileId).IsRequired();
+    builder.HasIndex(d => d.ProfileId);
     builder.HasOne(d => d.Currency).WithMany().HasForeignKey(d => d.CurrencyId);
   }
 }

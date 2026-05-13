@@ -14,5 +14,6 @@ public class UnitConfiguration : IEntityTypeConfiguration<Unit>
     builder.HasIndex(u => u.ShortName);
     builder.Property(u => u.IsSystem).IsRequired();
     builder.Property(u => u.ProfileId).IsRequired(false);
+    builder.HasIndex(u => u.ProfileId);
   }
 }

@@ -5,6 +5,8 @@ namespace Finance.Infrastructure.Persistence;
 
 public class FinanceDbContext : DbContext
 {
+  public const string Schema = "finance";
+
   public DbSet<Wallet> Wallets { get; set; }
   public DbSet<Currency> Currencies { get; set; }
   public DbSet<Transaction> Transactions { get; set; }
@@ -22,5 +24,7 @@ public class FinanceDbContext : DbContext
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
     modelBuilder.ApplyConfigurationsFromAssembly(typeof(FinanceDbContext).Assembly);
+    modelBuilder.HasDefaultSchema(Schema);
+    base.OnModelCreating(modelBuilder);
   }
 }

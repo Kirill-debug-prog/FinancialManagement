@@ -18,17 +18,25 @@ services:
 
   backend:
     build:
-      context: ./FInanceTracker
+      context: ./FinanceTrackerCleanArchitecture
       dockerfile: Dockerfile
     restart: unless-stopped
     ports:
       - "8080:8080"
     environment:
-      ConnectionStrings__DefaultConnection: "Server=db;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
-      Jwt__Key: ${JWT_KEY}
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
       Jwt__Issuer: ${JWT_ISSUER}
       Jwt__Audience: ${JWT_AUDIENCE}
-      Jwt__ExpireMinutes: ${JWT_EXPIRE_MINUTES}
+      Jwt__Secret: ${JWT_SECRET}
+      Jwt__ExpirationHours: ${JWT_EXPIRATION_HOURS}
+      S3__ServiceUrl: ${S3_SERVICE_URL}
+      S3__Region: ${S3_REGION}
+      S3__AccessKey: ${S3_ACCESS_KEY}
+      S3__SecretKey: ${S3_SECRET_KEY}
+      S3__Bucket: ${S3_BUCKET}
+      S3__PresignedUrlExpirationMinutes: ${S3_PRESIGNED_URL_EXPIRATION_MINUTES}
     depends_on:
       db:
         condition: service_healthy
