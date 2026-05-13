@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, CardHeader, CradTitle, CardDescription } from "../../components/ui/card/card";
+import { Card, CardHeader, CardTitle, CardDescription } from "../../components/ui/card/card";
 import './Auth.scss'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs/tabs";
 import { Label } from "../../components/ui/label/label";
@@ -12,7 +12,7 @@ import { getProfiles } from '../../api/profiles';
 import { setActiveProfileId } from '../../api/client';
 
 const emailRegex = /^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-const MIN_PASSWORD_LENGTH = 8;
+const MIN_PASSWORD_LENGTH = 6;
 const MAX_PASSWORD_LENGTH = 128;
 const MAX_EMAIL_LENGTH = 254;
 
@@ -224,7 +224,7 @@ function Auth({ onLogin }) {
         <div className="main-auth">
             <Card className="auth-card">
                 <CardHeader className="auth-card-header">
-                    <CradTitle className="auth-card-title">Финансовый помошник</CradTitle>
+                    <CardTitle className="auth-card-title">Финансовый помошник</CardTitle>
                     <CardDescription className="auth-card-description">
                         Управляйте своими финансами с  умом
                     </CardDescription>

@@ -47,16 +47,29 @@ export function clearAuth() {
 }
 
 /**
- * Проверить, авторизован ли пользователь (валидный не истекший токен)
- * @returns {boolean} true если авторизован и токен не истек
+ * Проверить, авторизован ли пользователь
+ * @returns {boolean}
  */
 export function isAuthenticated() {
     const token = getToken();
+    
     if (!token) return false;
+    
     try {
         const payload = JSON.parse(atob(token.split('.')[1]));
-        return payload.exp * 1000 > Date.now();
-    } catch {
+        // Проверяем что токен еще действителен (срок не истек)
+        const isTokenValid = payload.exp && payload.exp * 1000 > Date.now();
+        
+        if (!isTokenValid) {
+            // Если токен истек, очищаем все данные
+            clearAuth();
+            return false;
+        }
+        
+        return true;
+    } catch (error) {
+        console.error('Error parsing token:', error);
+        clearAuth();
         return false;
     }
 }
@@ -80,12 +93,11 @@ export function parseJwt(token) {
 // ============================================================================
 
 /**
- * Выполнить HTTP запрос с автоматической авторизацией
+ * Выполнить HTTP запрос с авторизацией
  * @private
- * @param {string} url URL для запроса (относительный путь)
+ * @param {string} url URL для запроса
  * @param {object} options опции fetch
- * @returns {Promise} JSON ответ от сервера
- * @throws {Error} Если статус ответа не OK или сессия истекла
+ * @returns {Promise} JSON ответ
  */
 async function request(url, options = {}) {
     const token = getToken();
@@ -98,28 +110,35 @@ async function request(url, options = {}) {
         headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${API_BASE_URL}${url}`, {
-        ...options,
-        headers,
-    });
+    const fullUrl = `${API_BASE_URL}${url}`;
 
-    // Обработка 401 - сессия истекла
-    if (response.status === 401) {
-        clearAuth();
-        window.location.href = '/login';
-        throw new Error('Сессия истекла');
+    try {
+        const response = await fetch(fullUrl, {
+            ...options,
+            headers,
+        });
+
+        // Обработка 401 - сессия истекла
+        if (response.status === 401) {
+            clearAuth();
+            window.location.href = '/login';
+            throw new Error('Сессия истекла');
+        }
+
+        // Обработка ошибочных статусов
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({ message: 'Ошибка сервера' }));
+            throw new Error(error.message || `HTTP ${response.status}`);
+        }
+
+        // Обработка 204 No Content
+        if (response.status === 204) return null;
+        
+        return await response.json();
+    } catch (error) {
+        console.error('API Error:', error);
+        throw error;
     }
-
-    // Обработка ошибочных статусов
-    if (!response.ok) {
-        const error = await response.json().catch(() => ({ message: 'Ошибка сервера' }));
-        throw new Error(error.message || `HTTP ${response.status}`);
-    }
-
-    // Обработка 204 No Content
-    if (response.status === 204) return null;
-    
-    return response.json();
 }
 
 // ============================================================================
@@ -131,33 +150,8 @@ async function request(url, options = {}) {
  * @type {object}
  */
 export const api = {
-    /**
-     * GET запрос
-     * @param {string} url URL для запроса
-     * @returns {Promise} JSON ответ
-     */
-    get: (url) => request(url),
-    
-    /**
-     * POST запрос
-     * @param {string} url URL для запроса
-     * @param {object} data Тело запроса
-     * @returns {Promise} JSON ответ
-     */
+    get: (url, options = {}) => request(url, { ...options, method: 'GET' }),
     post: (url, data) => request(url, { method: 'POST', body: JSON.stringify(data) }),
-    
-    /**
-     * PUT запрос
-     * @param {string} url URL для запроса
-     * @param {object} data Тело запроса
-     * @returns {Promise} JSON ответ
-     */
     put: (url, data) => request(url, { method: 'PUT', body: JSON.stringify(data) }),
-    
-    /**
-     * DELETE запрос
-     * @param {string} url URL для запроса
-     * @returns {Promise} JSON ответ
-     */
     delete: (url) => request(url, { method: 'DELETE' }),
 };

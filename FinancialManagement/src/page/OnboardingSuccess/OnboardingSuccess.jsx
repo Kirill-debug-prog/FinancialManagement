@@ -1,3 +1,4 @@
+import React from 'react'
 import { motion } from 'framer-motion';
 import { CheckCircle, Sparkles, TrendingUp, Wallet, BarChart3 } from 'lucide-react';
 import './OnboardingSuccess.scss';

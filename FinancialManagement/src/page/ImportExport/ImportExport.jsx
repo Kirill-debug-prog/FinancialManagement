@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select/select";
 import { Upload, FileText, FileSpreadsheet, File } from 'lucide-react';
@@ -6,7 +6,7 @@ import { Button } from '../../components/ui/button/button';
 import { Badge } from '../../components/ui/badge/badge';
 import { toast } from 'sonner';
 import './ImportExport.scss'
-import { Card, CardContent, CradTitle, CardHeader } from '../../components/ui/card/card';
+import { Card, CardContent, CardTitle, CardHeader } from '../../components/ui/card/card';
 import { Progress } from '../../components/ui/progress/progress';
 import { Label } from '../../components/ui/label/label';
 
@@ -154,7 +154,7 @@ export default function ImportExport() {
                     <div className="import-export__import-section">
                         <Card className="import-export__import-card">
                             <CardHeader>
-                                <CradTitle className="text-lg">Импорт данных</CradTitle>
+                                <CardTitle className="text-lg">Импорт данных</CardTitle>
                             </CardHeader>
                             <CardContent className="import-export__import-card-content">
                                 <div className="import-export__import-controls">
@@ -199,7 +199,7 @@ export default function ImportExport() {
                     <div className="import-export__export-section">
                         <Card className="import-export__export-card">
                             <CardHeader>
-                                <CradTitle className="text-lg">Экспорт данных</CradTitle>
+                                <CardTitle className="text-lg">Экспорт данных</CardTitle>
                             </CardHeader>
                             <CardContent className="import-export__export-card-content">
                                 <div className="import-export__controls">
@@ -299,7 +299,7 @@ export default function ImportExport() {
                     <div className="import-export__history-section">
                         <Card className="card import-export__card">
                             <CardHeader>
-                                <CradTitle className="text-lg">История импорта</CradTitle>
+                                <CardTitle className="text-lg">История импорта</CardTitle>
                             </CardHeader>
 
                             <CardContent className="import-export__card-content">
@@ -330,7 +330,7 @@ export default function ImportExport() {
 
                         <Card className="card import-export__card">
                             <CardHeader>
-                                <CradTitle className="text-lg">История экспорта</CradTitle>
+                                <CardTitle className="text-lg">История экспорта</CardTitle>
                             </CardHeader>
                             <CardContent className="import-export__card-content">
                                 <div className="import-export__history-list">

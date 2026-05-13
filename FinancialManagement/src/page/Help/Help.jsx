@@ -1,16 +1,15 @@
 import {
-    Book,
     Search,
     HelpCircle,
     CheckCircle,
     Lightbulb
 } from 'lucide-react';
-import { Card, CardContent, CradTitle, CardHeader, CardDescription } from '../../components/ui/card/card';
+import { Card, CardContent, CardTitle, CardHeader, CardDescription } from '../../components/ui/card/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs/tabs';
 import { Input } from '../../components/ui/input_data/input';
 import { Badge } from '../../components/ui/badge/badge';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '../../components/ui/Accordion/Accordion';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { sections, faqGeneral, tips } from '../../data/help-content';
 import './Help.scss';
 
@@ -78,9 +77,9 @@ export default function Help() {
                                                 </div>
 
                                                 <div className="help-card__text">
-                                                    <CradTitle className="help-card__title">
+                                                    <CardTitle className="help-card__title">
                                                         {section.title}
-                                                    </CradTitle>
+                                                    </CardTitle>
                                                     <CardDescription className="help-card__description">
                                                         {section.description}
                                                     </CardDescription>
@@ -121,10 +120,10 @@ export default function Help() {
                 <TabsContent value="faq" className="faq-tab">
                     <Card className="faq-card">
                         <CardHeader className="faq-card__header">
-                            <CradTitle className="faq-card__title">
+                            <CardTitle className="faq-card__title">
                                 <HelpCircle className="faq-card__title-icon" />
                                 Часто задаваемые вопросы
-                            </CradTitle>
+                            </CardTitle>
 
                             <CardDescription className="faq-card__description">
                                 Ответы на самые популярные вопросы пользователей
@@ -161,10 +160,10 @@ export default function Help() {
                     <div className="tips-tab__wrapper">
                         <Card className="tips-header">
                             <CardHeader className="tips-header__content">
-                                <CradTitle className="tips-header__title">
+                                <CardTitle className="tips-header__title">
                                     <Lightbulb className="tips-header__icon" />
                                     Полезные советы
-                                </CradTitle>
+                                </CardTitle>
 
                                 <CardDescription className="tips-header__description">
                                     Рекомендации для эффективного управления финансами
@@ -183,9 +182,9 @@ export default function Help() {
                                                 <div className="tip-card__icon">
                                                     <Icon className="tip-card__icon-svg" />
                                                 </div>
-                                                <CradTitle className="tip-card__title">
+                                                <CardTitle className="tip-card__title">
                                                     {tip.title}
-                                                </CradTitle>
+                                                </CardTitle>
                                             </div>
                                         </CardHeader>
 
@@ -200,9 +199,9 @@ export default function Help() {
 
                     <Card className="first-steps">
                         <CardHeader className="first-steps__header">
-                            <CradTitle className="first-steps__title">
+                            <CardTitle className="first-steps__title">
                                 Первые шаги
-                            </CradTitle>
+                            </CardTitle>
                         </CardHeader>
 
                         <CardContent className="first-steps__content">

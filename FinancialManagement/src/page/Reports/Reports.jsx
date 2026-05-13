@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CradTitle, CardHeader } from '../../components/ui/card/card';
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardTitle, CardHeader } from '../../components/ui/card/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select/select";
 import { Button } from '../../components/ui/button/button';
 import { Trash2, TrendingUp, TrendingDown, Calendar } from 'lucide-react';
@@ -120,7 +120,7 @@ export function Reports() {
             {/* Filters */}
             <Card className="report__filter">
                 <CardHeader className="report__filter-header">
-                    <CradTitle className="report__filter-title">Фильтры отчётов</CradTitle>
+                    <CardTitle className="report__filter-title">Фильтры отчётов</CardTitle>
                 </CardHeader>
 
                 <CardContent className="report__filter-content">
@@ -160,7 +160,7 @@ export function Reports() {
             <div className="report__summary-cards">
                 <Card className="report__summery-card">
                     <CardHeader className="card__header">
-                        <CradTitle>Общий доход</CradTitle>
+                        <CardTitle>Общий доход</CardTitle>
                         <TrendingUp className="icon--green" />
                     </CardHeader>
 
@@ -172,7 +172,7 @@ export function Reports() {
 
                 <Card className="report__summery-card">
                     <CardHeader className="card__header">
-                        <CradTitle>Общий расход</CradTitle>
+                        <CardTitle>Общий расход</CardTitle>
                         <TrendingDown className="icon--red" />
                     </CardHeader>
                     <CardContent>
@@ -183,7 +183,7 @@ export function Reports() {
 
                 <Card className="report__summery-card">
                     <CardHeader className="card__header">
-                        <CradTitle>Средний доход</CradTitle>
+                        <CardTitle>Средний доход</CardTitle>
                         <Calendar className="icon--blue" />
                     </CardHeader>
                     <CardContent>
@@ -194,7 +194,7 @@ export function Reports() {
 
                 <Card className="report__summery-card">
                     <CardHeader className="card__header">
-                        <CradTitle>Средний расход</CradTitle>
+                        <CardTitle>Средний расход</CardTitle>
                         <Calendar className="icon--purple" />
                     </CardHeader>
                     <CardContent>
@@ -208,7 +208,7 @@ export function Reports() {
             {monthlyData.length > 0 && (
                 <Card>
                     <CardHeader>
-                        <CradTitle>Доходы и расходы по месяцам</CradTitle>
+                        <CardTitle>Доходы и расходы по месяцам</CardTitle>
                     </CardHeader>
 
                     <CardContent>
@@ -232,7 +232,7 @@ export function Reports() {
                 {monthlyData.length > 0 && (
                     <Card className="balance-trend">
                         <CardHeader>
-                            <CradTitle>Динамика баланса</CradTitle>
+                            <CardTitle>Динамика баланса</CardTitle>
                         </CardHeader>
 
                         <CardContent>
@@ -253,7 +253,7 @@ export function Reports() {
                 {showExpenseChart && categoryExpenseData.length > 0 && (
                     <Card className="expense-categories">
                         <CardHeader>
-                            <CradTitle>Структура расходов</CradTitle>
+                            <CardTitle>Структура расходов</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <ResponsiveContainer width="100%" height={300}>
@@ -283,7 +283,7 @@ export function Reports() {
                 {showIncomeChart && categoryIncomeData.length > 0 && (
                     <Card className="income-categories">
                         <CardHeader>
-                            <CradTitle>Структура доходов</CradTitle>
+                            <CardTitle>Структура доходов</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <ResponsiveContainer width="100%" height={300}>
@@ -313,7 +313,7 @@ export function Reports() {
                 {showExpenseChart && categoryExpenseData.length > 0 && (
                     <Card className="top-categories">
                         <CardHeader>
-                            <CradTitle>Топ категорий расходов</CradTitle>
+                            <CardTitle>Топ категорий расходов</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="top-categories__list">

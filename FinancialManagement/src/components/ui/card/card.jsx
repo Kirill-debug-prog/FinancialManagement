@@ -18,7 +18,7 @@ function CardHeader ({className, ...props}) {
     )
 }
 
-function CradTitle ({className, ...props}) {
+function CardTitle ({className, ...props}) {
     return (
         <h4 className={`cardTitle ${className ||""}`}
         {...props}>
@@ -45,7 +45,7 @@ function CardContent({className, ...props}) {
 export  {
     Card,
     CardHeader,
-    CradTitle,
+    CardTitle,
     CardDescription,
     CardContent,
 }

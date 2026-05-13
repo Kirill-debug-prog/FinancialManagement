@@ -8,9 +8,19 @@ import { api, setToken, parseJwt } from './client';
  * @throws {Error} Если ошибка при авторизации
  */
 export async function login(email, password) {
-    const data = await api.post('/auth/login', { email, password });
-    setToken(data.token);
-    return data.token;
+    try {
+        const data = await api.post('/auth/login', { email, password });
+        if (data && data.token) {
+            setToken(data.token);
+            // Сохраняем информацию о том, что пользователь авторизирован
+            localStorage.setItem('auth', 'true');
+            console.log('[Auth] Login successful, token saved');
+        }
+        return data.token;
+    } catch (error) {
+        console.error('[Auth] Login failed:', error);
+        throw error;
+    }
 }
 
 /**

@@ -1,13 +1,18 @@
+import React from 'react'
+import { BrowserRouter } from 'react-router-dom'
 import { Toaster } from 'sonner'
 import './App.css'
-import Router from './app/Router.jsx'
+import AppRoutes from './app/Router.jsx'
+import ErrorBoundary from './components/ErrorBoundary'
 
 function App() {
   return (
-    <>
-      <Router />
-      <Toaster />
-    </>
+    <BrowserRouter>
+      <ErrorBoundary>
+        <AppRoutes />
+        <Toaster />
+      </ErrorBoundary>
+    </BrowserRouter>
   )
 }
 
