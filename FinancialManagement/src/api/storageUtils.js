@@ -1,6 +1,6 @@
 /**
  * Storage Management Utilities
- * Вспомогательные функции для управления браузерными хранилищами
+ * Вспомогательные функции для управления браузерным хранилищем (localStorage)
  */
 
 /**
@@ -9,21 +9,8 @@
 export function getLocalStorageSize() {
     let total = 0;
     for (let key in localStorage) {
-        if (localStorage.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(localStorage, key)) {
             total += localStorage[key].length + key.length;
-        }
-    }
-    return (total / 1024).toFixed(2);
-}
-
-/**
- * Получить размер sessionStorage в KB
- */
-export function getSessionStorageSize() {
-    let total = 0;
-    for (let key in sessionStorage) {
-        if (sessionStorage.hasOwnProperty(key)) {
-            total += sessionStorage[key].length + key.length;
         }
     }
     return (total / 1024).toFixed(2);
@@ -35,27 +22,10 @@ export function getSessionStorageSize() {
 export function getAllLocalStorageKeys() {
     const keys = [];
     for (let key in localStorage) {
-        if (localStorage.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(localStorage, key)) {
             keys.push({
                 key,
                 size: (localStorage[key].length / 1024).toFixed(2),
-                prefix: key.split('_')[0]
-            });
-        }
-    }
-    return keys;
-}
-
-/**
- * Получить все ключи из sessionStorage
- */
-export function getAllSessionStorageKeys() {
-    const keys = [];
-    for (let key in sessionStorage) {
-        if (sessionStorage.hasOwnProperty(key)) {
-            keys.push({
-                key,
-                size: (sessionStorage[key].length / 1024).toFixed(2),
                 prefix: key.split('_')[0]
             });
         }
@@ -69,25 +39,11 @@ export function getAllSessionStorageKeys() {
 export function clearLocalStorageByPrefix(prefix) {
     const keysToRemove = [];
     for (let key in localStorage) {
-        if (localStorage.hasOwnProperty(key) && key.startsWith(prefix)) {
+        if (Object.prototype.hasOwnProperty.call(localStorage, key) && key.startsWith(prefix)) {
             keysToRemove.push(key);
         }
     }
     keysToRemove.forEach(key => localStorage.removeItem(key));
-    return keysToRemove.length;
-}
-
-/**
- * Очистить все ключи из sessionStorage с определенным префиксом
- */
-export function clearSessionStorageByPrefix(prefix) {
-    const keysToRemove = [];
-    for (let key in sessionStorage) {
-        if (sessionStorage.hasOwnProperty(key) && key.startsWith(prefix)) {
-            keysToRemove.push(key);
-        }
-    }
-    keysToRemove.forEach(key => sessionStorage.removeItem(key));
     return keysToRemove.length;
 }
 
@@ -101,20 +57,10 @@ export function clearAllLocalStorage() {
 }
 
 /**
- * Очистить весь sessionStorage
- */
-export function clearAllSessionStorage() {
-    const count = sessionStorage.length;
-    sessionStorage.clear();
-    return count;
-}
-
-/**
- * Получить подробную информацию об всех хранилищах
+ * Получить подробную информацию об хранилище
  */
 export function getStorageInfo() {
     const localKeys = getAllLocalStorageKeys();
-    const sessionKeys = getAllSessionStorageKeys();
     
     // Группировка по префиксам
     const groupByPrefix = (keys) => {
@@ -135,12 +81,6 @@ export function getStorageInfo() {
             totalCount: localKeys.length,
             byPrefix: groupByPrefix(localKeys),
             keys: localKeys
-        },
-        sessionStorage: {
-            totalSize: getSessionStorageSize(),
-            totalCount: sessionKeys.length,
-            byPrefix: groupByPrefix(sessionKeys),
-            keys: sessionKeys
         }
     };
 }
@@ -150,27 +90,17 @@ export function getStorageInfo() {
  */
 export function exportStorageState() {
     const storage = {
-        localStorage: {},
-        sessionStorage: {}
+        localStorage: {}
     };
     
-    // Экспортируем только некешированные данные (auth, preferences, appState)
+    // Экспортируем только важные данные (auth, preferences, appState)
     const prefixesToExport = ['APP_STATE_', 'APP_CACHE_', 'token', 'profileId', 'auth', 'onboarding'];
     
     for (let key in localStorage) {
-        if (localStorage.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(localStorage, key)) {
             const shouldExport = prefixesToExport.some(prefix => key.includes(prefix) || key.startsWith('APP_'));
             if (shouldExport) {
                 storage.localStorage[key] = localStorage[key];
-            }
-        }
-    }
-    
-    for (let key in sessionStorage) {
-        if (sessionStorage.hasOwnProperty(key)) {
-            const shouldExport = key.startsWith('APP_');
-            if (shouldExport) {
-                storage.sessionStorage[key] = sessionStorage[key];
             }
         }
     }
@@ -187,13 +117,6 @@ export function importStorageState(state) {
         if (state.localStorage) {
             Object.keys(state.localStorage).forEach(key => {
                 localStorage.setItem(key, state.localStorage[key]);
-            });
-        }
-        
-        // Импортируем sessionStorage
-        if (state.sessionStorage) {
-            Object.keys(state.sessionStorage).forEach(key => {
-                sessionStorage.setItem(key, state.sessionStorage[key]);
             });
         }
         

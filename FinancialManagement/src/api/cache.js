@@ -5,6 +5,7 @@
 
 const CACHE_STORAGE = 'APP_CACHE_';
 const CACHE_TIMESTAMP = '_TIMESTAMP_';
+const MAX_CACHE_SIZE = 5 * 1024 * 1024; // 5MB максимум для localStorage
 const CACHE_TTL = {
     SHORT: 5 * 60 * 1000,      // 5 минут
     MEDIUM: 15 * 60 * 1000,    // 15 минут
@@ -27,6 +28,55 @@ function getCacheKey(url, prefix = '') {
  */
 function isCacheValid(timestamp, ttl) {
     return Date.now() - timestamp < ttl;
+}
+
+/**
+ * Получить размер всех данных в localStorage
+ */
+function getLocalStorageSize() {
+    try {
+        let size = 0;
+        for (const key in localStorage) {
+            if (Object.prototype.hasOwnProperty.call(localStorage, key)) {
+                size += localStorage[key].length + key.length;
+            }
+        }
+        return size * 2; // Примерная оценка в байтах
+    } catch (error) {
+        console.warn('Error calculating localStorage size:', error);
+        return 0;
+    }
+}
+
+/**
+ * Удалить самый старый кеш (LRU - Least Recently Used)
+ */
+function clearOldestCache() {
+    try {
+        let oldestKey = null;
+        let oldestTime = Infinity;
+        
+        for (const key of Object.keys(localStorage)) {
+            if (key.includes(CACHE_STORAGE) && !key.includes(CACHE_TIMESTAMP)) {
+                const timestampKey = key.replace(CACHE_STORAGE, `${CACHE_STORAGE}${CACHE_TIMESTAMP}`);
+                const timestamp = parseInt(localStorage.getItem(timestampKey)) || 0;
+                
+                if (timestamp < oldestTime) {
+                    oldestTime = timestamp;
+                    oldestKey = key;
+                }
+            }
+        }
+        
+        if (oldestKey) {
+            localStorage.removeItem(oldestKey);
+            const timestampKey = oldestKey.replace(CACHE_STORAGE, `${CACHE_STORAGE}${CACHE_TIMESTAMP}`);
+            localStorage.removeItem(timestampKey);
+            console.log('[Cache] Removed oldest cache entry:', oldestKey);
+        }
+    } catch (error) {
+        console.warn('Error clearing oldest cache:', error);
+    }
 }
 
 /**
@@ -71,7 +121,7 @@ export function getLocalCache(url) {
         
         // Проверяем TTL (по умолчанию 1 час)
         if (!isCacheValid(timestamp, CACHE_TTL.LONG)) {
-            clearLocalCache(url);
+            clearCache(url);
             return null;
         }
         
@@ -87,13 +137,38 @@ export function getLocalCache(url) {
  */
 export function setLocalCache(url, data) {
     try {
+        // Проверяем размер перед сохранением
+        const currentSize = getLocalStorageSize();
+        const newDataSize = JSON.stringify(data).length * 2;
+        
+        // Если размер превышен, удаляем старые записи
+        if (currentSize + newDataSize > MAX_CACHE_SIZE) {
+            console.warn('[Cache] localStorage size limit reached, clearing old entries...');
+            
+            // Удаляем старые записи пока место не освободится
+            while (getLocalStorageSize() + newDataSize > MAX_CACHE_SIZE) {
+                clearOldestCache();
+                
+                // Защита от бесконечного цикла
+                if (Object.keys(localStorage).length === 0) {
+                    break;
+                }
+            }
+        }
+        
         const key = getCacheKey(url);
         localStorage.setItem(key, JSON.stringify(data));
         
         const timestampKey = getCacheKey(url, CACHE_TIMESTAMP);
         localStorage.setItem(timestampKey, Date.now().toString());
     } catch (error) {
-        console.warn('Error writing to localStorage cache:', error);
+        // Если квота превышена, очищаем весь кеш
+        if (error.name === 'QuotaExceededError') {
+            console.error('[Cache] localStorage quota exceeded, clearing all cache...');
+            clearAllCache();
+        } else {
+            console.warn('Error writing to localStorage cache:', error);
+        }
     }
 }
 

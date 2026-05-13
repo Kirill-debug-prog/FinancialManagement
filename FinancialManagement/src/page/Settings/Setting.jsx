@@ -1,10 +1,10 @@
+import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs/tabs";
 import { Input } from '../../components/ui/input_data/input'
 import { Button } from "../../components/ui/button/button";
 import { Label } from "../../components/ui/label/label";
-import { Card, CardContent, CradTitle, CardHeader } from '../../components/ui/card/card';
+import { Card, CardContent, CardTitle, CardHeader } from '../../components/ui/card/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select/select";
 import { Database, Trash2, Plus, Edit } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from "../../components/ui/avatar/avatar";
@@ -111,7 +111,7 @@ export default function Setting() {
                 <TabsContent value="profile">
                     <Card className="card">
                         <CardHeader className="card-header--start">
-                            <CradTitle>Информация профиля</CradTitle>
+                            <CardTitle>Информация профиля</CardTitle>
                         </CardHeader>
                         <CardContent className="card-content--spaced">
                             <div className="profile-row">
@@ -157,7 +157,7 @@ export default function Setting() {
                     <div className="stack">
                         <Card className="card">
                             <CardHeader className="card-header--between">
-                                <CradTitle>Категории расходов</CradTitle>
+                                <CardTitle>Категории расходов</CardTitle>
                                 <Dialog open={addCatDialogOpen && newCatType === 'expense'} onOpenChange={(v) => { setAddCatDialogOpen(v); setNewCatType('expense'); }}>
                                     <DialogTrigger asChild>
                                         <Button size="sm" onClick={() => { setNewCatType('expense'); setAddCatDialogOpen(true); }}>
@@ -207,7 +207,7 @@ export default function Setting() {
 
                         <Card className="card">
                             <CardHeader className="card-header--between">
-                                <CradTitle>Категории доходов</CradTitle>
+                                <CardTitle>Категории доходов</CardTitle>
                                 <Dialog open={addCatDialogOpen && newCatType === 'income'} onOpenChange={(v) => { setAddCatDialogOpen(v); setNewCatType('income'); }}>
                                     <DialogTrigger asChild>
                                         <Button size="sm" onClick={() => { setNewCatType('income'); setAddCatDialogOpen(true); }}>
@@ -260,7 +260,7 @@ export default function Setting() {
                 <TabsContent value="appearance">
                     <Card className="card">
                         <CardHeader className="card-header--start">
-                            <CradTitle>Внешний вид и локализация</CradTitle>
+                            <CardTitle>Внешний вид и локализация</CardTitle>
                         </CardHeader>
                         <CardContent className="card-content--spaced">
                             <div className="field">
@@ -313,7 +313,7 @@ export default function Setting() {
                 <TabsContent value="notifications">
                     <Card className="card">
                         <CardHeader className="card-header--start">
-                            <CradTitle>Настройки уведомлений</CradTitle>
+                            <CardTitle>Настройки уведомлений</CardTitle>
                         </CardHeader>
                         <CardContent className="card-content--spaced">
                             <div className="setting-row">
@@ -371,7 +371,7 @@ export default function Setting() {
                 <TabsContent value="security">
                     <Card>
                         <CardHeader className="card-header--start">
-                            <CradTitle>Безопасность и доступ</CradTitle>
+                            <CardTitle>Безопасность и доступ</CardTitle>
                         </CardHeader>
                         <CardContent className="card-content--spaced">
                             <div className="stack-sm">
@@ -398,7 +398,7 @@ export default function Setting() {
                     <div className="stack">
                         <Card className="card">
                             <CardHeader className="card-header--start">
-                                <CradTitle>Резервное копирование</CradTitle>
+                                <CardTitle>Резервное копирование</CardTitle>
                             </CardHeader>
                             <CardContent className="card-content--spaced">
                                 <p className="muted">Создайте резервную копию всех ваших финансовых данных</p>
@@ -417,7 +417,7 @@ export default function Setting() {
 
                         <Card className="cardcard--danger">
                             <CardHeader className="card-header--start">
-                                <CradTitle className="text-danger">Опасная зона</CradTitle>
+                                <CardTitle className="text-danger">Опасная зона</CardTitle>
                             </CardHeader>
                             <CardContent className="card-content--spaced">
                                 <div className="info--danger">

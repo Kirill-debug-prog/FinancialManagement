@@ -3,10 +3,9 @@
  * Управляет сохранением и восстановлением маршрута при перезагрузке страницы
  */
 
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { saveCurrentRoute, getLastRoute } from '../api/appState';
-import { isAuthenticated } from '../api/client';
 
 export default function RouteStateManager({ isAuthenticated: isAuth }) {
     const navigate = useNavigate();
@@ -29,7 +28,7 @@ export default function RouteStateManager({ isAuthenticated: isAuth }) {
                 navigate(lastRoute, { replace: true });
             }
         }
-    }, [isAuth, navigate]); // Зависит только от isAuth
+    }, [isAuth, navigate, location.pathname]); // Зависит только от isAuth
 
     return null; // Компонент только для логики, не рендерит UI
 }

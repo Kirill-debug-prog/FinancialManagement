@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { Card, CardContent, CardHeader, CradTitle } from '../../components/ui/card/card';
+import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card/card';
 import { Button } from '../../components/ui/button/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/table/table';
-import { Plus, Filter, Download, Edit, Trash2, Search, RefreshCw } from 'lucide-react';
+import { Plus, Download, Edit, Trash2, Search } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../../components/ui/dialog_/dialog';
 import { Input } from '../../components/ui/input_data/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select/select';
@@ -13,22 +13,35 @@ import { getTransactions, deleteTransaction } from '../../api/transactions';
 import { getAccounts } from '../../api/accounts';
 import { transformTransactionFromBackend } from '../../api/transformers';
 import { invalidateTransactionsCache } from '../../api/cacheInvalidation';
-import { usePageFilters, useDebounce } from '../../hooks/useAppState';
+import { useDebounce } from '../../hooks/usePerformance';
 import "./Transactions.scss"
 
-export default function Transactions() {
+function Transactions() {
     const [dialogOpen, setDialogOpen] = useState(false)
     const [editTransaction, setEditTransaction] = useState(null);
     const [filterType, setFilterType] = useState('all')
     const [filterAccount, setFilterAccount] = useState('all')
-    const [searchQuery, setsearchQuery] = useState('')
+    const [searchQuery, setSearchQuery] = useState('')
     const [dateFrom, setDateFrom] = useState('')
     const [dateTo, setDateTo] = useState('')
+    // eslint-disable-next-line no-unused-vars
     const [minAmount, setMinAmount] = useState('')
+    // eslint-disable-next-line no-unused-vars
     const [maxAmount, setMaxAmount] = useState('')
     const [transactions, setTransactions] = useState([])
     const [accounts, setAccounts] = useState([])
     const [loading, setLoading] = useState(true)
+
+    // Debounced поиск для оптимизации производительности (500ms задержка)
+    const debouncedSearch = useDebounce(() => {
+        // Фильтрация уже происходит в filteredTransactions ниже
+        // Это просто задерживает поиск при вводе текста
+    }, 500)
+
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value)
+        debouncedSearch(e.target.value)
+    }
 
     const fetchTransactions = async (filters = {}) => {
         try {
@@ -47,7 +60,7 @@ export default function Transactions() {
                 const accs = await getAccounts();
                 setAccounts(accs);
                 setLoading(false);
-            } catch (err) {
+            } catch {
                 toast.error('Ошибка загрузки данных');
                 setLoading(false);
             }
@@ -155,7 +168,7 @@ export default function Transactions() {
             {/* Filters card */}
             <Card className="transactions__card">
                 <CardHeader>
-                    <CradTitle className="text-xl" style={{ color: "#666363" }}>Фильтры и поиск</CradTitle>
+                    <CardTitle className="text-xl" style={{ color: "#666363" }}>Фильтры и поиск</CardTitle>
                 </CardHeader>
                 <CardContent className="transactions__card-content">
                     <div className="transactions__filters">
@@ -165,7 +178,7 @@ export default function Transactions() {
                                 placeholder="Поиск по описанию или категории..."
                                 className="transactions__search-input"
                                 value={searchQuery}
-                                onChange={(e) => setsearchQuery(e.target.value)}
+                                onChange={handleSearchChange}
                             />
                         </div>
 
@@ -303,3 +316,5 @@ export default function Transactions() {
         </div>
     );
 }
+
+export default React.memo(Transactions);

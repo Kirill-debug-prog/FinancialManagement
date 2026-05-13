@@ -1,5 +1,4 @@
 import { API_BASE_URL } from './config';
-import { getMemoryCache, setMemoryCache, getLocalCache, setLocalCache, CACHE_TTL } from './cache';
 
 // ============================================================================
 // Authentication & Storage Management
@@ -48,12 +47,11 @@ export function clearAuth() {
 }
 
 /**
- * Проверить, авторизован ли пользователь (валидный не истекший токен)
- * @returns {boolean} true если авторизован и токен не истек
+ * Проверить, авторизован ли пользователь
+ * @returns {boolean}
  */
 export function isAuthenticated() {
     const token = getToken();
-    const onboarding = localStorage.getItem('onboarding');
     
     if (!token) return false;
     
@@ -91,64 +89,17 @@ export function parseJwt(token) {
 }
 
 // ============================================================================
-// Cache Configuration
+// HTTP Request Handler
 // ============================================================================
 
 /**
- * Конфигурация кеша для разных типов запросов
- */
-const CACHE_CONFIG = {
-    // GET запросы кешируются
-    'GET': true,
-    // POST/PUT/DELETE запросы не кешируются по умолчанию
-    'POST': false,
-    'PUT': false,
-    'DELETE': false
-};
-
-/**
- * Время жизни кеша для разных URL паттернов
- */
-const URL_CACHE_TTL = {
-    '/profiles': CACHE_TTL.LONG,           // 1 час
-    '/accounts': CACHE_TTL.MEDIUM,        // 15 минут
-    '/categories': CACHE_TTL.MEDIUM,      // 15 минут
-    '/currencies': CACHE_TTL.VERY_LONG,   // 24 часа (редко меняется)
-    '/units': CACHE_TTL.VERY_LONG,        // 24 часа
-    '/transactions': CACHE_TTL.SHORT,     // 5 минут
-    '/credits': CACHE_TTL.MEDIUM,         // 15 минут
-    '/debts': CACHE_TTL.MEDIUM,           // 15 минут
-    '/deposits': CACHE_TTL.MEDIUM,        // 15 минут
-    '/dashboard': CACHE_TTL.SHORT,        // 5 минут
-    '/reports': CACHE_TTL.SHORT,          // 5 минут
-};
-
-/**
- * Получить TTL для URL
- */
-function getCacheTTL(url) {
-    for (const [pattern, ttl] of Object.entries(URL_CACHE_TTL)) {
-        if (url.includes(pattern)) {
-            return ttl;
-        }
-    }
-    return CACHE_TTL.MEDIUM; // По умолчанию 15 минут
-}
-
-// ============================================================================
-// HTTP Request Handler with Caching
-// ============================================================================
-
-/**
- * Выполнить HTTP запрос с автоматической авторизацией и кешированием
+ * Выполнить HTTP запрос с авторизацией
  * @private
- * @param {string} url URL для запроса (относительный путь)
+ * @param {string} url URL для запроса
  * @param {object} options опции fetch
- * @returns {Promise} JSON ответ от сервера
- * @throws {Error} Если статус ответа не OK или сессия истекла
+ * @returns {Promise} JSON ответ
  */
 async function request(url, options = {}) {
-    const method = options.method || 'GET';
     const token = getToken();
     const headers = {
         'Content-Type': 'application/json',
@@ -161,65 +112,33 @@ async function request(url, options = {}) {
 
     const fullUrl = `${API_BASE_URL}${url}`;
 
-    // ========== CHECK CACHE FOR GET REQUESTS ==========
-    if (method === 'GET' && CACHE_CONFIG[method]) {
-        // Проверить memory cache
-        const cachedData = getMemoryCache(url);
-        if (cachedData) {
-            console.debug('[Cache] Memory hit:', url);
-            return cachedData;
-        }
-
-        // Проверить localStorage cache
-        const localCachedData = getLocalCache(url);
-        if (localCachedData) {
-            console.debug('[Cache] Local storage hit:', url);
-            // Восстановить в memory cache
-            const ttl = getCacheTTL(url);
-            setMemoryCache(url, localCachedData, ttl);
-            return localCachedData;
-        }
-    }
-
-    // ========== PERFORM ACTUAL REQUEST ==========
-    let response;
     try {
-        response = await fetch(fullUrl, {
+        const response = await fetch(fullUrl, {
             ...options,
             headers,
         });
+
+        // Обработка 401 - сессия истекла
+        if (response.status === 401) {
+            clearAuth();
+            window.location.href = '/login';
+            throw new Error('Сессия истекла');
+        }
+
+        // Обработка ошибочных статусов
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({ message: 'Ошибка сервера' }));
+            throw new Error(error.message || `HTTP ${response.status}`);
+        }
+
+        // Обработка 204 No Content
+        if (response.status === 204) return null;
+        
+        return await response.json();
     } catch (error) {
-        console.error('Network error:', error);
-        throw new Error('Ошибка подключения к серверу');
+        console.error('API Error:', error);
+        throw error;
     }
-
-    // Обработка 401 - сессия истекла
-    if (response.status === 401) {
-        clearAuth();
-        window.location.href = '/login';
-        throw new Error('Сессия истекла');
-    }
-
-    // Обработка ошибочных статусов
-    if (!response.ok) {
-        const error = await response.json().catch(() => ({ message: 'Ошибка сервера' }));
-        throw new Error(error.message || `HTTP ${response.status}`);
-    }
-
-    // Обработка 204 No Content
-    if (response.status === 204) return null;
-    
-    const data = await response.json();
-
-    // ========== SAVE TO CACHE FOR GET REQUESTS ==========
-    if (method === 'GET' && CACHE_CONFIG[method]) {
-        const ttl = getCacheTTL(url);
-        setMemoryCache(url, data, ttl);
-        setLocalCache(url, data);
-        console.debug('[Cache] Saved:', url);
-    }
-
-    return data;
 }
 
 // ============================================================================
@@ -227,38 +146,12 @@ async function request(url, options = {}) {
 // ============================================================================
 
 /**
- * API клиент для выполнения HTTP запросов с кешированием
+ * API клиент для выполнения HTTP запросов
  * @type {object}
  */
 export const api = {
-    /**
-     * GET запрос (с кешированием)
-     * @param {string} url URL для запроса
-     * @param {object} options дополнительные опции
-     * @returns {Promise} JSON ответ
-     */
     get: (url, options = {}) => request(url, { ...options, method: 'GET' }),
-    
-    /**
-     * POST запрос (без кеширования)
-     * @param {string} url URL для запроса
-     * @param {object} data Тело запроса
-     * @returns {Promise} JSON ответ
-     */
     post: (url, data) => request(url, { method: 'POST', body: JSON.stringify(data) }),
-    
-    /**
-     * PUT запрос (без кеширования)
-     * @param {string} url URL для запроса
-     * @param {object} data Тело запроса
-     * @returns {Promise} JSON ответ
-     */
     put: (url, data) => request(url, { method: 'PUT', body: JSON.stringify(data) }),
-    
-    /**
-     * DELETE запрос (без кеширования)
-     * @param {string} url URL для запроса
-     * @returns {Promise} JSON ответ
-     */
     delete: (url) => request(url, { method: 'DELETE' }),
 };

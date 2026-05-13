@@ -1,146 +1,128 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { useState, useEffect } from 'react'
-import Auth from '../page/Login/Auth'
-import FirstTimeWelcome from '../page/FirstTimeWelcome/FirstTimeWelcome'
-import { Onboarding } from '../page/Onboarding/Onboarding'
-import OnboardingSuccess from '../page/OnboardingSuccess/OnboardingSuccess'
-import AppLayout from '../layouts/AppLayout'
-import ProtectedRoute from './ProtectedRoute.jsx'
-import WelcomeModal from '../components/ui/WelcomeModel/WelcomeModal.jsx'
-import { isAuthenticated as checkAuth, clearAuth, getActiveProfileId, getToken } from '../api/client'
+import React, { useState, lazy, Suspense } from 'react'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import ScrollTop from '../components/ScrollTop.jsx'
 import RouteStateManager from '../components/RouteStateManager.jsx'
-import { clearAllCache } from '../api/cache'
-import { clearAppState } from '../api/appState'
+import ProtectedRoute from './ProtectedRoute.jsx'
+import { useAuth } from '../hooks/useAuth.js'
 
-export default function Router() {
-    const [isAuthenticated, setIsAuthenticated] = useState(false)
-    const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false)
+// Lazy loaded компоненты (Code Splitting)
+const Auth = lazy(() => import('../page/Login/Auth'))
+const FirstTimeWelcome = lazy(() => import('../page/FirstTimeWelcome/FirstTimeWelcome'))
+const Onboarding = lazy(() => import('../page/Onboarding/Onboarding').then(m => ({ default: m.Onboarding })))
+const OnboardingSuccess = lazy(() => import('../page/OnboardingSuccess/OnboardingSuccess'))
+const AppLayout = lazy(() => import('../layouts/AppLayout'))
+const WelcomeModal = lazy(() => import('../components/ui/WelcomeModel/WelcomeModal.jsx'))
+
+/**
+ * Loading компонент для Suspense fallback
+ */
+function LoadingFallback() {
+    return (
+        <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100vh',
+            backgroundColor: '#f5f5f5'
+        }}>
+            <div style={{
+                textAlign: 'center'
+            }}>
+                <div style={{
+                    width: '50px',
+                    height: '50px',
+                    border: '4px solid #e5e7eb',
+                    borderTop: '4px solid #3b82f6',
+                    borderRadius: '50%',
+                    animation: 'spin 1s linear infinite',
+                    margin: '0 auto 20px'
+                }} />
+                <p style={{ color: '#6b7280' }}>Загрузка...</p>
+                <style>{`
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                `}</style>
+            </div>
+        </div>
+    )
+}
+
+export default function AppRoutes() {
+    // Централизованная логика аутентификации из useAuth хука
+    const { isAuth, logout, hasCompletedOnboarding, setHasCompletedOnboarding, handleLogin } = useAuth()
     const [showWelcomeModal, setShowWelcomeModal] = useState(false)
     const [userName, setUserName] = useState('')
 
-    useEffect(() => {
-        // Проверяем авторизацию при загрузке приложения
-        const token = getToken();
-        const isAuth = checkAuth();
-        const hasProfile = getActiveProfileId();
-        const hasOnboarding = localStorage.getItem('onboarding') === 'true';
-        const hasAuth = localStorage.getItem('auth') === 'true';
-        
-        console.log('[Router Init] token:', !!token, 'isAuth:', isAuth, 'hasProfile:', hasProfile, 'hasOnboarding:', hasOnboarding, 'hasAuth:', hasAuth);
-        
-        // Если токен существует но невалиден (истек), очищаем все
-        if (token && !isAuth) {
-            console.log('[Router Init] Token expired, clearing auth');
-            clearAuth();
-            setIsAuthenticated(false);
-            setHasCompletedOnboarding(false);
-            return;
-        }
-        
-        // Если токен валиден, восстанавливаем состояние
-        if (isAuth || hasAuth) {
-            setIsAuthenticated(true);
-            if (hasProfile && hasOnboarding) {
-                setHasCompletedOnboarding(true);
-            }
-        } else {
-            setIsAuthenticated(false);
-            setHasCompletedOnboarding(false);
-        }
-    }, [])
-
-    const handleLogin = (isNewUser) => {
-        setIsAuthenticated(true)
-        
-        // Всегда сохраняем что пользователь авторизирован
-        localStorage.setItem('auth', 'true')
-        
-        // Если не новый пользователь, то он уже прошел онбординг
-        if (!isNewUser) {
-            setHasCompletedOnboarding(true)
-            localStorage.setItem('onboarding', 'true')
-        }
-    }
-
-    const logout = () => {
-        console.log('[Router] Logout called');
-        setIsAuthenticated(false);
-        setHasCompletedOnboarding(false);
-        setShowWelcomeModal(false);
-        
-        // Очистить все данные приложения при выходе
-        clearAuth();
-        clearAllCache();
-        clearAppState();
-    }
-
     return (
-        <BrowserRouter>
+        <>
             <ScrollTop />
             {/* Управление сохранением и восстановлением маршрута */}
-            <RouteStateManager isAuthenticated={isAuthenticated && hasCompletedOnboarding} />
-            <Routes>
+            <RouteStateManager isAuthenticated={isAuth && hasCompletedOnboarding} />
+            <Suspense fallback={<LoadingFallback />}>
+                <Routes>
 
-                {/* ---------- LOGIN ---------- */}
-                <Route
-                    path="/login"
-                    element={<Auth onLogin={handleLogin} />}
-                />
-
-                {/* ---------- ONBOARDING FLOW ---------- */}
-                <Route element={<ProtectedRoute isAllowed={isAuthenticated} />}>
-
-                    <Route path="/welcome" element={<FirstTimeWelcome />} />
-
+                    {/* ---------- LOGIN ---------- */}
                     <Route
-                        path="/onboarding"
-                        element={<Onboarding onComplete={(name) => setUserName(name)} />}
+                        path="/login"
+                        element={<Auth onLogin={handleLogin} />}
                     />
 
+                    {/* ---------- ONBOARDING FLOW ---------- */}
+                    <Route element={<ProtectedRoute isAllowed={isAuth} />}>
+
+                        <Route path="/welcome" element={<FirstTimeWelcome />} />
+
+                        <Route
+                            path="/onboarding"
+                            element={<Onboarding onComplete={(name) => setUserName(name)} />}
+                        />
+
+                        <Route
+                            path="/onboarding-success"
+                            element={
+                                <OnboardingSuccess
+                                    userName={userName || 'Пользователь'}
+                                    onContinue={() => {
+                                        setHasCompletedOnboarding(true)
+                                        localStorage.setItem('onboarding', 'true')
+                                        setShowWelcomeModal(true)
+                                    }}
+                                />
+                            }
+                        />
+                    </Route>
+
+                    {/* ---------- APP ---------- */}
                     <Route
-                        path="/onboarding-success"
                         element={
-                            <OnboardingSuccess
-                                userName={userName || 'Пользователь'}
-                                onContinue={() => {
-                                    setHasCompletedOnboarding(true)
-                                    localStorage.setItem('onboarding', 'true')
-                                    setShowWelcomeModal(true)
-                                }}
+                            <ProtectedRoute
+                                isAllowed={isAuth && hasCompletedOnboarding}
                             />
                         }
-                    />
-                </Route>
-
-                {/* ---------- APP ---------- */}
-                <Route
-                    element={
-                        <ProtectedRoute
-                            isAllowed={isAuthenticated && hasCompletedOnboarding}
+                    >
+                        <Route
+                            path="/app/*"
+                            element={
+                                <>
+                                    <AppLayout onLogout={logout} />
+                                    {showWelcomeModal && (
+                                        <WelcomeModal
+                                            userName={userName || 'Пользователь'}
+                                            onClose={() => setShowWelcomeModal(false)}
+                                        />
+                                    )}
+                                </>
+                            }
                         />
-                    }
-                >
-                    <Route
-                        path="/app/*"
-                        element={
-                            <>
-                                <AppLayout onLogout={logout} />
-                                {showWelcomeModal && (
-                                    <WelcomeModal
-                                        userName={userName || 'Пользователь'}
-                                        onClose={() => setShowWelcomeModal(false)}
-                                    />
-                                )}
-                            </>
-                        }
-                    />
-                </Route>
+                    </Route>
 
-                {/* ---------- FALLBACK ---------- */}
-                <Route path="*" element={<Navigate to="/login" />} />
+                    {/* ---------- FALLBACK ---------- */}
+                    <Route path="*" element={<Navigate to="/login" />} />
 
-            </Routes>
-        </BrowserRouter>
+                </Routes>
+            </Suspense>
+        </>
     )
 }

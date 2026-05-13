@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import FinanceProductCard from "../../components/ui/FinanceProductCard/FinanceProductCard";
 import { Badge } from "../../components/ui/badge/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../../components/ui/dialog_/dialog';
@@ -7,7 +7,7 @@ import { Card, CardHeader, CardContent } from "../../components/ui/card/card";
 import { Label } from '../../components/ui/label/label';
 import { Input } from '../../components/ui/input_data/input'
 import { Button } from "../../components/ui/button/button";
-import { Plus, AlertCircle, RefreshCw } from 'lucide-react';
+import { Plus, AlertCircle } from 'lucide-react';
 import { toast } from "sonner";
 import { Trash2 } from 'lucide-react';
 import { getCredits, createCredit, updateCredit, deleteCredit } from '../../api/credits';
@@ -894,7 +894,7 @@ export default function Credits() {
 
                                 <div className="dialog-warning-box">
                                     <p className="dialog-warning-box__text">
-                                        ⚠️ После подтверждения вся оставшаяся сумма кредита будет погашена, и статус кредита изменится на "Закрыт".
+                                        ⚠️ После подтверждения вся оставшаяся сумма кредита будет погашена, и статус кредита изменится на Закрыт.
                                     </p>
                                 </div>
                             </>

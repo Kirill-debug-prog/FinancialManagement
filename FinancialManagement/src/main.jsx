@@ -2,7 +2,10 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import './assets/styles/main.scss'
-import App from './App.jsx' 
+import App from './App.jsx'
+import { initializeGlobalErrorHandlers } from './api/globalErrorHandler'
+
+initializeGlobalErrorHandlers()
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
