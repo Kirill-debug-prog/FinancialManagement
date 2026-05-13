@@ -4,3 +4,9 @@
 **/.vscode/
 .git/
 .gitignore
+**/*.md
+**/LICENSE
+**/.github/
+Dockerfile*
+.dockerignore
+**/appsettings.Development.json
