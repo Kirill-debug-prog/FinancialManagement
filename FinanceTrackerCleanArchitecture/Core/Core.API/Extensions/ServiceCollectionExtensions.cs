@@ -1,5 +1,3 @@
-using Users.Domain.Interfaces;
-using Users.Application.Interfaces;
 using Users.Application.Users.Commands.LoginUser;
 using Users.Application.Users.Commands.RegisterUser;
 using Users.Application.Users.Commands.DeleteUser;
@@ -12,10 +10,6 @@ using Users.Application.Profiles.Commands.RenameProfile;
 using Users.Application.Profiles.Commands.ToggleProfileActive;
 using Users.Application.Profiles.Queries.GetProfileById;
 using Users.Application.Profiles.Queries.GetProfilesByUserId;
-using Users.Infrastructure.Persistence;
-using Users.Infrastructure.Persistence.Repositories;
-using Users.Infrastructure.Services;
-using Finance.Domain.Interfaces;
 using Finance.Application.Currencies.Queries.GetAllCurrencies;
 using Finance.Application.Currencies.Queries.GetCurrencyById;
 using Finance.Application.Currencies.Commands.UpdateCurrencyRate;
@@ -75,49 +69,14 @@ using Finance.Application.RecurringTransactions.Commands.DeleteRecurringTransact
 using Finance.Application.RecurringTransactions.Commands.DeactivateRecurringTransaction;
 using Finance.Application.RecurringTransactions.Queries.GetRecurringTransactionById;
 using Finance.Application.RecurringTransactions.Queries.GetRecurringTransactionsByWalletId;
-using Finance.Infrastructure.Persistence;
-using Finance.Infrastructure.Persistence.Repositories;
 using Reports.Application.Reports.Commands.CreateReport;
 using Reports.Application.Reports.Queries.GetReportStatus;
 using Reports.Application.Reports.Queries.GetReportDownloadUrl;
-using Microsoft.EntityFrameworkCore;
 
 namespace Core.API.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-  public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
-  {
-    var connectionString = configuration.GetConnectionString("DefaultConnection");
-
-    services.AddDbContext<UserDbContext>(options => options.UseNpgsql(connectionString));
-    services.AddDbContext<FinanceDbContext>(options => options.UseNpgsql(connectionString));
-
-    // User repositories
-    services.AddScoped<IUserRepository, UserRepository>();
-    services.AddScoped<IProfileRepository, ProfileRepository>();
-
-    // Finance repositories
-    services.AddScoped<IWalletRepository, WalletRepository>();
-    services.AddScoped<ICurrencyRepository, CurrencyRepository>();
-    services.AddScoped<IUnitRepository, UnitRepository>();
-    services.AddScoped<ICreditRepository, CreditRepository>();
-    services.AddScoped<IDebtRepository, DebtRepository>();
-    services.AddScoped<IDepositRepository, DepositRepository>();
-    services.AddScoped<ICategoryRepository, CategoryRepository>();
-    services.AddScoped<ITransactionRepository, TransactionRepository>();
-    services.AddScoped<IRecurringTransactionRepository, RecurringTransactionRepository>();
-
-    // Cross-module services
-    services.AddScoped<IProfileChecker, ProfileChecker>();
-
-    // User services
-    services.AddScoped<IPasswordHasher, PasswordHasher>();
-    services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
-
-    return services;
-  }
-
   public static IServiceCollection AddApplication(this IServiceCollection services)
   {
     // User application

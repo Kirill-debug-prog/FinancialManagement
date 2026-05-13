@@ -14,5 +14,6 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
     builder.Property(c => c.Icon).IsRequired(false);
     builder.Property(c => c.IsSystem).IsRequired();
     builder.Property(c => c.ProfileId).IsRequired(false);
+    builder.HasIndex(c => c.ProfileId);
   }
 }

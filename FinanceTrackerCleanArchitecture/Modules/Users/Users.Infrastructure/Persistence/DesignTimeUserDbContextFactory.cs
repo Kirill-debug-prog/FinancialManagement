@@ -2,11 +2,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 
-namespace Finance.Infrastructure.Persistence;
+namespace Users.Infrastructure.Persistence;
 
-public class DesignTimeFinanceDbContextFactory : IDesignTimeDbContextFactory<FinanceDbContext>
+public class DesignTimeUserDbContextFactory : IDesignTimeDbContextFactory<UserDbContext>
 {
-  public FinanceDbContext CreateDbContext(string[] args)
+  public UserDbContext CreateDbContext(string[] args)
   {
     var apiProjectPath = FindApiProjectPath();
 
@@ -22,12 +22,12 @@ public class DesignTimeFinanceDbContextFactory : IDesignTimeDbContextFactory<Fin
         "Connection string 'DefaultConnection' not found. " +
         $"Searched in: {apiProjectPath}");
 
-    var optionsBuilder = new DbContextOptionsBuilder<FinanceDbContext>();
+    var optionsBuilder = new DbContextOptionsBuilder<UserDbContext>();
     optionsBuilder.UseNpgsql(
       connectionString,
-      npgsql => npgsql.MigrationsHistoryTable("__EFMigrationsHistory", FinanceDbContext.Schema));
+      npgsql => npgsql.MigrationsHistoryTable("__EFMigrationsHistory", UserDbContext.Schema));
 
-    return new FinanceDbContext(optionsBuilder.Options);
+    return new UserDbContext(optionsBuilder.Options);
   }
 
   private static string FindApiProjectPath()

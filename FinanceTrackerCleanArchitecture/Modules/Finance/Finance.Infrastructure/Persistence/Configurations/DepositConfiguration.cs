@@ -16,6 +16,7 @@ public class DepositConfiguration : IEntityTypeConfiguration<Deposit>
     builder.Property(d => d.IsCapitalized).IsRequired();
     builder.Property(d => d.IsClosed).IsRequired();
     builder.Property(d => d.ProfileId).IsRequired();
+    builder.HasIndex(d => d.ProfileId);
     builder.HasOne(d => d.Currency).WithMany().HasForeignKey(d => d.CurrencyId);
   }
 }

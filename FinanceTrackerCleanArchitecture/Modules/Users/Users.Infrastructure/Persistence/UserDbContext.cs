@@ -5,6 +5,8 @@ namespace Users.Infrastructure.Persistence;
 
 public class UserDbContext : DbContext
 {
+  public const string Schema = "users";
+
   public DbSet<User> Users { get; set; }
   public DbSet<Profile> Profiles { get; set; }
 
@@ -15,5 +17,7 @@ public class UserDbContext : DbContext
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
     modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserDbContext).Assembly);
+    modelBuilder.HasDefaultSchema(Schema);
+    base.OnModelCreating(modelBuilder);
   }
 }

@@ -12,6 +12,7 @@ public class WalletConfiguration : IEntityTypeConfiguration<Wallet>
     builder.Property(w => w.Name).IsRequired().HasMaxLength(256);
     builder.Property(w => w.InitialBalance).HasColumnType("decimal(18,2)");
     builder.Property(w => w.ProfileId).IsRequired();
+    builder.HasIndex(w => w.ProfileId);
     builder.HasOne(w => w.Currency).WithMany().HasForeignKey(w => w.CurrencyId);
   }
 }
