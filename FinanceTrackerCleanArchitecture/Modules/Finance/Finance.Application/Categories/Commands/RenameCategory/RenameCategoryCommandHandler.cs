@@ -1,0 +1,31 @@
+﻿using Core.Domain.Common;
+using Finance.Domain.Interfaces;
+
+namespace Finance.Application.Categories.Commands.RenameCategory;
+
+public class RenameCategoryCommandHandler
+{
+  private readonly ICategoryRepository _categoryRepository;
+
+  public RenameCategoryCommandHandler(ICategoryRepository categoryRepository)
+  {
+    _categoryRepository = categoryRepository;
+  }
+
+  public async Task<Result<bool>> Handle(RenameCategoryCommand command)
+  {
+    var category = await _categoryRepository.GetByIdAsync(command.Id);
+    if (category is null)
+      return Result<bool>.Failure(new DomainError("Category.NotFound", "Category not found."));
+
+    if (category.IsSystem)
+      return Result<bool>.Failure(new DomainError("Category.CannotModifySystem", "System category cannot be modified."));
+
+    var result = category.Rename(command.NewName);
+    if (result.IsFailure)
+      return result;
+
+    await _categoryRepository.UpdateAsync(category);
+    return Result<bool>.Success(true);
+  }
+}

@@ -1,0 +1,30 @@
+﻿using Core.Domain.Common;
+using Finance.Domain.Interfaces;
+
+namespace Finance.Application.Currencies.Queries.GetCurrencyById;
+
+public class GetCurrencyByIdQueryHandler
+{
+  private readonly ICurrencyRepository _currencyRepository;
+
+  public GetCurrencyByIdQueryHandler(ICurrencyRepository currencyRepository)
+  {
+    _currencyRepository = currencyRepository;
+  }
+
+  public async Task<Result<GetCurrencyByIdResponse>> Handle(GetCurrencyByIdQuery query)
+  {
+    var currency = await _currencyRepository.GetByIdAsync(query.Id);
+    if (currency is null)
+      return Result<GetCurrencyByIdResponse>.Failure(new DomainError("Currency.NotFound", "Currency not found."));
+
+    return Result<GetCurrencyByIdResponse>.Success(new GetCurrencyByIdResponse(
+      currency.Id,
+      currency.Name,
+      currency.Code,
+      currency.NumericCode,
+      currency.Nominal,
+      currency.Rate,
+      currency.UnitRate));
+  }
+}

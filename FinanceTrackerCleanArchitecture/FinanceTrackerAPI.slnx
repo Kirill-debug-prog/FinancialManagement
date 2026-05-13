@@ -1,0 +1,24 @@
+<Solution>
+  <Folder Name="/Core/">
+    <Project Path="Core/Core.API/Core.API.csproj" />
+    <Project Path="Core/Core.Domain/Core.Domain.csproj" />
+    <Project Path="Core/Core.Infrastructure/Core.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/Modules/">
+    <Folder Name="/Modules/Users/">
+      <Project Path="Modules/Users/Users.Application/Users.Application.csproj" />
+      <Project Path="Modules/Users/Users.Domain/Users.Domain.csproj" />
+      <Project Path="Modules/Users/Users.Infrastructure/Users.Infrastructure.csproj" />
+    </Folder>
+    <Folder Name="/Modules/Reports/">
+      <Project Path="Modules/Reports/Reports.Application/Reports.Application.csproj" />
+      <Project Path="Modules/Reports/Reports.Domain/Reports.Domain.csproj" />
+      <Project Path="Modules/Reports/Reports.Infrastructure/Reports.Infrastructure.csproj" />
+    </Folder>
+    <Folder Name="/Modules/Finance/">
+      <Project Path="Modules/Finance/Finance.Application/Finance.Application.csproj" />
+      <Project Path="Modules/Finance/Finance.Domain/Finance.Domain.csproj" />
+      <Project Path="Modules/Finance/Finance.Infrastructure/Finance.Infrastructure.csproj" />
+    </Folder>
+  </Folder>
+</Solution>

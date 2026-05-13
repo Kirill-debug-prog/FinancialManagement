@@ -1,0 +1,30 @@
+﻿using Core.Domain.Common;
+using Finance.Domain.Interfaces;
+
+namespace Finance.Application.Currencies.Queries.GetAllCurrencies;
+
+public class GetAllCurrenciesQueryHandler
+{
+  private readonly ICurrencyRepository _currencyRepository;
+
+  public GetAllCurrenciesQueryHandler(ICurrencyRepository currencyRepository)
+  {
+    _currencyRepository = currencyRepository;
+  }
+
+  public async Task<Result<IEnumerable<GetAllCurrenciesResponse>>> Handle(GetAllCurrenciesQuery query)
+  {
+    var currencies = await _currencyRepository.GetAllAsync();
+
+    var response = currencies.Select(c => new GetAllCurrenciesResponse(
+      c.Id,
+      c.Name,
+      c.Code,
+      c.NumericCode,
+      c.Nominal,
+      c.Rate,
+      c.UnitRate));
+
+    return Result<IEnumerable<GetAllCurrenciesResponse>>.Success(response);
+  }
+}

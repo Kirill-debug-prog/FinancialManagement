@@ -1,0 +1,25 @@
+﻿using Core.Domain.Common;
+using Finance.Domain.Interfaces;
+
+namespace Finance.Application.Wallets.Commands.ChangeNote;
+
+public class ChangeNoteCommandHandler
+{
+  private readonly IWalletRepository _walletRepository;
+
+  public ChangeNoteCommandHandler(IWalletRepository walletRepository)
+  {
+    _walletRepository = walletRepository;
+  }
+
+  public async Task<Result<bool>> Handle(ChangeNoteCommand command)
+  {
+    var wallet = await _walletRepository.GetWalletByIdAsync(command.Id);
+    if (wallet is null)
+      return Result<bool>.Failure(new DomainError("Wallet.NotFound", "Wallet not found."));
+
+    wallet.ChangeNote(command.NewNote);
+    await _walletRepository.UpdateAsync(wallet);
+    return Result<bool>.Success(true);
+  }
+}

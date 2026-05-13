@@ -1,0 +1,32 @@
+﻿using Core.Domain.Common;
+using Finance.Domain.Interfaces;
+
+namespace Finance.Application.Wallets.Queries.GetWalletById;
+
+public class GetWalletByIdQueryHandler
+{
+  private readonly IWalletRepository _walletRepository;
+
+  public GetWalletByIdQueryHandler(IWalletRepository walletRepository)
+  {
+    _walletRepository = walletRepository;
+  }
+
+  public async Task<Result<GetWalletByIdResponse>> Handle(GetWalletByIdQuery query)
+  {
+    var wallet = await _walletRepository.GetWalletByIdAsync(query.Id);
+    if (wallet is null)
+      return Result<GetWalletByIdResponse>.Failure(new DomainError("Wallet.NotFound", "Wallet not found."));
+
+    return Result<GetWalletByIdResponse>.Success(new GetWalletByIdResponse(
+      wallet.Id,
+      wallet.ProfileId,
+      wallet.Name,
+      wallet.Icon,
+      wallet.SortOrder,
+      wallet.CurrencyId,
+      wallet.InitialBalance,
+      wallet.Note,
+      wallet.IsArchived));
+  }
+}

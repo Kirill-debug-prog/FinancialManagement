@@ -1,0 +1,3 @@
+namespace Finance.Application.RecurringTransactions.Queries.GetRecurringTransactionsByWalletId;
+
+public record GetRecurringTransactionsByWalletIdQuery(Guid WalletId);

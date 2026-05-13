@@ -1,0 +1,27 @@
+﻿using Core.Domain.Common;
+using Finance.Domain.Interfaces;
+
+namespace Finance.Application.Categories.Commands.DeleteCategory;
+
+public class DeleteCategoryCommandHandler
+{
+  private readonly ICategoryRepository _categoryRepository;
+
+  public DeleteCategoryCommandHandler(ICategoryRepository categoryRepository)
+  {
+    _categoryRepository = categoryRepository;
+  }
+
+  public async Task<Result<bool>> Handle(DeleteCategoryCommand command)
+  {
+    var category = await _categoryRepository.GetByIdAsync(command.Id);
+    if (category is null)
+      return Result<bool>.Failure(new DomainError("Category.NotFound", "Category not found."));
+
+    if (category.IsSystem)
+      return Result<bool>.Failure(new DomainError("Category.CannotDeleteSystem", "System category cannot be deleted."));
+
+    await _categoryRepository.DeleteAsync(category);
+    return Result<bool>.Success(true);
+  }
+}
