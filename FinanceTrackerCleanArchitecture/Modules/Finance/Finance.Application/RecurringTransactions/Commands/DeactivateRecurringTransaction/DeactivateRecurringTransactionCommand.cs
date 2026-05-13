@@ -1,0 +1,3 @@
+namespace Finance.Application.RecurringTransactions.Commands.DeactivateRecurringTransaction;
+
+public record DeactivateRecurringTransactionCommand(Guid Id);
