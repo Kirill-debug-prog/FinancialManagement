@@ -6,6 +6,9 @@ using Users.Infrastructure;
 using Users.Infrastructure.Persistence;
 using Finance.Infrastructure;
 using Finance.Infrastructure.Persistence;
+using Finance.Domain.Interfaces;
+using Finance.Infrastructure.ExternalRates;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -42,7 +45,8 @@ using (var scope = app.Services.CreateScope())
 
   var financeDb = scope.ServiceProvider.GetRequiredService<FinanceDbContext>();
   await financeDb.Database.MigrateAsync();
-  await FinanceDataSeeder.SeedAsync(financeDb);
+  var cbrService = scope.ServiceProvider.GetRequiredService<ICbrCurrencyRateService>();
+  await FinanceDataSeeder.SeedAsync(financeDb, cbrService);
 
   var reportsDb = scope.ServiceProvider.GetRequiredService<ReportsDbContext>();
   await reportsDb.Database.MigrateAsync();
@@ -58,6 +62,12 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseHangfireDashboard("/hangfire");
+
+RecurringJob.AddOrUpdate<CurrencyRateSyncJob>(
+  "cbr-currency-sync",
+  job => job.ExecuteAsync(),
+  Cron.Daily);
+
 app.MapControllers();
 
 app.Run();

@@ -1,12 +1,11 @@
 using System.Security.Claims;
 using System.Text.Json;
-using Core.API.Contracts.Reports;
+using Reports.Application.Reports.Commands.CreateReport;
 using Finance.Application.Analytics.Queries.GetCategoryAnalytics;
 using Finance.Application.Analytics.Queries.GetMonthlyAnalytics;
 using Finance.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Reports.Application.Reports.Commands.CreateReport;
 using Reports.Application.Reports.Queries.GetReportDownloadUrl;
 using Reports.Application.Reports.Queries.GetReportStatus;
 using Reports.Domain.Enums;

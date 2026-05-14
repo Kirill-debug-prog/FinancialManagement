@@ -3,6 +3,7 @@ using Finance.Application.Analytics.Queries.GetMonthlyAnalytics;
 using Finance.Application.Import;
 using Finance.Domain.Interfaces;
 using Finance.Infrastructure.BankParsers;
+using Finance.Infrastructure.ExternalRates;
 using Finance.Infrastructure.Persistence;
 using Finance.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -34,6 +35,9 @@ public static class DependencyInjection
     services.AddScoped<GetCategoryAnalyticsQueryHandler>();
 
     services.AddScoped<IBankStatementParser, SberbankPdfParser>();
+
+    services.AddHttpClient<ICbrCurrencyRateService, CbrCurrencyRateService>();
+    services.AddScoped<CurrencyRateSyncJob>();
 
     return services;
   }

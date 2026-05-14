@@ -1,4 +1,4 @@
-namespace Core.API.Contracts.Reports;
+namespace Reports.Application.Reports.Commands.CreateReport;
 
 public record CreateProfileTransactionsReportRequest(
   Guid ProfileId,
