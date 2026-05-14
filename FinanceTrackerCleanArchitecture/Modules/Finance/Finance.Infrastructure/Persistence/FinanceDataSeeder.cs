@@ -20,6 +20,7 @@ public static class FinanceDataSeeder
 
     var currencies = new[]
     {
+      Currency.Create("Российский рубль",    1,   1.0000m,  "643", "RUB", 1.0000m),
       Currency.Create("Украинская гривна",   1,   1.0000m,  "980", "UAH", 1.0000m),
       Currency.Create("Доллар США",          1,  41.5000m,  "840", "USD", 41.5000m),
       Currency.Create("Евро",                1,  46.0000m,  "978", "EUR", 46.0000m),

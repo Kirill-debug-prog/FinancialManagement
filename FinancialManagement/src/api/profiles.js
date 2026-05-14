@@ -1,11 +1,16 @@
-import { api } from './client';
+import { api, getToken, parseJwt } from './client';
+
+function getUserId() {
+    const payload = parseJwt(getToken());
+    return payload?.sub ?? null;
+}
 
 /**
  * Получить список всех профилей пользователя
  * @returns {Promise<Array>} Массив профилей
  */
 export async function getProfiles() {
-    return api.get('/profile');
+    return api.get(`/profile?userId=${getUserId()}`);
 }
 
 /**
@@ -24,7 +29,8 @@ export async function getProfile(profileId) {
  * @returns {Promise<Object>} Созданный профиль с ID
  */
 export async function createProfile(name, mainCurrency) {
-    return api.post('/profile', { name, mainCurrency });
+    const id = await api.post('/profile', { userId: getUserId(), name });
+    return { id };
 }
 
 /**

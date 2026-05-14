@@ -10,13 +10,11 @@ import { api, setToken, parseJwt } from './client';
 export async function login(email, password) {
     try {
         const data = await api.post('/user/login', { email, password });
-        if (data && data.token) {
-            setToken(data.token);
-            // Сохраняем информацию о том, что пользователь авторизирован
+        if (data && data.jwtToken) {
+            setToken(data.jwtToken);
             localStorage.setItem('auth', 'true');
-            console.log('[Auth] Login successful, token saved');
         }
-        return data.token;
+        return data.jwtToken;
     } catch (error) {
         console.error('[Auth] Login failed:', error);
         throw error;

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Card, CardHeader, CardContent } from '../../components/ui/card/card'
+import { Card, CardHeader, CardContent, CardTitle } from '../../components/ui/card/card'
 import { CurrencyInputs, Input } from '../../components/ui/input_data/input';
 import { Progress } from '../../components/ui/progress/progress'
 import { CheckCircle, Wallet, DollarSign, Tag, TrendingUp } from 'lucide-react';
