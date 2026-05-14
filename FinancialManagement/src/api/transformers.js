@@ -69,19 +69,20 @@ function getAccountIcon(type) {
  * Трансформировать счет с бэкенда в формат фронтенда
  * @param {Object} account Данные счета с бэкенда
  * @param {number} index Индекс для выбора цвета (циклический)
+ * @param {string|null} currencyCode Код валюты (ISO), разрешённый вызывающим кодом
  * @returns {Object} Трансформированный счет
  */
-export function transformAccountFromBackend(account, index = 0) {
+export function transformAccountFromBackend(account, index = 0, currencyCode = null) {
     if (!account) return null;
-    
+
     const type = guessAccountType(account);
     return {
         id: account.id,
         name: account.name || '',
         type,
-        currency: account.currencyCode,
-        currencyShortName: account.currencyShortName || account.currencyCode,
-        balance: account.balance ?? 0,
+        currency: currencyCode || 'RUB',
+        currencyId: account.currencyId,
+        balance: account.balance ?? account.currentBalance ?? account.initialBalance ?? 0,
         icon: getAccountIcon(type),
         color: ACCOUNT_COLORS[index % ACCOUNT_COLORS.length],
         isArchived: account.isArchived || false,
@@ -92,6 +93,8 @@ export function transformAccountFromBackend(account, index = 0) {
 // Transaction Transformers
 // ============================================================================
 
+const TYPE_INT_TO_STR = { 0: 'income', 1: 'expense', 2: 'transfer' };
+
 /**
  * Трансформировать транзакцию с бэкенда в формат фронтенда
  * @param {Object} t Данные транзакции с бэкенда
@@ -99,17 +102,21 @@ export function transformAccountFromBackend(account, index = 0) {
  */
 export function transformTransactionFromBackend(t) {
     if (!t) return null;
-    
+
+    const typeStr = typeof t.type === 'number'
+        ? (TYPE_INT_TO_STR[t.type] || 'expense')
+        : (t.type || 'expense').toLowerCase();
+
     return {
         id: t.id,
-        date: t.date || new Date().toISOString(),
-        type: t.type || 'Expense',
+        date: t.date || new Date().toISOString().split('T')[0],
+        type: typeStr,
         category: t.categoryName || 'Без категории',
         categoryId: t.categoryId,
-        account: t.accountName || '',
-        accountId: t.accountId,
-        amount: t.totalAmount ?? 0,
-        description: t.note || '',
+        account: t.walletId || '',
+        accountId: t.walletId || t.accountId,
+        amount: t.amount ?? t.totalAmount ?? 0,
+        description: t.description || t.note || '',
         currencyCode: t.currencyCode || 'RUB',
         currencyId: t.currencyId,
     };

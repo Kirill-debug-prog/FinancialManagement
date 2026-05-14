@@ -1,56 +1,49 @@
-import { api } from './client';
+import { api, getActiveProfileId } from './client';
 import { buildProfileUrl } from './utils';
 
-/**
- * Получить список всех счетов текущего профиля
- * @returns {Promise<Array>} Массив счетов
- */
 export async function getAccounts() {
-    return api.get(buildProfileUrl('accounts'));
+    const url = buildProfileUrl('accounts');
+    const wallets = await api.get(url);
+    if (!wallets || !wallets.length) return [];
+
+    const withBalances = await Promise.all(
+        wallets.map(async (wallet) => {
+            try {
+                const bal = await api.get(`/transaction/balance?walletId=${wallet.id}`);
+                return { ...wallet, balance: bal?.balance ?? wallet.initialBalance ?? 0 };
+            } catch {
+                return { ...wallet, balance: wallet.initialBalance ?? 0 };
+            }
+        })
+    );
+    return withBalances;
 }
 
-/**
- * Получить один счет по ID
- * @param {string} id ID счета
- * @returns {Promise<Object>} Данные счета
- */
 export async function getAccount(id) {
     return api.get(buildProfileUrl('accounts', `/${id}`));
 }
 
-/**
- * Создать новый счет
- * @param {Object} data Данные счета (name, type, currency, balance, color, icon)
- * @returns {Promise<Object>} Созданный счет с ID
- */
 export async function createAccount(data) {
-    return api.post(buildProfileUrl('accounts'), data);
+    const profileId = getActiveProfileId();
+    return api.post('/wallet', {
+        profileId,
+        name: data.name,
+        sortOrder: data.sortOrder ?? 0,
+        currencyId: data.currencyId,
+        initialBalance: data.initialBalance ?? 0,
+        icon: data.icon || null,
+        note: data.note || null,
+    });
 }
 
-/**
- * Обновить счет
- * @param {string} id ID счета
- * @param {Object} data Данные для обновления
- * @returns {Promise<Object>} Обновленный счет
- */
 export async function updateAccount(id, data) {
-    return api.put(buildProfileUrl('accounts', `/${id}`), data);
+    return api.put(`/wallet/${id}/rename`, data.name);
 }
 
-/**
- * Удалить счет
- * @param {string} id ID счета
- * @returns {Promise<void>}
- */
 export async function deleteAccount(id) {
-    return api.delete(buildProfileUrl('accounts', `/${id}`));
+    return api.delete(`/wallet/${id}`);
 }
 
-/**
- * Архивировать счет (переместить в архив без удаления)
- * @param {string} id ID счета
- * @returns {Promise<Object>} Архивированный счет
- */
 export async function archiveAccount(id) {
-    return api.post(buildProfileUrl('accounts', `/${id}/archive`));
+    return api.post(`/wallet/${id}/archive`);
 }

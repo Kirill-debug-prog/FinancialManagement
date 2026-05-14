@@ -1,47 +1,64 @@
-import { api } from './client';
+import { api, getActiveProfileId } from './client';
 import { buildProfileUrl } from './utils';
+import { getCurrencies } from './currencies';
 
-/**
- * Получить список долгов текущего профиля
- * @returns {Promise<Array>} Массив долгов
- */
+function toDateOnly(value) {
+    if (!value) return null;
+    if (typeof value === 'string') return value.split('T')[0];
+    return new Date(value).toISOString().split('T')[0];
+}
+
+async function getDefaultCurrencyId() {
+    const currencies = await getCurrencies().catch(() => []);
+    const rub = (currencies ?? []).find(c => c.code === 'RUB');
+    return rub?.id ?? null;
+}
+
+function transformDebtResponse(debt) {
+    if (!debt) return null;
+    return {
+        id: debt.id,
+        name: debt.creditorName,
+        person: debt.creditorName,
+        amount: debt.remainingAmount ?? debt.totalAmount ?? 0,
+        totalAmount: debt.totalAmount ?? 0,
+        remainingAmount: debt.remainingAmount ?? 0,
+        date: null,
+        returnDate: debt.dueDate,
+        status: debt.isRepaid ? 'returned' : 'active',
+        currencyId: debt.currencyId,
+    };
+}
+
 export async function getDebts() {
-    return api.get(buildProfileUrl('debts'));
+    const debts = await api.get(buildProfileUrl('debts'));
+    return (debts ?? []).map(transformDebtResponse);
 }
 
-/**
- * Получить один долг по ID
- * @param {string} id ID долга
- * @returns {Promise<Object>} Данные долга
- */
 export async function getDebt(id) {
-    return api.get(buildProfileUrl('debts', `/${id}`));
+    const debt = await api.get(`/debt/${id}`);
+    return transformDebtResponse(debt);
 }
 
-/**
- * Создать новый долг
- * @param {Object} data Данные долга (debtor, amount, reason, dueDate, description)
- * @returns {Promise<Object>} Созданный долг с ID
- */
 export async function createDebt(data) {
-    return api.post(buildProfileUrl('debts'), data);
+    const profileId = getActiveProfileId();
+    const currencyId = await getDefaultCurrencyId();
+    return api.post('/debt', {
+        profileId,
+        currencyId,
+        creditorName: data.person || data.name,
+        totalAmount: data.amount,
+        dueDate: toDateOnly(data.returnDate),
+    });
 }
 
-/**
- * Обновить долг
- * @param {string} id ID долга
- * @param {Object} data Данные для обновления
- * @returns {Promise<Object>} Обновленный долг
- */
 export async function updateDebt(id, data) {
-    return api.put(buildProfileUrl('debts', `/${id}/creditor`), data.creditor);
+    if (data.status === 'returned') {
+        return api.patch(`/debt/${id}/repay`);
+    }
+    return api.put(`/debt/${id}/creditor`, data.creditor || data.person || data.name);
 }
 
-/**
- * Удалить долг
- * @param {string} id ID долга
- * @returns {Promise<void>}
- */
 export async function deleteDebt(id) {
-    return api.delete(buildProfileUrl('debts', `/${id}`));
+    return api.delete(`/debt/${id}`);
 }

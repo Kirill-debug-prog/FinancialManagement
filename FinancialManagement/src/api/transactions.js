@@ -1,58 +1,61 @@
-import { api } from './client';
-import { buildProfileUrl, buildQueryString } from './utils';
+import { api, getActiveProfileId } from './client';
 
-/**
- * Получить список транзакций с фильтрацией
- * @param {Object} filters Объект фильтров
- * @param {string} filters.accountId ID счета для фильтра
- * @param {string} filters.categoryId ID категории для фильтра
- * @param {string} filters.dateFrom Начальная дата (ISO формат)
- * @param {string} filters.dateTo Конечная дата (ISO формат)
- * @returns {Promise<Array>} Массив транзакций
- */
+const TYPE_STR_TO_INT = {
+    income: 0, expense: 1, transfer: 2,
+    Income: 0, Expense: 1, Transfer: 2,
+};
+
+function toDateOnly(value) {
+    if (!value) return new Date().toISOString().split('T')[0];
+    if (typeof value === 'string') return value.split('T')[0];
+    return new Date(value).toISOString().split('T')[0];
+}
+
 export async function getTransactions(filters = {}) {
-    const query = buildQueryString({
-        walletId: filters.accountId || filters.walletId || null,
-        categoryId: filters.categoryId || null,
-        dateFrom: filters.dateFrom || null,
-        dateTo: filters.dateTo || null,
-    });
-    return api.get(buildProfileUrl('transactions') + query);
+    const walletId = filters.walletId || filters.accountId;
+
+    if (walletId) {
+        return api.get(`/transaction?walletId=${walletId}`);
+    }
+
+    // No walletId: fetch all profile wallets then all their transactions
+    const profileId = getActiveProfileId();
+    const wallets = await api.get(`/wallet?profileId=${profileId}`).catch(() => []);
+    if (!wallets || !wallets.length) return [];
+
+    const all = await Promise.all(
+        wallets.map(w => api.get(`/transaction?walletId=${w.id}`).catch(() => []))
+    );
+    return all.flat();
 }
 
-/**
- * Получить одну транзакцию по ID
- * @param {string} id ID транзакции
- * @returns {Promise<Object>} Данные транзакции
- */
 export async function getTransaction(id) {
-    return api.get(buildProfileUrl('transactions', `/${id}`));
+    return api.get(`/transaction/${id}`);
 }
 
-/**
- * Создать новую транзакцию
- * @param {Object} data Данные транзакции (accountId, categoryId, amount, date, type, note)
- * @returns {Promise<Object>} Созданная транзакция с ID
- */
 export async function createTransaction(data) {
-    return api.post(buildProfileUrl('transactions'), data);
+    return api.post('/transaction', {
+        walletId: data.walletId || data.accountId,
+        type: TYPE_STR_TO_INT[data.type] ?? 1,
+        amount: data.amount,
+        date: toDateOnly(data.date),
+        categoryId: data.categoryId || null,
+        description: data.description || data.note || null,
+        toWalletId: data.toWalletId || null,
+    });
 }
 
-/**
- * Обновить транзакцию
- * @param {string} id ID транзакции
- * @param {Object} data Данные для обновления
- * @returns {Promise<Object>} Обновленная транзакция
- */
 export async function updateTransaction(id, data) {
-    return api.put(buildProfileUrl('transactions', `/${id}`), data);
+    const tasks = [];
+    if (data.description !== undefined || data.note !== undefined) {
+        tasks.push(api.patch(`/transaction/${id}/description`, data.description ?? data.note ?? null));
+    }
+    if (data.categoryId !== undefined) {
+        tasks.push(api.patch(`/transaction/${id}/category`, data.categoryId || null));
+    }
+    if (tasks.length) await Promise.all(tasks);
 }
 
-/**
- * Удалить транзакцию
- * @param {string} id ID транзакции
- * @returns {Promise<void>}
- */
 export async function deleteTransaction(id) {
-    return api.delete(buildProfileUrl('transactions', `/${id}`));
+    return api.delete(`/transaction/${id}`);
 }

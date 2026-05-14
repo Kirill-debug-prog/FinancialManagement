@@ -40,8 +40,11 @@ function Accounts() {
     const fetchData = async () => {
         try {
             const [accs, currs] = await Promise.all([getAccounts(), getCurrencies()]);
-            setAccounts(accs.map((a, i) => transformAccountFromBackend(a, i)));
             setCurrencies(currs);
+            setAccounts(accs.map((a, i) => {
+                const curr = currs.find(c => c.id === a.currencyId);
+                return transformAccountFromBackend(a, i, curr?.code || 'RUB');
+            }));
         } catch (err) {
             toast.error(err.message || 'Ошибка загрузки данных');
         } finally {
@@ -272,22 +275,20 @@ function Accounts() {
             // Создаём две транзакции для трансфера
             // Расход из счета-источника
             await createTransaction({
-                accountId: transferForm.fromAccountId,
+                walletId: transferForm.fromAccountId,
                 type: 'expense',
                 amount: amount,
-                currencyId: curr.id,
                 date: new Date().toISOString(),
-                note: `Перевод на ${toAccount.name}`,
+                description: `Перевод на ${toAccount.name}`,
             });
 
             // Доход на счет-получатель
             await createTransaction({
-                accountId: transferForm.toAccountId,
+                walletId: transferForm.toAccountId,
                 type: 'income',
                 amount: amount,
-                currencyId: curr.id,
                 date: new Date().toISOString(),
-                note: `Перевод со счета ${fromAccount.name}`,
+                description: `Перевод со счета ${fromAccount.name}`,
             });
 
             toast.success(`✅ Перевод ${amount.toLocaleString('ru-RU')} выполнен успешно`);
@@ -386,7 +387,7 @@ function Accounts() {
                                             <SelectContent>
                                                 {currencies.map(c => (
                                                     <SelectItem key={c.id} value={c.code}>
-                                                        {c.code} ({c.shortName})
+                                                        {c.code} - {c.name}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>

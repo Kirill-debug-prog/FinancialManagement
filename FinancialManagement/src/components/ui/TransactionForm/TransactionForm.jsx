@@ -174,43 +174,34 @@ export default function TransactionForm({ onClose, onCreated, initialData }) {
         try {
             if (type === 'transfer') {
                 const toAcc = accounts.find(a => a.id === toAccount);
-                const curr = currencies[0];
 
                 await createTransaction({
-                    accountId: fromAccount,
+                    walletId: fromAccount,
+                    toWalletId: toAccount,
                     type: 'transfer',
                     amount: parseFloat(amount),
-                    currencyId: curr?.id,
                     date: new Date(date).toISOString(),
-                    note: description || `Перевод на ${toAcc?.name || 'счёт'}`,
+                    description: description || `Перевод на ${toAcc?.name || 'счёт'}`,
                 });
 
                 toast.success('✅ Перевод создан успешно');
             } else {
-                const curr = currencies[0];
-
                 if (initialData?.id) {
-                    // Обновление
+                    // Обновление — только описание и категория
                     await updateTransaction(initialData.id, {
-                        accountId: account,
                         categoryId: category,
-                        type,
-                        amount: parseFloat(amount),
-                        currencyId: curr?.id,
-                        date: new Date(date).toISOString(),
-                        note: description,
+                        description,
                     });
                     toast.success('✅ Операция успешно обновлена');
                 } else {
                     // Создание
                     await createTransaction({
-                        accountId: account,
+                        walletId: account,
                         categoryId: category,
                         type,
                         amount: parseFloat(amount),
-                        currencyId: curr?.id,
                         date: new Date(date).toISOString(),
-                        note: description,
+                        description,
                     });
                     toast.success('✅ Операция успешно добавлена');
                 }

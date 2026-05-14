@@ -294,6 +294,7 @@ export default function Credits() {
                 type: editForm.type,
                 totalAmount: parseFloat(editForm.totalAmount) || 0,
                 remainingAmount: newRemainingAmount,
+                paymentAmount: parseFloat(editForm.paymentAmount) || 0,
                 interestRate: parseFloat(editForm.interestRate) || 0,
                 monthlyPayment: parseFloat(editForm.monthlyPayment) || 0,
                 nextPaymentDate: editForm.nextPaymentDate
@@ -349,6 +350,7 @@ export default function Credits() {
         try {
             await updateCredit(repayingCreditId, {
                 ...credit,
+                paymentAmount: credit.remainingAmount,
                 remainingAmount: 0,
                 status: 'closed'
             });
@@ -722,12 +724,14 @@ export default function Credits() {
                                         </span>
                                     </div>
 
+                                    {debt.date && (
                                     <div className="debt-card__row">
                                         <span className="debt-card__label">Дата выдачи:</span>
                                         <span className="debt-card__value">
                                             {new Date(debt.date).toLocaleDateString('ru-RU')}
                                         </span>
                                     </div>
+                                    )}
 
                                     {debt.returnDate && (
                                         <div className="debt-card__row">

@@ -50,35 +50,36 @@ export async function getDashboardData() {
     }
 
     // Параллельно тянем баланс и транзакции для каждого кошелька
+    // Backend returns: GetWalletBalanceResponse(WalletId, Balance), type as int (0=Income,1=Expense,2=Transfer)
     const walletResults = await Promise.all(
         wallets.map(async (wallet) => {
-            const [balance, transactions] = await Promise.all([
+            const [balData, transactions] = await Promise.all([
                 api.get(`/transaction/balance?walletId=${wallet.id}`),
                 api.get(`/transaction?walletId=${wallet.id}`),
             ]);
-            return { balance: balance ?? 0, transactions: transactions ?? [] };
+            return { balance: balData?.balance ?? 0, transactions: transactions ?? [] };
         })
     );
 
     const totalBalance = walletResults.reduce((sum, { balance }) => sum + balance, 0);
     const allTransactions = walletResults.flatMap(({ transactions }) => transactions);
 
-    // Метрики текущего месяца
+    // Метрики текущего месяца. Backend: type 0=Income, 1=Expense, 2=Transfer; amount field is 'amount'
     const currentMonthTx = allTransactions.filter(t => isCurrentMonth(t.date));
     const totalIncome = currentMonthTx
-        .filter(t => t.type === 'Income')
-        .reduce((sum, t) => sum + (t.totalAmount ?? 0), 0);
+        .filter(t => t.type === 0)
+        .reduce((sum, t) => sum + (t.amount ?? 0), 0);
     const totalExpense = currentMonthTx
-        .filter(t => t.type === 'Expense')
-        .reduce((sum, t) => sum + (t.totalAmount ?? 0), 0);
+        .filter(t => t.type === 1)
+        .reduce((sum, t) => sum + (t.amount ?? 0), 0);
 
     // Разбивка по категориям (расходы текущего месяца)
     const categoryMap = {};
     currentMonthTx
-        .filter(t => t.type === 'Expense')
+        .filter(t => t.type === 1)
         .forEach(t => {
             const name = t.categoryName || 'Без категории';
-            categoryMap[name] = (categoryMap[name] ?? 0) + (t.totalAmount ?? 0);
+            categoryMap[name] = (categoryMap[name] ?? 0) + (t.amount ?? 0);
         });
     const categoryExpenses = Object.entries(categoryMap).map(([name, value], i) => ({
         name,
@@ -96,8 +97,8 @@ export async function getDashboardData() {
         .forEach(t => {
             const label = getMonthLabel(t.date);
             if (monthlyMap[label]) {
-                if (t.type === 'Income') monthlyMap[label].income += t.totalAmount ?? 0;
-                if (t.type === 'Expense') monthlyMap[label].expense += t.totalAmount ?? 0;
+                if (t.type === 0) monthlyMap[label].income += t.amount ?? 0;
+                if (t.type === 1) monthlyMap[label].expense += t.amount ?? 0;
             }
         });
     const monthlyData = monthLabels.map(m => monthlyMap[m]);

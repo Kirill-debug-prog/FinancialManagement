@@ -1,47 +1,83 @@
-import { api } from './client';
+import { api, getActiveProfileId } from './client';
 import { buildProfileUrl } from './utils';
+import { getCurrencies } from './currencies';
 
-/**
- * Получить список депозитов текущего профиля
- * @returns {Promise<Array>} Массив депозитов
- */
+function toDateOnly(value) {
+    if (!value) return new Date().toISOString().split('T')[0];
+    if (typeof value === 'string') return value.split('T')[0];
+    return new Date(value).toISOString().split('T')[0];
+}
+
+async function getDefaultCurrencyId() {
+    const currencies = await getCurrencies().catch(() => []);
+    const rub = (currencies ?? []).find(c => c.code === 'RUB');
+    return rub?.id ?? null;
+}
+
+function transformDepositResponse(deposit) {
+    if (!deposit) return null;
+    const amount = deposit.currentAmount ?? deposit.initialAmount ?? 0;
+    return {
+        id: deposit.id,
+        name: deposit.name,
+        bank: '',
+        amount,
+        currentAmount: amount,
+        initialAmount: deposit.initialAmount ?? 0,
+        interestRate: deposit.interestRate ?? 0,
+        startDate: deposit.startDate,
+        endDate: deposit.endDate,
+        capitalization: deposit.isCapitalized ?? false,
+        isCapitalized: deposit.isCapitalized ?? false,
+        status: deposit.isClosed ? 'closed' : 'active',
+        type: 'fixed',
+        currencyId: deposit.currencyId,
+    };
+}
+
 export async function getDeposits() {
-    return api.get(buildProfileUrl('deposits'));
+    const deposits = await api.get(buildProfileUrl('deposits'));
+    return (deposits ?? []).map(transformDepositResponse);
 }
 
-/**
- * Получить один депозит по ID
- * @param {string} id ID депозита
- * @returns {Promise<Object>} Данные депозита
- */
 export async function getDeposit(id) {
-    return api.get(buildProfileUrl('deposits', `/${id}`));
+    const deposit = await api.get(`/deposit/${id}`);
+    return transformDepositResponse(deposit);
 }
 
-/**
- * Создать новый депозит
- * @param {Object} data Данные депозита (bank, amount, rate, startDate, endDate, currency, description)
- * @returns {Promise<Object>} Созданный депозит с ID
- */
 export async function createDeposit(data) {
-    return api.post(buildProfileUrl('deposits'), data);
+    const profileId = getActiveProfileId();
+    const currencyId = await getDefaultCurrencyId();
+    return api.post('/deposit', {
+        profileId,
+        currencyId,
+        name: data.name,
+        initialAmount: data.amount,
+        interestRate: data.interestRate,
+        startDate: toDateOnly(data.startDate),
+        endDate: toDateOnly(data.endDate),
+        isCapitalized: data.capitalization ?? data.isCapitalized ?? false,
+    });
 }
 
-/**
- * Обновить депозит
- * @param {string} id ID депозита
- * @param {Object} data Данные для обновления
- * @returns {Promise<Object>} Обновленный депозит
- */
 export async function updateDeposit(id, data) {
-    return api.put(buildProfileUrl('deposits', `/${id}/rename`), data.name);
+    const tasks = [];
+
+    if (data.name) {
+        tasks.push(api.put(`/deposit/${id}/rename`, data.name));
+    }
+
+    const currentAmount = data.currentAmount ?? 0;
+    const newAmount = data.amount ?? currentAmount;
+    const topUpAmount = newAmount - currentAmount;
+
+    if (topUpAmount > 0) {
+        tasks.push(api.post(`/deposit/${id}/top-up`, topUpAmount));
+    }
+
+    if (tasks.length) await Promise.all(tasks);
 }
 
-/**
- * Удалить депозит
- * @param {string} id ID депозита
- * @returns {Promise<void>}
- */
 export async function deleteDeposit(id) {
-    return api.delete(buildProfileUrl('deposits', `/${id}`));
+    return api.delete(`/deposit/${id}`);
 }
