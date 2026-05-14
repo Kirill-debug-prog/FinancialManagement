@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardTitle, CardHeader } from '../../components/ui/card/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select/select";
 import { Button } from '../../components/ui/button/button';
-import { Trash2, TrendingUp, TrendingDown, Calendar } from 'lucide-react';
+import { TrendingUp, TrendingDown, Calendar } from 'lucide-react';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { toast } from 'sonner';
 import { getMonthlyReport, getCategoryReport } from '../../api/reports';
+import { createTransactionsReport, createCategoryBreakdownReport, createObligationsReport, waitForReport, getReportDownloadUrl } from '../../api/reportExport';
 import './Reports.scss';
 
 export function Reports() {
@@ -15,24 +16,43 @@ export function Reports() {
     const [categoryExpenseData, setCategoryExpenseData] = useState([])
     const [categoryIncomeData, setCategoryIncomeData] = useState([])
     const [loading, setLoading] = useState(true)
+    const [exportMenuOpen, setExportMenuOpen] = useState(false)
+    const [exporting, setExporting] = useState(false)
+    const exportMenuRef = useRef(null)
+
+    useEffect(() => {
+        const handler = (e) => {
+            if (exportMenuRef.current && !exportMenuRef.current.contains(e.target))
+                setExportMenuOpen(false);
+        };
+        document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, []);
+
+    const formatDateOnly = (date) => {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    };
 
     const getPeriodDates = (selectedPeriod) => {
         const now = new Date();
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        
+
         switch (selectedPeriod) {
             case 'month': {
                 const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-                return { dateFrom: monthStart.toISOString(), dateTo: today.toISOString() };
+                return { dateFrom: formatDateOnly(monthStart), dateTo: formatDateOnly(today) };
             }
             case 'quarter': {
                 const quarter = Math.floor(today.getMonth() / 3);
                 const quarterStart = new Date(today.getFullYear(), quarter * 3, 1);
-                return { dateFrom: quarterStart.toISOString(), dateTo: today.toISOString() };
+                return { dateFrom: formatDateOnly(quarterStart), dateTo: formatDateOnly(today) };
             }
             case 'year': {
                 const yearStart = new Date(today.getFullYear(), 0, 1);
-                return { dateFrom: yearStart.toISOString(), dateTo: today.toISOString() };
+                return { dateFrom: formatDateOnly(yearStart), dateTo: formatDateOnly(today) };
             }
             default:
                 return { dateFrom: null, dateTo: null };
@@ -81,9 +101,33 @@ export function Reports() {
         fetchData(period, reportType); 
     }, [period, reportType]);
 
-    const handleExport = (format) => {
-        toast.success(`Экспорт в формате ${format.toUpperCase()} начат`)
-    }
+    const handleExport = async (reportTypeKey) => {
+        setExportMenuOpen(false);
+        if (exporting) return;
+        setExporting(true);
+        const toastId = toast.loading('Создание отчёта...');
+        try {
+            const { dateFrom, dateTo } = getPeriodDates(period);
+
+            let result;
+            if (reportTypeKey === 'transactions') {
+                result = await createTransactionsReport(dateFrom, dateTo);
+            } else if (reportTypeKey === 'categories') {
+                result = await createCategoryBreakdownReport(dateFrom, dateTo);
+            } else {
+                result = await createObligationsReport(dateFrom, dateTo);
+            }
+
+            await waitForReport(result.reportId);
+            const { downloadUrl } = await getReportDownloadUrl(result.reportId);
+            window.open(downloadUrl, '_blank');
+            toast.success('Отчёт готов! Скачивание начато.', { id: toastId });
+        } catch (err) {
+            toast.error(err.message || 'Ошибка создания отчёта', { id: toastId });
+        } finally {
+            setExporting(false);
+        }
+    };
 
     const totalIncome = monthlyData.reduce((sum, m) => sum + (m.income || 0), 0)
     const totalExpens = monthlyData.reduce((sum, m) => sum + (m.expense || 0), 0)
@@ -107,13 +151,35 @@ export function Reports() {
                 </div>
 
                 <div className="report__action">
-                    <Button size="auto" variant="white" onClick={() => handleExport('pdf')}>
-                        PDF
-                    </Button>
-
-                    <Button size="auto" variant="white" onClick={() => handleExport('excel')}>
-                        Excel
-                    </Button>
+                    <div className="export-menu" ref={exportMenuRef}>
+                        <Button
+                            size="auto"
+                            variant="white"
+                            disabled={exporting}
+                            onClick={() => setExportMenuOpen(prev => !prev)}
+                        >
+                            {exporting ? 'Генерация...' : 'Экспорт Excel ▾'}
+                        </Button>
+                        {exportMenuOpen && (
+                            <ul className="export-menu__list">
+                                <li>
+                                    <button className="export-menu__item" onClick={() => handleExport('transactions')}>
+                                        Транзакции профиля
+                                    </button>
+                                </li>
+                                <li>
+                                    <button className="export-menu__item" onClick={() => handleExport('categories')}>
+                                        Разбивка по категориям
+                                    </button>
+                                </li>
+                                <li>
+                                    <button className="export-menu__item" onClick={() => handleExport('obligations')}>
+                                        Финансовые обязательства
+                                    </button>
+                                </li>
+                            </ul>
+                        )}
+                    </div>
                 </div>
             </div>
 

@@ -125,7 +125,9 @@ public class ReportsController : ControllerBase
 
     var parameters = JsonSerializer.Serialize(new
     {
-      profileId = request.ProfileId
+      profileId = request.ProfileId,
+      from = request.From,
+      to = request.To
     }, JsonOptions);
 
     var command = new CreateReportCommand(ReportType.FinancialObligations, userId, parameters);
