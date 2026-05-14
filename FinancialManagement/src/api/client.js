@@ -155,6 +155,14 @@ export const api = {
     put: (url, data) => request(url, { method: 'PUT', body: JSON.stringify(data) }),
     
     /**
+     * PATCH запрос
+     * @param {string} url URL для запроса
+     * @param {object} data Тело запроса
+     * @returns {Promise} JSON ответ
+     */
+    patch: (url, data) => request(url, { method: 'PATCH', body: JSON.stringify(data) }),
+
+    /**
      * DELETE запрос
      * @param {string} url URL для запроса
      * @returns {Promise} JSON ответ

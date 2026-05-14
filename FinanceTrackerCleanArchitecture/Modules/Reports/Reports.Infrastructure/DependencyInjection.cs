@@ -45,6 +45,8 @@ public static class DependencyInjection
 
     services.AddScoped<IFileStorage, S3FileStorage>();
     services.AddScoped<IReportGenerator, ProfileTransactionsReportGenerator>();
+    services.AddScoped<IReportGenerator, CategoryBreakdownReportGenerator>();
+    services.AddScoped<IReportGenerator, FinancialObligationsReportGenerator>();
     services.AddScoped<IReportPipeline, ReportPipeline>();
     
     services.AddHangfire(config => config

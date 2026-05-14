@@ -27,7 +27,10 @@ public class CreditRepository : ICreditRepository
 
   public async Task<IEnumerable<Credit>> GetByProfileIdAsync(Guid profileId)
   {
-    return await _context.Credits.AsNoTracking().Where(c => c.ProfileId == profileId).ToListAsync();
+    return await _context.Credits.AsNoTracking()
+      .Include(c => c.Currency)
+      .Where(c => c.ProfileId == profileId)
+      .ToListAsync();
   }
 
   public async Task UpdateAsync(Credit credit)

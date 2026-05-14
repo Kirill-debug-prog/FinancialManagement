@@ -12,7 +12,7 @@ import { buildProfileUrl, buildQueryString } from './utils';
  */
 export async function getTransactions(filters = {}) {
     const query = buildQueryString({
-        accountId: filters.accountId || null,
+        walletId: filters.accountId || filters.walletId || null,
         categoryId: filters.categoryId || null,
         dateFrom: filters.dateFrom || null,
         dateTo: filters.dateTo || null,

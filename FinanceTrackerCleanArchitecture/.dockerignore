@@ -9,4 +9,3 @@
 **/.github/
 Dockerfile*
 .dockerignore
-**/appsettings.Development.json

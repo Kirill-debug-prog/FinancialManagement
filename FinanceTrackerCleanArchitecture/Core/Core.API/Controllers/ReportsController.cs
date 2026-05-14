@@ -80,6 +80,55 @@ public class ReportsController : ControllerBase
     return Ok(result.Value);
   }
 
+  [HttpPost("category-breakdown")]
+  public async Task<IActionResult> CreateCategoryBreakdownReport(
+    [FromBody] CreateCategoryBreakdownReportRequest request,
+    CancellationToken cancellationToken)
+  {
+    if (!TryGetUserId(out var userId))
+      return Unauthorized();
+
+    if (request.From > request.To)
+      return BadRequest(new { error = "'From' date must be before or equal to 'To' date." });
+
+    var parameters = JsonSerializer.Serialize(new
+    {
+      profileId = request.ProfileId,
+      from = request.From,
+      to = request.To
+    }, JsonOptions);
+
+    var command = new CreateReportCommand(ReportType.CategoryBreakdown, userId, parameters);
+    var result = await _createReportHandler.Handle(command, cancellationToken);
+
+    if (result.IsFailure)
+      return BadRequest(result.Error);
+
+    return Ok(result.Value);
+  }
+
+  [HttpPost("financial-obligations")]
+  public async Task<IActionResult> CreateFinancialObligationsReport(
+    [FromBody] CreateFinancialObligationsReportRequest request,
+    CancellationToken cancellationToken)
+  {
+    if (!TryGetUserId(out var userId))
+      return Unauthorized();
+
+    var parameters = JsonSerializer.Serialize(new
+    {
+      profileId = request.ProfileId
+    }, JsonOptions);
+
+    var command = new CreateReportCommand(ReportType.FinancialObligations, userId, parameters);
+    var result = await _createReportHandler.Handle(command, cancellationToken);
+
+    if (result.IsFailure)
+      return BadRequest(result.Error);
+
+    return Ok(result.Value);
+  }
+
   [HttpGet("{id:guid}/download")]
   public async Task<IActionResult> GetDownloadUrl(Guid id, CancellationToken cancellationToken)
   {

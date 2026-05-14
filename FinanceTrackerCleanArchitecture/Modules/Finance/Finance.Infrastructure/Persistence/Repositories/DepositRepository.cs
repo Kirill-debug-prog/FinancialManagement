@@ -27,7 +27,10 @@ public class DepositRepository : IDepositRepository
 
   public async Task<IEnumerable<Deposit>> GetByProfileIdAsync(Guid profileId)
   {
-    return await _context.Deposits.AsNoTracking().Where(d => d.ProfileId == profileId).ToListAsync();
+    return await _context.Deposits.AsNoTracking()
+      .Include(d => d.Currency)
+      .Where(d => d.ProfileId == profileId)
+      .ToListAsync();
   }
 
   public async Task UpdateAsync(Deposit deposit)
