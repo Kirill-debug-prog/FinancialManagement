@@ -7,11 +7,17 @@ const TYPE_STR_TO_INT = {
 };
 
 export async function getCategories(type = null) {
-    const categories = await api.get(buildProfileUrl('categories'));
-    if (!type) return categories ?? [];
+    const profileId = getActiveProfileId();
+    // Системные категории (isSystem=true, profileId=null) хранятся отдельно от профильных
+    const [systemCats, profileCats] = await Promise.all([
+        api.get('/category/system').catch(() => []),
+        api.get(`/category?profileId=${profileId}`).catch(() => []),
+    ]);
+    const all = [...(systemCats ?? []), ...(profileCats ?? [])];
+    if (!type) return all;
     const typeInt = TYPE_STR_TO_INT[type] ?? null;
-    if (typeInt === null) return categories ?? [];
-    return (categories ?? []).filter(c => c.type === typeInt);
+    if (typeInt === null) return all;
+    return all.filter(c => c.type === typeInt);
 }
 
 export async function getCategory(id) {
