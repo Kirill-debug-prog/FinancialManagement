@@ -1,5 +1,16 @@
 import { getActiveProfileId } from './client';
 
+// Маппинг имён ресурсов фронтенда → имена роутов бэкенда
+const RESOURCE_MAP = {
+    accounts: 'wallet',
+    transactions: 'transaction',
+    categories: 'category',
+    credits: 'credit',
+    debts: 'debt',
+    deposits: 'deposit',
+    currencies: 'currency',
+};
+
 /**
  * Построить URL для ресурса в контексте активного профиля
  * @param {string} resource Название ресурса (например: 'accounts', 'categories')
@@ -11,7 +22,13 @@ export function buildProfileUrl(resource, path = '') {
     if (!profileId) {
         console.warn(`buildProfileUrl: profileId не установлен`);
     }
-    return `/profiles/${profileId}/${resource}${path}`;
+    const backendResource = RESOURCE_MAP[resource] || resource;
+    // Запрос коллекции — profileId передаём query-параметром
+    if (path === '') {
+        return `/${backendResource}?profileId=${profileId}`;
+    }
+    // Запрос конкретного ресурса по ID — profileId не нужен
+    return `/${backendResource}${path}`;
 }
 
 /**

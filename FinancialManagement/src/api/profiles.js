@@ -5,7 +5,7 @@ import { api } from './client';
  * @returns {Promise<Array>} Массив профилей
  */
 export async function getProfiles() {
-    return api.get('/profiles');
+    return api.get('/profile');
 }
 
 /**
@@ -14,7 +14,7 @@ export async function getProfiles() {
  * @returns {Promise<Object>} Данные профиля
  */
 export async function getProfile(profileId) {
-    return api.get(`/profiles/${profileId}`);
+    return api.get(`/profile/${profileId}`);
 }
 
 /**
@@ -24,17 +24,17 @@ export async function getProfile(profileId) {
  * @returns {Promise<Object>} Созданный профиль с ID
  */
 export async function createProfile(name, mainCurrency) {
-    return api.post('/profiles', { name, mainCurrency });
+    return api.post('/profile', { name, mainCurrency });
 }
 
 /**
- * Обновить профиль
+ * Обновить профиль (переименовать)
  * @param {string} profileId ID профиля
  * @param {string} name Новое название профиля
  * @returns {Promise<Object>} Обновленный профиль
  */
 export async function updateProfile(profileId, name) {
-    return api.put(`/profiles/${profileId}`, { name });
+    return api.put(`/profile/${profileId}/rename`, { name });
 }
 
 /**
@@ -43,5 +43,5 @@ export async function updateProfile(profileId, name) {
  * @returns {Promise<void>}
  */
 export async function deleteProfile(profileId) {
-    return api.delete(`/profiles/${profileId}`);
+    return api.delete(`/profile/${profileId}`);
 }

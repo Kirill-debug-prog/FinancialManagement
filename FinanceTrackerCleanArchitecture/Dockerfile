@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
 WORKDIR /src
 
 COPY ["Core/Core.API/Core.API.csproj", "Core/Core.API/"]
@@ -14,12 +14,18 @@ COPY ["Modules/Users/Users.Application/Users.Application.csproj", "Modules/Users
 COPY ["Modules/Users/Users.Domain/Users.Domain.csproj", "Modules/Users/Users.Domain/"]
 COPY ["Modules/Users/Users.Infrastructure/Users.Infrastructure.csproj", "Modules/Users/Users.Infrastructure/"]
 
-RUN dotnet restore "Core/Core.API/Core.API.csproj"
+RUN dotnet restore "Core/Core.API/Core.API.csproj" -r linux-musl-x64
 
 COPY . .
-RUN dotnet publish "Core/Core.API/Core.API.csproj" -c Release -o /app/publish --no-restore
+RUN dotnet publish "Core/Core.API/Core.API.csproj" \
+    -c Release \
+    -r linux-musl-x64 \
+    --no-self-contained \
+    --no-restore \
+    -o /app/publish
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS runtime
+RUN apk add --no-cache icu-libs
 WORKDIR /app
 COPY --from=build /app/publish .
 EXPOSE 8080

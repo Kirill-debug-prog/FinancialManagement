@@ -27,7 +27,10 @@ public class DebtRepository : IDebtRepository
 
   public async Task<IEnumerable<Debt>> GetByProfileIdAsync(Guid profileId)
   {
-    return await _context.Debts.AsNoTracking().Where(d => d.ProfileId == profileId).ToListAsync();
+    return await _context.Debts.AsNoTracking()
+      .Include(d => d.Currency)
+      .Where(d => d.ProfileId == profileId)
+      .ToListAsync();
   }
 
   public async Task UpdateAsync(Debt debt)

@@ -4,3 +4,9 @@ dist-ssr/
 .vite/
 *.local
 npm-debug.log*
+.git/
+.vscode/
+*.md
+Dockerfile*
+.dockerignore
+.env*
