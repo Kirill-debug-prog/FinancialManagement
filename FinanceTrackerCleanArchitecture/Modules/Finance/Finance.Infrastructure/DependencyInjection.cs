@@ -1,4 +1,8 @@
+using Finance.Application.Analytics.Queries.GetCategoryAnalytics;
+using Finance.Application.Analytics.Queries.GetMonthlyAnalytics;
+using Finance.Application.Import;
 using Finance.Domain.Interfaces;
+using Finance.Infrastructure.BankParsers;
 using Finance.Infrastructure.Persistence;
 using Finance.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +29,11 @@ public static class DependencyInjection
     services.AddScoped<ICategoryRepository, CategoryRepository>();
     services.AddScoped<ITransactionRepository, TransactionRepository>();
     services.AddScoped<IRecurringTransactionRepository, RecurringTransactionRepository>();
+
+    services.AddScoped<GetMonthlyAnalyticsQueryHandler>();
+    services.AddScoped<GetCategoryAnalyticsQueryHandler>();
+
+    services.AddScoped<IBankStatementParser, SberbankPdfParser>();
 
     return services;
   }
