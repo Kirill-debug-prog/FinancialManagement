@@ -9,7 +9,7 @@ import { api, setToken, parseJwt } from './client';
  */
 export async function login(email, password) {
     try {
-        const data = await api.post('/auth/login', { email, password });
+        const data = await api.post('/user/login', { email, password });
         if (data && data.token) {
             setToken(data.token);
             // Сохраняем информацию о том, что пользователь авторизирован
@@ -32,7 +32,7 @@ export async function login(email, password) {
  * @throws {Error} Если ошибка при регистрации
  */
 export async function register(email, password, confirmPassword) {
-    const data = await api.post('/auth/register', { email, password, confirmPassword });
+    const data = await api.post('/user/register', { email, password, confirmPassword });
     return data;
 }
 

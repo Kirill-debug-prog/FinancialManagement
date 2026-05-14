@@ -34,7 +34,7 @@ export async function createDebt(data) {
  * @returns {Promise<Object>} Обновленный долг
  */
 export async function updateDebt(id, data) {
-    return api.put(buildProfileUrl('debts', `/${id}`), data);
+    return api.put(buildProfileUrl('debts', `/${id}/creditor`), data.creditor);
 }
 
 /**

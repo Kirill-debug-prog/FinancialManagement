@@ -34,7 +34,7 @@ export async function createCredit(data) {
  * @returns {Promise<Object>} Обновленный кредит
  */
 export async function updateCredit(id, data) {
-    return api.put(buildProfileUrl('credits', `/${id}`), data);
+    return api.put(buildProfileUrl('credits', `/${id}/rename`), data.name);
 }
 
 /**

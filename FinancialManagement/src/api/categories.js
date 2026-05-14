@@ -7,8 +7,9 @@ import { buildProfileUrl, buildQueryString } from './utils';
  * @returns {Promise<Array>} Массив категорий
  */
 export async function getCategories(type = null) {
-    const query = buildQueryString({ type });
-    return api.get(buildProfileUrl('categories') + query);
+    const categories = await api.get(buildProfileUrl('categories'));
+    if (!type) return categories;
+    return (categories ?? []).filter(c => c.type === type);
 }
 
 /**
@@ -36,7 +37,7 @@ export async function createCategory(data) {
  * @returns {Promise<Object>} Обновленная категория
  */
 export async function updateCategory(id, data) {
-    return api.put(buildProfileUrl('categories', `/${id}`), data);
+    return api.put(buildProfileUrl('categories', `/${id}/rename`), data.name);
 }
 
 /**

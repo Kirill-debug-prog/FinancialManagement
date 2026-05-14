@@ -6,7 +6,7 @@ import { buildProfileUrl } from './utils';
  * @returns {Promise<Array>} Массив валют
  */
 export async function getCurrencies() {
-    return api.get(buildProfileUrl('currencies'));
+    return api.get('/currency');
 }
 
 /**
@@ -15,33 +15,27 @@ export async function getCurrencies() {
  * @returns {Promise<Object>} Данные валюты
  */
 export async function getCurrency(id) {
-    return api.get(buildProfileUrl('currencies', `/${id}`));
+    return api.get(`/currency/${id}`);
 }
 
 /**
- * Создать новую валюту
- * @param {Object} data Данные валюты (code, symbol, name, exchangeRate)
- * @returns {Promise<Object>} Созданная валюта с ID
+ * Найти валюту по коду из глобального справочника.
+ * Бэкенд не поддерживает создание валют — они предзаполнены.
+ * @param {Object} data Данные с полем code (например: 'RUB', 'USD')
+ * @returns {Promise<Object>} Найденная валюта
  */
 export async function createCurrency(data) {
-    return api.post(buildProfileUrl('currencies'), data);
+    const all = await getCurrencies();
+    const found = (all ?? []).find(c => c.code === data.code);
+    return found ?? null;
 }
 
 /**
- * Обновить валюту
+ * Обновить курс валюты
  * @param {string} id ID валюты
- * @param {Object} data Данные для обновления
- * @returns {Promise<Object>} Обновленная валюта
- */
-export async function updateCurrency(id, data) {
-    return api.put(buildProfileUrl('currencies', `/${id}`), data);
-}
-
-/**
- * Удалить валюту
- * @param {string} id ID валюты
+ * @param {number} rate Новый курс
  * @returns {Promise<void>}
  */
-export async function deleteCurrency(id) {
-    return api.delete(buildProfileUrl('currencies', `/${id}`));
+export async function updateCurrencyRate(id, rate) {
+    return api.patch(`/currency/${id}/rate`, { rate });
 }

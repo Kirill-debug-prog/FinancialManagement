@@ -34,7 +34,7 @@ export async function createDeposit(data) {
  * @returns {Promise<Object>} Обновленный депозит
  */
 export async function updateDeposit(id, data) {
-    return api.put(buildProfileUrl('deposits', `/${id}`), data);
+    return api.put(buildProfileUrl('deposits', `/${id}/rename`), data.name);
 }
 
 /**
