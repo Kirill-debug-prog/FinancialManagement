@@ -1,4 +1,5 @@
-import { Card, CardHeader, CradTitle, CardContent } from '../../components/ui/card/card'
+import React from 'react'
+import { Card, CardHeader, CardContent } from '../../components/ui/card/card'
 import { CurrencyInputs, Input } from '../../components/ui/input_data/input';
 import { Progress } from '../../components/ui/progress/progress'
 import { CheckCircle, Wallet, DollarSign, Tag, TrendingUp } from 'lucide-react';
@@ -166,7 +167,7 @@ function Onboarding({ onComplete }) {
                 <CardHeader className='onboarding__header'>
                     <div className='onboarding__header-inf'>
                         <div>
-                            <CradTitle className='onboarding__header-title'>Финансовый помошник</CradTitle>
+                            <CardTitle className='onboarding__header-title'>Финансовый помошник</CardTitle>
                             <p className='onboarding__header-steps'>Шаг {step} из {totalStep}</p>
                         </div>
                         <p className='onboarding__header-precent'>{Math.round(progres)}%</p>

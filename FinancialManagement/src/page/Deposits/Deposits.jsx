@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../../components/ui/dialog_/dialog';
 import { Plus, TrendingUp } from 'lucide-react';
-import { Card, CardContent, CardHeader, CradTitle } from '../../components/ui/card/card'
+import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card/card'
 import { Button } from '../../components/ui/button/button';
 import { Label } from '../../components/ui/label/label';
 import { Input } from '../../components/ui/input_data/input';
@@ -10,11 +10,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Badge } from "../../components/ui/badge/badge";
 import FinanceProductCard from '../../components/ui/FinanceProductCard/FinanceProductCard'
 import { getDeposits, createDeposit, deleteDeposit, updateDeposit } from '../../api/deposits';
+import { invalidateCreditsDebtsCache } from '../../api/cacheInvalidation';
 import './Deposits.scss'
 
 export default function Deposits() {
     const [dialogOpen, setDialogOpen] = useState(false)
-    const [dipositName, setDipositName] = useState('')
+    const [depositName, setDepositName] = useState('')
     const [depositType, setDepositType] = useState('')
     const [depositBank, setDepositBank] = useState('')
     const [depositAmount, setDepositAmount] = useState('')
@@ -38,7 +39,7 @@ export default function Deposits() {
         const amount = parseFloat(depositAmount);
         const rate = parseFloat(depositRate);
 
-        if (!dipositName || dipositName.trim().length === 0) {
+        if (!depositName || depositName.trim().length === 0) {
             newErrors.name = 'Название вклада не может быть пустым';
         }
         if (!depositType) {
@@ -121,7 +122,7 @@ export default function Deposits() {
         setDepositErrors({});
         try {
             await createDeposit({
-                name: dipositName,
+                name: depositName,
                 bank: depositBank,
                 amount: parseFloat(depositAmount) || 0,
                 interestRate: parseFloat(depositRate) || 0,
@@ -133,7 +134,7 @@ export default function Deposits() {
             });
             toast.success('Вклад успешно добавлен');
             setDialogOpen(false);
-            setDipositName('');
+            setDepositName('');
             setDepositType('');
             setDepositBank('');
             setDepositAmount('');
@@ -141,6 +142,7 @@ export default function Deposits() {
             setDepositStartDate('');
             setDepositEndDate('');
             setDepositCapitalization(false);
+            invalidateCreditsDebtsCache();
             fetchData();
         } catch (err) {
             toast.error(err.message || 'Ошибка добавления вклада');
@@ -155,6 +157,7 @@ export default function Deposits() {
         try {
             await deleteDeposit(depositId);
             toast.success('Вклад успешно закрыт');
+            invalidateCreditsDebtsCache();
             fetchData();
         } catch (err) {
             toast.error(err.message || 'Ошибка закрытия вклада');
@@ -194,6 +197,7 @@ export default function Deposits() {
             });
             toast.success(`Вклад пополнен на ${replenishForm.amount} ₽`);
             setReplenishDialogOpen(false);
+            invalidateCreditsDebtsCache();
             fetchData();
         } catch (err) {
             toast.error(err.message || 'Ошибка пополнения вклада');
@@ -258,9 +262,9 @@ export default function Deposits() {
                                 <Input
                                     id="deposits-name"
                                     placeholder="Например: Накопительный вклад"
-                                    value={dipositName}
+                                    value={depositName}
                                     onChange={(e) => {
-                                        setDipositName(e.target.value);
+                                        setDepositName(e.target.value);
                                         setDepositErrors(prev => ({ ...prev, name: '' }));
                                     }}
                                     className={depositErrors.name ? 'is-error' : ''}
@@ -394,9 +398,9 @@ export default function Deposits() {
             <div className="deposits-summary">
                 <Card>
                     <CardHeader className="deposits-summary__header">
-                        <CradTitle className="deposits-summary__title">
+                        <CardTitle className="deposits-summary__title">
                             Общая сумма вкладов
-                        </CradTitle>
+                        </CardTitle>
                         <TrendingUp className="deposits-summary__icon deposits-summary__icon--blue" />
                     </CardHeader>
                     <CardContent>
@@ -411,9 +415,9 @@ export default function Deposits() {
 
                 <Card>
                     <CardHeader className="deposits-summary__header">
-                        <CradTitle className="deposits-summary__title">
+                        <CardTitle className="deposits-summary__title">
                             Ожидаемый доход
-                        </CradTitle>
+                        </CardTitle>
                         <TrendingUp className="deposits-summary__icon deposits-summary__icon--green" />
                     </CardHeader>
                     <CardContent>
@@ -428,9 +432,9 @@ export default function Deposits() {
 
                 <Card>
                     <CardHeader className="deposits-summary__header">
-                        <CradTitle className="deposits-summary__title">
+                        <CardTitle className="deposits-summary__title">
                             Активных вкладов
-                        </CradTitle>
+                        </CardTitle>
                         <TrendingUp className="deposits-summary__icon deposits-summary__icon--purple" />
                     </CardHeader>
                     <CardContent>

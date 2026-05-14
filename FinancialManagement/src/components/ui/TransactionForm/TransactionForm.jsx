@@ -43,7 +43,7 @@ export default function TransactionForm({ onClose, onCreated, initialData }) {
                 setIncomeCategories(incCats);
                 setAccounts(accs);
                 setCurrencies(currs);
-            } catch (err) {
+            } catch {
                 toast.error('Ошибка загрузки данных формы');
             }
         };
@@ -238,7 +238,6 @@ export default function TransactionForm({ onClose, onCreated, initialData }) {
         }
     }
 
-    const currentCategories = type === 'income' ? incomeCategories : expenseCategories;
     const selectedAccountBalance = account ? getAccountBalance(account) : 0;
     const selectedFromAccountBalance = fromAccount ? getAccountBalance(fromAccount) : 0;
 
