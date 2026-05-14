@@ -5,6 +5,7 @@ using Finance.Domain.Interfaces;
 using Microsoft.Extensions.Logging;
 using Reports.Domain.Enums;
 using Reports.Domain.Interfaces;
+using Reports.Infrastructure.Charts;
 using Users.Domain.Interfaces;
 
 namespace Reports.Infrastructure.Generators;
@@ -20,6 +21,7 @@ public class ProfileTransactionsReportGenerator : IReportGenerator
   private readonly IWalletRepository _walletRepository;
   private readonly ITransactionRepository _transactionRepository;
   private readonly ICategoryRepository _categoryRepository;
+  private readonly IChartServiceClient _chartClient;
   private readonly ILogger<ProfileTransactionsReportGenerator> _logger;
 
   public ProfileTransactionsReportGenerator(
@@ -27,12 +29,14 @@ public class ProfileTransactionsReportGenerator : IReportGenerator
     IWalletRepository walletRepository,
     ITransactionRepository transactionRepository,
     ICategoryRepository categoryRepository,
+    IChartServiceClient chartClient,
     ILogger<ProfileTransactionsReportGenerator> logger)
   {
     _profileRepository = profileRepository;
     _walletRepository = walletRepository;
     _transactionRepository = transactionRepository;
     _categoryRepository = categoryRepository;
+    _chartClient = chartClient;
     _logger = logger;
   }
 
@@ -76,7 +80,30 @@ public class ProfileTransactionsReportGenerator : IReportGenerator
       "Profile transactions report: profile={ProfileId}, rows={Count}",
       parameters.ProfileId, transactions.Count);
 
-    return BuildExcel(profile.Name, parameters, transactions);
+    // Build monthly aggregates for charts
+    var monthGroups = transactions
+      .Where(t => t.Type != FinancialType.Transfer)
+      .GroupBy(t => (t.Date.Year, t.Date.Month))
+      .OrderBy(g => g.Key.Year).ThenBy(g => g.Key.Month)
+      .ToList();
+
+    var labels  = monthGroups.Select(g => $"{g.Key.Year:D4}-{g.Key.Month:D2}").ToList();
+    var income  = monthGroups.Select(g => g.Where(t => t.Type == FinancialType.Income).Sum(t => t.Amount)).ToList();
+    var expense = monthGroups.Select(g => g.Where(t => t.Type == FinancialType.Expense).Sum(t => t.Amount)).ToList();
+
+    var running = 0m;
+    var balance = income.Zip(expense).Select(p => { running += p.First - p.Second; return running; }).ToList();
+
+    byte[]? barChart  = null;
+    byte[]? lineChart = null;
+
+    if (labels.Count > 0)
+    {
+      barChart  = await _chartClient.GetMonthlyBarAsync(new(labels, income, expense), cancellationToken);
+      lineChart = await _chartClient.GetBalanceLineAsync(new(labels, balance), cancellationToken);
+    }
+
+    return BuildExcel(profile.Name, parameters, transactions, barChart, lineChart);
   }
 
   private static ProfileTransactionsParameters ParseParameters(string json)
@@ -100,7 +127,12 @@ public class ProfileTransactionsReportGenerator : IReportGenerator
     }
   }
 
-  private static Stream BuildExcel(string profileName, ProfileTransactionsParameters parameters, List<TransactionRow> rows)
+  private static Stream BuildExcel(
+    string profileName,
+    ProfileTransactionsParameters parameters,
+    List<TransactionRow> rows,
+    byte[]? barChart,
+    byte[]? lineChart)
   {
     var workbook = new XLWorkbook();
     var sheet = workbook.Worksheets.Add("Transactions");
@@ -152,6 +184,26 @@ public class ProfileTransactionsReportGenerator : IReportGenerator
     sheet.Range(summaryRow, 4, summaryRow + 1, 5).Style.Font.Bold = true;
 
     sheet.Columns().AdjustToContents();
+
+    if (barChart is not null || lineChart is not null)
+    {
+      var charts = workbook.Worksheets.Add("Графики");
+      charts.Cell("A1").Value = "Графики по отчёту";
+      charts.Range("A1:N1").Merge().Style.Font.SetBold().Font.SetFontSize(14);
+
+      var row = 3;
+      if (barChart is not null)
+      {
+        using var s = new MemoryStream(barChart);
+        charts.AddPicture(s).MoveTo(charts.Cell(row, 1)).WithSize(1000, 420);
+        row += 27;
+      }
+      if (lineChart is not null)
+      {
+        using var s = new MemoryStream(lineChart);
+        charts.AddPicture(s).MoveTo(charts.Cell(row, 1)).WithSize(1000, 420);
+      }
+    }
 
     var stream = new MemoryStream();
     workbook.SaveAs(stream);
