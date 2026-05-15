@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card/card';
 import { Button } from '../../components/ui/button/button';
@@ -43,31 +43,35 @@ function Transactions() {
         debouncedSearch(e.target.value)
     }
 
-    const fetchTransactions = async (filters = {}) => {
+    const fetchTransactions = useCallback(async (filters = {}) => {
         try {
             const data = await getTransactions(filters);
-            setTransactions(data.map(t => transformTransactionFromBackend(t)));
+            const transformed = data.map(t => transformTransactionFromBackend(t, accounts));
+            setTransactions(transformed);
         } catch (err) {
             toast.error(err.message || 'Ошибка загрузки операций');
         } finally {
             setLoading(false);
         }
-    };
+    }, [accounts]);
 
     useEffect(() => {
         const loadData = async () => {
             try {
                 const accs = await getAccounts();
                 setAccounts(accs);
-                setLoading(false);
             } catch {
                 toast.error('Ошибка загрузки данных');
-                setLoading(false);
             }
         };
         loadData();
-        fetchTransactions();
     }, []);
+
+    useEffect(() => {
+        if (accounts.length > 0) {
+            fetchTransactions();
+        }
+    }, [accounts, fetchTransactions]);
 
     const handleFilterChange = (newFilters) => {
         const filters = {};

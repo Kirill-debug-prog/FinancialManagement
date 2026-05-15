@@ -77,10 +77,10 @@ function Accounts() {
                 toast.error('Валюта не найдена');
                 return;
             }
-            const iconMap = { card: '💳', cash: '💵', savings: '🏦', investment: '📈' };
+            const iconMap = { card: 'card', cash: 'cash', savings: 'savings', investment: 'investment' };
             await createAccount({
                 name: accountName.trim(),
-                icon: iconMap[accountType] || '💳',
+                icon: iconMap[accountType] || 'card',
                 sortOrder: accounts.length,
                 currencyId: curr.id,
                 initialBalance: Number(initialBalance),
@@ -122,7 +122,7 @@ function Accounts() {
     const validateAccount = () => {
         const newErrors = {};
 
-        const num = Number(intialBalance);
+        const num = Number(initialBalance);
 
         if (initialBalance !== '' && Number.isNaN(num)) {
             newErrors.initialBalance = 'Введите корректное число';

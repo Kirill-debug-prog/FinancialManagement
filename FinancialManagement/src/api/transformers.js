@@ -35,19 +35,30 @@ const CURRENCY_SYMBOLS = {
 // ============================================================================
 
 /**
- * Определить тип счета на основе его названия и иконки
+ * Определить тип счета на основе поля type или названия счета
  * @private
- * @param {Object} account Объект счета с полями name и icon
- * @returns {string} Тип счета: 'cash', 'savings' или 'card'
+ * @param {Object} account Объект счета с полями name, icon и type
+ * @returns {string} Тип счета: 'card', 'cash', 'savings' или 'investment'
  */
 function guessAccountType(account) {
     if (!account) return 'card';
     
+    const validTypes = ['card', 'cash', 'savings', 'investment'];
+    if (account.type && validTypes.includes(account.type)) {
+        return account.type;
+    }
+
     const name = (account.name || '').toLowerCase();
     const icon = (account.icon || '').toLowerCase();
-    
-    if (name.includes('наличн') || icon.includes('cash')) return 'cash';
-    if (name.includes('сбереж') || name.includes('накоп') || icon.includes('saving')) return 'savings';
+
+    if (icon === 'cash' || icon.includes('cash')) return 'cash';
+    if (icon === 'savings' || icon === 'saving' || icon.includes('saving')) return 'savings';
+    if (icon === 'investment' || icon === 'invest' || icon.includes('investment')) return 'investment';
+    if (icon === 'card' || icon.includes('card')) return 'card';
+
+    if (name.includes('наличн')) return 'cash';
+    if (name.includes('сбереж') || name.includes('накоп')) return 'savings';
+    if (name.includes('инвест')) return 'investment';
     return 'card';
 }
 
@@ -61,6 +72,7 @@ function getAccountIcon(type) {
     switch (type) {
         case 'cash': return Wallet;
         case 'savings': return Landmark;
+        case 'investment': return DollarSign;
         default: return CreditCard;
     }
 }
@@ -93,19 +105,23 @@ export function transformAccountFromBackend(account, index = 0, currencyCode = n
 // Transaction Transformers
 // ============================================================================
 
-const x1TYPE_INT_TO_STR = { 0: 'income', 1: 'expense', 2: 'transfer' };
+const TYPE_INT_TO_STR = { 0: 'income', 1: 'expense', 2: 'transfer' };
 
 /**
  * Трансформировать транзакцию с бэкенда в формат фронтенда
  * @param {Object} t Данные транзакции с бэкенда
  * @returns {Object|null} Трансформированная транзакция или null
  */
-export function transformTransactionFromBackend(t) {
+export function transformTransactionFromBackend(t, accounts = []) {
     if (!t) return null;
 
     const typeStr = typeof t.type === 'number'
         ? (TYPE_INT_TO_STR[t.type] || 'expense')
         : (t.type || 'expense').toLowerCase();
+
+    // Найти имя счета по walletId
+    const account = accounts.find(acc => acc.id === t.walletId);
+    const accountName = account ? account.name : (t.accountName || '');
 
     return {
         id: t.id,
@@ -113,7 +129,7 @@ export function transformTransactionFromBackend(t) {
         type: typeStr,
         category: t.categoryName || 'Без категории',
         categoryId: t.categoryId,
-        account: t.walletId || '',
+        account: accountName,
         accountId: t.walletId || t.accountId,
         amount: t.amount ?? t.totalAmount ?? 0,
         description: t.description || t.note || '',

@@ -21,7 +21,7 @@ function transformDepositResponse(deposit) {
     return {
         id: deposit.id,
         name: deposit.name,
-        bank: '',
+        bank: deposit.bank ?? '',
         amount,
         currentAmount: amount,
         initialAmount: deposit.initialAmount ?? 0,
@@ -31,7 +31,7 @@ function transformDepositResponse(deposit) {
         capitalization: deposit.isCapitalized ?? false,
         isCapitalized: deposit.isCapitalized ?? false,
         status: deposit.isClosed ? 'closed' : 'active',
-        type: 'fixed',
+        type: deposit.type ?? 'fixed',
         currencyId: deposit.currencyId,
     };
 }
@@ -49,7 +49,7 @@ export async function getDeposit(id) {
 export async function createDeposit(data) {
     const profileId = getActiveProfileId();
     const currencyId = await getDefaultCurrencyId();
-    return api.post('/deposit', {
+    const result = await api.post('/deposit', {
         profileId,
         currencyId,
         name: data.name,
@@ -58,6 +58,7 @@ export async function createDeposit(data) {
         startDate: toDateOnly(data.startDate),
         endDate: toDateOnly(data.endDate),
         isCapitalized: data.capitalization ?? data.isCapitalized ?? false,
+        type: data.type ?? 'fixed',
     });
     invalidateDepositsCache();
     return result;

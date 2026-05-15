@@ -82,8 +82,18 @@ export default function TransactionForm({ onClose, onCreated, initialData }) {
                 return newErrors;
             }
 
-            if (!account) {
-                newErrors.account = 'Пожалуйста, выберите счёт';
+            if (!fromAccount) {
+                newErrors.fromAccount = 'Пожалуйста, выберите счет-отправитель';
+                return newErrors;
+            }
+
+            if (!toAccount) {
+                newErrors.toAccount = 'Пожалуйста, выберите счет-получатель';
+                return newErrors;
+            }
+
+            if (fromAccount === toAccount) {
+                newErrors.toAccount = 'Счета не могут быть одинаковыми';
                 return newErrors;
             }
 
@@ -464,10 +474,10 @@ export default function TransactionForm({ onClose, onCreated, initialData }) {
                 {/* TRANSFER TAB */}
                 <TabsContent value="transfer" className="transaction-form__section">
                     <div className="transaction-form__field">
-                        <Label htmlFor="from-account">Со счета * {errors.account && <span className="form-error-icon">⚠️</span>}</Label>
+                        <Label htmlFor="from-account">Со счета * {(errors.fromAccount || errors.account) && <span className="form-error-icon">⚠️</span>}</Label>
                         <Select value={fromAccount} onValueChange={(val) => {
                             setFromAccount(val);
-                            setErrors(prev => ({ ...prev, account: '' }));
+                            setErrors(prev => ({ ...prev, fromAccount: '', account: '' }));
                         }}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Выберите счет-отправитель" />
@@ -486,7 +496,7 @@ export default function TransactionForm({ onClose, onCreated, initialData }) {
                                 💰 Баланс: <strong>{selectedFromAccountBalance.toLocaleString('ru-RU')} ₽</strong>
                             </div>
                         )}
-                        {errors.account && <span className="form-error">{errors.account}</span>}
+                        {(errors.fromAccount || errors.account) && <span className="form-error">{errors.fromAccount || errors.account}</span>}
                     </div>
 
                     <div className="transaction-form__row">
@@ -527,10 +537,10 @@ export default function TransactionForm({ onClose, onCreated, initialData }) {
                     </div>
 
                     <div className="transaction-form__field">
-                        <Label htmlFor="to-account">На счет * {errors.account && <span className="form-error-icon">⚠️</span>}</Label>
+                        <Label htmlFor="to-account">На счет * {errors.toAccount && <span className="form-error-icon">⚠️</span>}</Label>
                         <Select value={toAccount} onValueChange={(val) => {
                             setToAccount(val);
-                            setErrors(prev => ({ ...prev, account: '' }));
+                            setErrors(prev => ({ ...prev, toAccount: '' }));
                         }}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Выберите счет-получатель" />
@@ -546,7 +556,7 @@ export default function TransactionForm({ onClose, onCreated, initialData }) {
                                 }
                             </SelectContent>
                         </Select>
-                        {errors.account && <span className="form-error">{errors.account}</span>}
+                        {errors.toAccount && <span className="form-error">{errors.toAccount}</span>}
                     </div>
 
                     <div className="transaction-form__field">

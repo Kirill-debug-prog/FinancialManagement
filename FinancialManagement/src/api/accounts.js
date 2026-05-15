@@ -40,7 +40,16 @@ export async function createAccount(data) {
 }
 
 export async function updateAccount(id, data) {
-    const result = await api.put(`/wallet/${id}/rename`, data.name);
+    let result;
+
+    if (data.name) {
+        result = await api.put(`/wallet/${id}/rename`, data.name);
+    }
+
+    if (data.type) {
+        result = await api.patch(`/wallet/${id}/icon`, data.type);
+    }
+
     invalidateAccountCache(id);
     return result;
 }
