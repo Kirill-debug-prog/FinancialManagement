@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { getCategories, createCategory, deleteCategory } from '../../api/categories';
 import { invalidateCategoriesCache } from '../../api/cacheInvalidation';
 import { transformCategoryFromBackend } from '../../api/transformers';
+import { getCurrentUser, changeEmail, changePassword, changeProfile, } from '../../api/user';
 import './Settings.scss';
 
 export default function Setting() {
@@ -31,6 +32,78 @@ export default function Setting() {
     const [newCatName, setNewCatName] = useState('');
     const [newCatType, setNewCatType] = useState('expense');
 
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
+
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+
+    useEffect(() => {
+        async function loadUser() {
+            try {
+                const user = await getCurrentUser();
+                setFirstName(user.firstName || '');
+                setLastName(user.lastName || '');
+                setPhone(user.phone || '');
+                setEmail(user.email || '');
+            } catch {
+                toast.error('Не удалось загрузить пользователя');
+            }
+        }
+
+        loadUser();
+    }, []);
+
+    const handleSaveProfile = async () => {
+        try {
+            await changeProfile(firstName, lastName, phone);
+            toast.success('Профиль обновлён');
+        } catch (err) {
+            toast.error(`Ошибка: ${err.message}`);
+        }
+    };
+
+    const handleChangeEmail = async () => {
+        try {
+            await changeEmail(email);
+            toast.success('Email обновлён');
+        } catch (err) {
+            toast.error(`Ошибка: ${err.message}`);
+        }
+    };
+
+    const handleChangePassword = async () => {
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            toast.error('Заполните все поля');
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            toast.error('Пароли не совпадают');
+            return;
+        }
+
+        if (newPassword.length < 6) {
+            toast.error('Пароль должен быть минимум 6 символов');
+            return;
+        }
+
+        try {
+            await changePassword(currentPassword, newPassword);
+
+            toast.success('Пароль изменён');
+
+            setCurrentPassword('');
+            setNewPassword('');
+            setConfirmPassword('');
+        } catch (err) {
+            toast.error(err.message || 'Ошибка смены пароля');
+        }
+    };
+
     const fetchCategories = async () => {
         try {
             const [exp, inc] = await Promise.all([
@@ -45,14 +118,6 @@ export default function Setting() {
     };
 
     useEffect(() => { fetchCategories(); }, []);
-
-    const handleSaveProfile = () => {
-        toast.success('Профиль обновлён');
-    };
-
-    const handleChangePassword = () => {
-        toast.success('Пароль изменён');
-    };
 
     const handleBackup = () => {
         toast.success('Резервная копия создана');
@@ -130,24 +195,57 @@ export default function Setting() {
                             <div className="grid grid--2cols gap">
                                 <div className="field">
                                     <Label htmlFor="firstName">Имя</Label>
-                                    <Input id="firstName" placeholder="Иван" />
+                                    <Input
+                                        id="firstName"
+                                        placeholder="Иван"
+                                        value={firstName}
+                                        onChange={(e) => setFirstName(e.target.value)}
+                                    />
                                 </div>
+
                                 <div className="field">
                                     <Label htmlFor="lastName">Фамилия</Label>
-                                    <Input id="lastName" placeholder="Петров" />
+                                    <Input
+                                        id="lastName"
+                                        placeholder="Петров"
+                                        value={lastName}
+                                        onChange={(e) => setLastName(e.target.value)}
+                                    />
                                 </div>
+
                                 <div className="field">
                                     <Label htmlFor="email">Email</Label>
-                                    <Input id="email" type="email" placeholder="ivan@example.com" />
+                                    <Input
+                                        id="email"
+                                        type="email"
+                                        placeholder="ivan@example.com"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                    />
                                 </div>
+
                                 <div className="field">
                                     <Label htmlFor="phone">Телефон</Label>
-                                    <Input id="phone" type="tel" placeholder="+7 (999) 123-45-67" />
+                                    <Input
+                                        id="phone"
+                                        type="tel"
+                                        placeholder="+7 (999) 123-45-67"
+                                        value={phone}
+                                        onChange={(e) => setPhone(e.target.value)}
+                                    />
                                 </div>
                             </div>
 
+                            <div className="grid grid--2cols gap">
+                                <Button size="sm" onClick={handleSaveProfile}>
+                                    Сохранить профиль
+                                </Button>
 
-                            <Button size="sm" onClick={handleSaveProfile}>Сохранить изменения</Button>
+                                <Button size="sm" onClick={handleChangeEmail}>
+                                    Сохранить email
+                                </Button>
+                            </div>
+
                         </CardContent>
                     </Card>
                 </TabsContent>
@@ -277,7 +375,7 @@ export default function Setting() {
                                 </Select>
                             </div>
 
-                            <div className="field">
+                            {/* <div className="field">
                                 <Label htmlFor="currency">Основная валюта</Label>
                                 <Select value={currency} onValueChange={setCurrency}>
                                     <SelectTrigger>
@@ -289,7 +387,7 @@ export default function Setting() {
                                         <SelectItem value="EUR">Евро (€)</SelectItem>
                                     </SelectContent>
                                 </Select>
-                            </div>
+                            </div> */}
 
                             <div className="field">
                                 <Label htmlFor="language">Язык интерфейса</Label>
@@ -351,7 +449,7 @@ export default function Setting() {
                                     <Label>Напоминания о платежах</Label>
                                     <p className="muted">Уведомлять о предстоящих платежах</p>
                                 </div>
-                                <Switch defaultUnchecked/>
+                                <Switch defaultUnchecked />
                             </div>
 
                             <Separator />
@@ -377,17 +475,40 @@ export default function Setting() {
                             <div className="stack-sm">
                                 <div className="field">
                                     <Label htmlFor="current-password">Текущий пароль</Label>
-                                    <Input id="current-password" type="password" />
+                                    <Input
+                                        id="current-password"
+                                        type="password"
+                                        placeholder="••••••••"
+                                        value={currentPassword}
+                                        onChange={(e) => setCurrentPassword(e.target.value)}
+                                    />
                                 </div>
+
                                 <div className="field">
                                     <Label htmlFor="new-password">Новый пароль</Label>
-                                    <Input id="new-password" type="password" />
+                                    <Input
+                                        id="new-password"
+                                        type="password"
+                                        placeholder="••••••••"
+                                        value={newPassword}
+                                        onChange={(e) => setNewPassword(e.target.value)}
+                                    />
                                 </div>
+
                                 <div className="field">
                                     <Label htmlFor="confirm-password">Подтвердите пароль</Label>
-                                    <Input id="confirm-password" type="password" />
+                                    <Input
+                                        id="confirm-password"
+                                        type="password"
+                                        placeholder="••••••••"
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                    />
                                 </div>
-                                <Button size="sm" onClick={handleChangePassword}>Изменить пароль</Button>
+
+                                <Button size="sm" onClick={handleChangePassword}>
+                                    Изменить пароль
+                                </Button>
                             </div>
                         </CardContent>
                     </Card>

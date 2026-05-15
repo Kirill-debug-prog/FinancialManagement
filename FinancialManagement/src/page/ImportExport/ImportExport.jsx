@@ -213,6 +213,21 @@ export default function ImportExport() {
                                 <CardTitle className="text-lg">Импорт выписки из банка</CardTitle>
                             </CardHeader>
                             <CardContent className="import-export__import-card-content">
+
+                                <div className="import-export__select-group">
+                                    <Label className="import-export__label">Счёт для импорта</Label>
+                                    <Select value={selectedWalletId} onValueChange={setSelectedWalletId}>
+                                        <SelectTrigger className="import-export__select-trigger">
+                                            <SelectValue placeholder="Выберите счёт" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {wallets.map(w => (
+                                                <SelectItem key={w.id} value={w.id}>{w.name}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
                                 <div className="import-export__import-controls">
                                     <Upload className="import-export__icon" />
                                     <input
