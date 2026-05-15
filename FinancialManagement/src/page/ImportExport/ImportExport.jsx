@@ -11,12 +11,7 @@ import { Progress } from '../../components/ui/progress/progress';
 import { Label } from '../../components/ui/label/label';
 import { getAccounts } from '../../api/accounts';
 import { importBankStatement } from '../../api/import';
-
-const exportHistory = [
-    { id: 1, filename: 'financial_report_2025.pdf', format: 'PDF', date: '2025-10-26', size: '2.3 MB' },
-    { id: 2, filename: 'transactions_october.xlsx', format: 'Excel', date: '2025-10-20', size: '156 KB' },
-    { id: 3, filename: 'full_backup.json', format: 'JSON', date: '2025-10-15', size: '1.8 MB' },
-];
+import { createTransactionsReport, createCategoryBreakdownReport, createObligationsReport, getReportDownloadUrl, waitForReport } from '../../api/reportExport';
 
 export default function ImportExport() {
     const [wallets, setWallets] = useState([]);
@@ -24,11 +19,10 @@ export default function ImportExport() {
     const [selectedFile, setSelectedFile] = useState(null);
     const [importing, setImporting] = useState(false);
     const [importResult, setImportResult] = useState(null);
-    const [exportFormat, setExportFormat] = useState('csv');
+    const [exportFormat, setExportFormat] = useState('transactions');
     const [exportPeriod, setExportPeriod] = useState('month');
-    const [exportCheckboxes, setExportCheckboxes] = useState({
-        transactions: true, accounts: true, credits: true, deposits: true,
-    });
+    const [exporting, setExporting] = useState(false);
+    const [exportHistory, setExportHistory] = useState([]);
     const fileInputRef = useRef(null);
 
     useEffect(() => {
@@ -69,18 +63,126 @@ export default function ImportExport() {
         }
     };
 
-    const handleExport = () => {
-        toast.success(`Экспорт в формате ${exportFormat.toUpperCase()} начат`);
+    const handleExport = async () => {
+        if (exporting) return;
+        
+        const { dateFrom, dateTo } = getPeriodDates(exportPeriod);
+        setExporting(true);
+        const toastId = toast.loading('Подготовка экспорта...');
+        
+        try {
+            let result;
+
+            // Выбираем функцию создания отчета в зависимости от типа
+            if (exportFormat === 'transactions') {
+                result = await createTransactionsReport(dateFrom, dateTo);
+            } else if (exportFormat === 'categories') {
+                result = await createCategoryBreakdownReport(dateFrom, dateTo);
+            } else if (exportFormat === 'obligations') {
+                result = await createObligationsReport(dateFrom, dateTo);
+            }
+
+            // Получаем URL для скачивания
+            if (result?.reportId) {
+                toast.loading('Генерация файла (ожидание)...', { id: toastId });
+                
+                // Ждем готовности отчета
+                try {
+                    await waitForReport(result.reportId);
+                } catch (waitErr) {
+                    throw new Error(`Отчет не готов: ${waitErr.message}`);
+                }
+                
+                // Теперь получаем URL скачивания
+                toast.loading('Получение ссылки на скачивание...', { id: toastId });
+                const downloadResult = await getReportDownloadUrl(result.reportId);
+                const downloadUrl = downloadResult.downloadUrl || downloadResult.url;
+                
+                // Добавляем в историю
+                const newExport = {
+                    id: Date.now(),
+                    filename: `report_${exportFormat}_${new Date().getTime()}.pdf`,
+                    format: 'PDF',
+                    date: new Date().toISOString().split('T')[0],
+                    size: '—',
+                    downloadUrl
+                };
+                setExportHistory(prev => [newExport, ...prev]);
+                
+                // Скачиваем файл
+                if (downloadUrl) {
+                    window.open(downloadUrl, '_blank');
+                }
+                toast.success('Отчет готов и скачивается!', { id: toastId });
+            } else {
+                toast.success('Отчет создан!', { id: toastId });
+            }
+        } catch (err) {
+            toast.error(err.message || 'Ошибка экспорта', { id: toastId });
+        } finally {
+            setExporting(false);
+        }
     };
 
-    const handleCheckboxChange = (name) => {
-        setExportCheckboxes(prev => ({ ...prev, [name]: !prev[name] }));
+    const getPeriodDates = (period) => {
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        
+        const formatDate = (date) => {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        };
+
+        switch (period) {
+            case 'week': {
+                const weekStart = new Date(today);
+                weekStart.setDate(today.getDate() - 7);
+                return { dateFrom: formatDate(weekStart), dateTo: formatDate(today) };
+            }
+            case 'month': {
+                const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+                return { dateFrom: formatDate(monthStart), dateTo: formatDate(today) };
+            }
+            case 'quarter': {
+                const quarter = Math.floor(today.getMonth() / 3);
+                const quarterStart = new Date(today.getFullYear(), quarter * 3, 1);
+                return { dateFrom: formatDate(quarterStart), dateTo: formatDate(today) };
+            }
+            case 'year': {
+                const yearStart = new Date(today.getFullYear(), 0, 1);
+                return { dateFrom: formatDate(yearStart), dateTo: formatDate(today) };
+            }
+            case 'all':
+            default:
+                return { dateFrom: null, dateTo: null };
+        }
+    };
+
+    const getExtensionForFormat = (format) => {
+        switch (format) {
+            case 'csv': return 'csv';
+            case 'xlsx': return 'xlsx';
+            case 'pdf': return 'pdf';
+            case 'json': return 'json';
+            default: return 'txt';
+        }
+    };
+
+    const getFormatLabel = (format) => {
+        switch (format) {
+            case 'csv': return 'CSV';
+            case 'xlsx': return 'Excel';
+            case 'pdf': return 'PDF';
+            case 'json': return 'JSON';
+            default: return format.toUpperCase();
+        }
     };
 
     const getFormatIcon = (format) => {
         switch (format.toLowerCase()) {
-            case 'csv': return <FileText className="icon" />;
-            case 'excel': case 'xlsx': return <FileSpreadsheet className="icon" />;
+            case 'pdf': return <FileText className="icon" />;
             default: return <File className="icon" />;
         }
     };
@@ -93,14 +195,14 @@ export default function ImportExport() {
     return (
         <div className="import-export">
             <div className="import-export__header">
-                <h1 className="import-export__title">Импорт и экспорт данных</h1>
-                <p className="import-export__subtitle">Работа с внешними данными и синхронизация</p>
+                <h1 className="import-export__title">Импорт данных и отчеты</h1>
+                <p className="import-export__subtitle">Работа с внешними данными и создание аналитических отчетов</p>
             </div>
 
             <Tabs defaultValue="import" className="import-export__tabs">
                 <TabsList className="import-export__tabs-list">
                     <TabsTrigger value="import" className="import-export__tab">Импорт</TabsTrigger>
-                    <TabsTrigger value="export" className="import-export__tab">Экспорт</TabsTrigger>
+                    <TabsTrigger value="export" className="import-export__tab">Отчеты</TabsTrigger>
                     <TabsTrigger value="history" className="import-export__tab">История</TabsTrigger>
                 </TabsList>
 
@@ -111,21 +213,6 @@ export default function ImportExport() {
                                 <CardTitle className="text-lg">Импорт выписки из банка</CardTitle>
                             </CardHeader>
                             <CardContent className="import-export__import-card-content">
-
-                                <div className="import-export__select-group">
-                                    <Label className="import-export__label">Счёт для импорта</Label>
-                                    <Select value={selectedWalletId} onValueChange={setSelectedWalletId}>
-                                        <SelectTrigger className="import-export__select-trigger">
-                                            <SelectValue placeholder="Выберите счёт" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {wallets.map(w => (
-                                                <SelectItem key={w.id} value={w.id}>{w.name}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-
                                 <div className="import-export__import-controls">
                                     <Upload className="import-export__icon" />
                                     <input
@@ -203,21 +290,20 @@ export default function ImportExport() {
                     <div className="import-export__export-section">
                         <Card className="import-export__export-card">
                             <CardHeader>
-                                <CardTitle className="text-lg">Экспорт данных</CardTitle>
+                                <CardTitle className="text-lg">Создание отчетов</CardTitle>
                             </CardHeader>
                             <CardContent className="import-export__export-card-content">
                                 <div className="import-export__controls">
                                     <div className="import-export__select-group">
-                                        <Label className="import-export__label">Формат экспорта</Label>
+                                        <Label className="import-export__label">Тип отчета</Label>
                                         <Select value={exportFormat} onValueChange={setExportFormat}>
                                             <SelectTrigger className="import-export__select-trigger">
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="csv">CSV (таблица)</SelectItem>
-                                                <SelectItem value="xlsx">Excel (таблица)</SelectItem>
-                                                <SelectItem value="pdf">PDF (отчёт)</SelectItem>
-                                                <SelectItem value="json">JSON (полные данные)</SelectItem>
+                                                <SelectItem value="transactions">Отчет по транзакциям</SelectItem>
+                                                <SelectItem value="categories">Разбивка по категориям</SelectItem>
+                                                <SelectItem value="obligations">Финансовые обязательства</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
@@ -239,33 +325,37 @@ export default function ImportExport() {
                                     </div>
                                 </div>
 
-                                <div className="import-export__export-group">
-                                    <Label className="import-export__label">Что экспортировать</Label>
-                                    <div className="import-export__checkbox-group">
-                                        {[['transactions', 'Операции'], ['accounts', 'Счета'], ['credits', 'Кредиты'], ['deposits', 'Вклады']].map(([key, label]) => (
-                                            <div key={key} className="import-export__checkbox-item">
-                                                <input
-                                                    type="checkbox"
-                                                    id={`export-${key}`}
-                                                    checked={exportCheckboxes[key]}
-                                                    onChange={() => handleCheckboxChange(key)}
-                                                />
-                                                <Label htmlFor={`export-${key}`}>{label}</Label>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <Button className="import-export__export-button" onClick={handleExport}>
-                                    Экспортировать данные
+                                <Button className="import-export__export-button" onClick={handleExport} disabled={exporting}>
+                                    {exporting ? 'Создание отчета...' : 'Создать отчет'}
                                 </Button>
 
                                 <div className="import-export__quick-export">
-                                    <h4 className="import-export__quick-export-title">Быстрый экспорт</h4>
+                                    <h4 className="import-export__quick-export-title">Быстрые отчеты</h4>
                                     <div className="import-export__quick-export-buttons">
-                                        <Button variant="white" size="auto" onClick={() => { setExportFormat('pdf'); handleExport(); }}>Месячный отчет (PDF)</Button>
-                                        <Button variant="white" size="auto" onClick={() => { setExportFormat('xlsx'); handleExport(); }}>Транзакции (Excel)</Button>
-                                        <Button variant="white" size="auto" onClick={() => { setExportFormat('json'); handleExport(); }}>Полная копия (JSON)</Button>
+                                        <Button 
+                                            variant="white" 
+                                            size="auto" 
+                                            disabled={exporting}
+                                            onClick={() => { setExportFormat('transactions'); setTimeout(() => handleExport(), 0); }}
+                                        >
+                                            Транзакции (PDF)
+                                        </Button>
+                                        <Button 
+                                            variant="white" 
+                                            size="auto" 
+                                            disabled={exporting}
+                                            onClick={() => { setExportFormat('categories'); setTimeout(() => handleExport(), 0); }}
+                                        >
+                                            Категории (PDF)
+                                        </Button>
+                                        <Button 
+                                            variant="white" 
+                                            size="auto" 
+                                            disabled={exporting}
+                                            onClick={() => { setExportFormat('obligations'); setTimeout(() => handleExport(), 0); }}
+                                        >
+                                            Обязательства (PDF)
+                                        </Button>
                                     </div>
                                 </div>
                             </CardContent>
@@ -277,7 +367,7 @@ export default function ImportExport() {
                     <div className="import-export__history-section">
                         <Card className="card import-export__card">
                             <CardHeader>
-                                <CardTitle className="text-lg">История экспорта</CardTitle>
+                                <CardTitle className="text-lg">История отчетов</CardTitle>
                             </CardHeader>
                             <CardContent className="import-export__card-content">
                                 <div className="import-export__history-list">
@@ -293,7 +383,14 @@ export default function ImportExport() {
                                                         </p>
                                                     </div>
                                                 </div>
-                                                <Button variant="transparent" className="import-export__history-item-action">Скачать</Button>
+                                                <Button 
+                                                    variant="transparent" 
+                                                    className="import-export__history-item-action"
+                                                    onClick={() => item.downloadUrl && window.open(item.downloadUrl, '_blank')}
+                                                    disabled={!item.downloadUrl}
+                                                >
+                                                    Скачать
+                                                </Button>
                                             </div>
                                         </div>
                                     ))}
