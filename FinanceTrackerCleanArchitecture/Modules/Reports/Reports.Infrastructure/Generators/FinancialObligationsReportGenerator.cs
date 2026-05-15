@@ -46,11 +46,24 @@ public class FinancialObligationsReportGenerator : IReportGenerator
     var debts = (await _debtRepository.GetByProfileIdAsync(parameters.ProfileId)).ToList();
     var deposits = (await _depositRepository.GetByProfileIdAsync(parameters.ProfileId)).ToList();
 
+    if (parameters.From.HasValue)
+    {
+      credits = credits.Where(c => c.EndDate >= parameters.From.Value).ToList();
+      deposits = deposits.Where(d => d.EndDate >= parameters.From.Value).ToList();
+      debts = debts.Where(d => !d.DueDate.HasValue || d.DueDate.Value >= parameters.From.Value).ToList();
+    }
+    if (parameters.To.HasValue)
+    {
+      credits = credits.Where(c => c.StartDate <= parameters.To.Value).ToList();
+      deposits = deposits.Where(d => d.StartDate <= parameters.To.Value).ToList();
+      debts = debts.Where(d => !d.DueDate.HasValue || d.DueDate.Value <= parameters.To.Value).ToList();
+    }
+
     _logger.LogInformation(
       "Financial obligations report: profile={ProfileId}, credits={Credits}, debts={Debts}, deposits={Deposits}",
       parameters.ProfileId, credits.Count, debts.Count, deposits.Count);
 
-    return BuildExcel(profile.Name, credits, debts, deposits);
+    return BuildExcel(profile.Name, parameters, credits, debts, deposits);
   }
 
   private static FinancialObligationsParameters ParseParameters(string json)
@@ -73,14 +86,15 @@ public class FinancialObligationsReportGenerator : IReportGenerator
 
   private static Stream BuildExcel(
     string profileName,
+    FinancialObligationsParameters parameters,
     List<Credit> credits,
     List<Debt> debts,
     List<Deposit> deposits)
   {
     var workbook = new XLWorkbook();
-    BuildCreditsSheet(workbook, profileName, credits);
-    BuildDebtsSheet(workbook, profileName, debts);
-    BuildDepositsSheet(workbook, profileName, deposits);
+    BuildCreditsSheet(workbook, profileName, parameters, credits);
+    BuildDebtsSheet(workbook, profileName, parameters, debts);
+    BuildDepositsSheet(workbook, profileName, parameters, deposits);
 
     var stream = new MemoryStream();
     workbook.SaveAs(stream);
@@ -88,14 +102,17 @@ public class FinancialObligationsReportGenerator : IReportGenerator
     return stream;
   }
 
-  private static void BuildCreditsSheet(XLWorkbook workbook, string profileName, List<Credit> credits)
+  private static void BuildCreditsSheet(XLWorkbook workbook, string profileName, FinancialObligationsParameters parameters, List<Credit> credits)
   {
     var sheet = workbook.Worksheets.Add("Кредиты");
 
     sheet.Cell("A1").Value = "Кредиты";
     sheet.Range("A1:I1").Merge().Style.Font.SetBold().Font.SetFontSize(14);
     sheet.Cell("A2").Value = $"Профиль: {profileName}";
-    sheet.Cell("A3").Value = $"Дата формирования: {DateTime.UtcNow:yyyy-MM-dd}";
+    var period = parameters.From.HasValue && parameters.To.HasValue
+      ? $"Период: {parameters.From:yyyy-MM-dd} — {parameters.To:yyyy-MM-dd}"
+      : $"Дата формирования: {DateTime.UtcNow:yyyy-MM-dd}";
+    sheet.Cell("A3").Value = period;
 
     const int headerRow = 5;
     sheet.Cell(headerRow, 1).Value = "Название";
@@ -150,14 +167,17 @@ public class FinancialObligationsReportGenerator : IReportGenerator
     sheet.Columns().AdjustToContents();
   }
 
-  private static void BuildDebtsSheet(XLWorkbook workbook, string profileName, List<Debt> debts)
+  private static void BuildDebtsSheet(XLWorkbook workbook, string profileName, FinancialObligationsParameters parameters, List<Debt> debts)
   {
     var sheet = workbook.Worksheets.Add("Долги");
 
     sheet.Cell("A1").Value = "Долги";
     sheet.Range("A1:F1").Merge().Style.Font.SetBold().Font.SetFontSize(14);
     sheet.Cell("A2").Value = $"Профиль: {profileName}";
-    sheet.Cell("A3").Value = $"Дата формирования: {DateTime.UtcNow:yyyy-MM-dd}";
+    var period = parameters.From.HasValue && parameters.To.HasValue
+      ? $"Период: {parameters.From:yyyy-MM-dd} — {parameters.To:yyyy-MM-dd}"
+      : $"Дата формирования: {DateTime.UtcNow:yyyy-MM-dd}";
+    sheet.Cell("A3").Value = period;
 
     const int headerRow = 5;
     sheet.Cell(headerRow, 1).Value = "Кредитор";
@@ -210,14 +230,17 @@ public class FinancialObligationsReportGenerator : IReportGenerator
     sheet.Columns().AdjustToContents();
   }
 
-  private static void BuildDepositsSheet(XLWorkbook workbook, string profileName, List<Deposit> deposits)
+  private static void BuildDepositsSheet(XLWorkbook workbook, string profileName, FinancialObligationsParameters parameters, List<Deposit> deposits)
   {
     var sheet = workbook.Worksheets.Add("Депозиты");
 
     sheet.Cell("A1").Value = "Депозиты";
     sheet.Range("A1:I1").Merge().Style.Font.SetBold().Font.SetFontSize(14);
     sheet.Cell("A2").Value = $"Профиль: {profileName}";
-    sheet.Cell("A3").Value = $"Дата формирования: {DateTime.UtcNow:yyyy-MM-dd}";
+    var period = parameters.From.HasValue && parameters.To.HasValue
+      ? $"Период: {parameters.From:yyyy-MM-dd} — {parameters.To:yyyy-MM-dd}"
+      : $"Дата формирования: {DateTime.UtcNow:yyyy-MM-dd}";
+    sheet.Cell("A3").Value = period;
 
     const int headerRow = 5;
     sheet.Cell(headerRow, 1).Value = "Название";

@@ -5,6 +5,7 @@ using Finance.Domain.Interfaces;
 using Microsoft.Extensions.Logging;
 using Reports.Domain.Enums;
 using Reports.Domain.Interfaces;
+using Reports.Infrastructure.Charts;
 using Users.Domain.Interfaces;
 
 namespace Reports.Infrastructure.Generators;
@@ -13,10 +14,18 @@ public class CategoryBreakdownReportGenerator : IReportGenerator
 {
   private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
 
+  private static readonly string[] PieColors =
+  [
+    "#ef4444", "#f97316", "#eab308", "#22c55e", "#3b82f6",
+    "#8b5cf6", "#ec4899", "#06b6d4", "#84cc16", "#f59e0b",
+    "#10b981", "#6366f1"
+  ];
+
   private readonly IProfileRepository _profileRepository;
   private readonly IWalletRepository _walletRepository;
   private readonly ITransactionRepository _transactionRepository;
   private readonly ICategoryRepository _categoryRepository;
+  private readonly IChartServiceClient _chartClient;
   private readonly ILogger<CategoryBreakdownReportGenerator> _logger;
 
   public CategoryBreakdownReportGenerator(
@@ -24,12 +33,14 @@ public class CategoryBreakdownReportGenerator : IReportGenerator
     IWalletRepository walletRepository,
     ITransactionRepository transactionRepository,
     ICategoryRepository categoryRepository,
+    IChartServiceClient chartClient,
     ILogger<CategoryBreakdownReportGenerator> logger)
   {
     _profileRepository = profileRepository;
     _walletRepository = walletRepository;
     _transactionRepository = transactionRepository;
     _categoryRepository = categoryRepository;
+    _chartClient = chartClient;
     _logger = logger;
   }
 
@@ -72,7 +83,28 @@ public class CategoryBreakdownReportGenerator : IReportGenerator
       "Category breakdown report: profile={ProfileId}, income rows={Income}, expense rows={Expense}",
       parameters.ProfileId, incomeRows.Count, expenseRows.Count);
 
-    return BuildExcel(profile.Name, parameters, incomeRows, expenseRows);
+    // Build category aggregates for pie charts
+    var expGroups = expenseRows
+      .GroupBy(r => r.Category)
+      .OrderByDescending(g => g.Sum(r => r.Amount))
+      .Select((g, i) => new CategoryPieItem(g.Key, g.Sum(r => r.Amount), PieColors[i % PieColors.Length]))
+      .ToList();
+
+    var incGroups = incomeRows
+      .GroupBy(r => r.Category)
+      .OrderByDescending(g => g.Sum(r => r.Amount))
+      .Select((g, i) => new CategoryPieItem(g.Key, g.Sum(r => r.Amount), PieColors[i % PieColors.Length]))
+      .ToList();
+
+    byte[]? expPie = null;
+    byte[]? incPie = null;
+
+    if (expGroups.Count > 0)
+      expPie = await _chartClient.GetCategoryPieAsync(new(expGroups, "Структура расходов"), ct);
+    if (incGroups.Count > 0)
+      incPie = await _chartClient.GetCategoryPieAsync(new(incGroups, "Структура доходов"), ct);
+
+    return BuildExcel(profile.Name, parameters, incomeRows, expenseRows, incPie, expPie);
   }
 
   private static CategoryBreakdownParameters ParseParameters(string json)
@@ -100,11 +132,33 @@ public class CategoryBreakdownReportGenerator : IReportGenerator
     string profileName,
     CategoryBreakdownParameters parameters,
     List<(string Category, decimal Amount)> incomeRows,
-    List<(string Category, decimal Amount)> expenseRows)
+    List<(string Category, decimal Amount)> expenseRows,
+    byte[]? incomePie,
+    byte[]? expensePie)
   {
     var workbook = new XLWorkbook();
     AddSheet(workbook, "Доходы", profileName, parameters, incomeRows);
     AddSheet(workbook, "Расходы", profileName, parameters, expenseRows);
+
+    if (incomePie is not null || expensePie is not null)
+    {
+      var charts = workbook.Worksheets.Add("Графики");
+      charts.Cell("A1").Value = "Структура доходов и расходов";
+      charts.Range("A1:R1").Merge().Style.Font.SetBold().Font.SetFontSize(14);
+
+      var col = 1;
+      if (incomePie is not null)
+      {
+        using var s = new MemoryStream(incomePie);
+        charts.AddPicture(s).MoveTo(charts.Cell(3, col)).WithSize(700, 520);
+        col += 10;
+      }
+      if (expensePie is not null)
+      {
+        using var s = new MemoryStream(expensePie);
+        charts.AddPicture(s).MoveTo(charts.Cell(3, col)).WithSize(700, 520);
+      }
+    }
 
     var stream = new MemoryStream();
     workbook.SaveAs(stream);

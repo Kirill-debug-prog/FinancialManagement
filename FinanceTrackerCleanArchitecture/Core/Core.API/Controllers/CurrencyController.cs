@@ -51,4 +51,5 @@ public class CurrencyController : ControllerBase
       return BadRequest(result.Error);
     return NoContent();
   }
+
 }

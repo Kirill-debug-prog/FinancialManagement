@@ -1,9 +1,11 @@
 using System.Security.Claims;
 using System.Text.Json;
-using Core.API.Contracts.Reports;
+using Reports.Application.Reports.Commands.CreateReport;
+using Finance.Application.Analytics.Queries.GetCategoryAnalytics;
+using Finance.Application.Analytics.Queries.GetMonthlyAnalytics;
+using Finance.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Reports.Application.Reports.Commands.CreateReport;
 using Reports.Application.Reports.Queries.GetReportDownloadUrl;
 using Reports.Application.Reports.Queries.GetReportStatus;
 using Reports.Domain.Enums;
@@ -23,15 +25,21 @@ public class ReportsController : ControllerBase
   private readonly CreateReportCommandHandler _createReportHandler;
   private readonly GetReportStatusQueryHandler _getReportStatusHandler;
   private readonly GetReportDownloadUrlQueryHandler _getReportDownloadUrlHandler;
+  private readonly GetMonthlyAnalyticsQueryHandler _monthlyAnalyticsHandler;
+  private readonly GetCategoryAnalyticsQueryHandler _categoryAnalyticsHandler;
 
   public ReportsController(
     CreateReportCommandHandler createReportHandler,
     GetReportStatusQueryHandler getReportStatusHandler,
-    GetReportDownloadUrlQueryHandler getReportDownloadUrlHandler)
+    GetReportDownloadUrlQueryHandler getReportDownloadUrlHandler,
+    GetMonthlyAnalyticsQueryHandler monthlyAnalyticsHandler,
+    GetCategoryAnalyticsQueryHandler categoryAnalyticsHandler)
   {
     _createReportHandler = createReportHandler;
     _getReportStatusHandler = getReportStatusHandler;
     _getReportDownloadUrlHandler = getReportDownloadUrlHandler;
+    _monthlyAnalyticsHandler = monthlyAnalyticsHandler;
+    _categoryAnalyticsHandler = categoryAnalyticsHandler;
   }
 
   [HttpPost("profile-transactions")]
@@ -117,7 +125,9 @@ public class ReportsController : ControllerBase
 
     var parameters = JsonSerializer.Serialize(new
     {
-      profileId = request.ProfileId
+      profileId = request.ProfileId,
+      from = request.From,
+      to = request.To
     }, JsonOptions);
 
     var command = new CreateReportCommand(ReportType.FinancialObligations, userId, parameters);
@@ -146,6 +156,53 @@ public class ReportsController : ControllerBase
         return Conflict(result.Error);
       return BadRequest(result.Error);
     }
+
+    return Ok(result.Value);
+  }
+
+  [HttpGet("monthly")]
+  public async Task<IActionResult> GetMonthlyAnalytics(
+    [FromQuery] Guid profileId,
+    [FromQuery] int? year)
+  {
+    if (profileId == Guid.Empty)
+      return BadRequest(new { error = "profileId is required." });
+
+    var selectedYear = year ?? DateTime.UtcNow.Year;
+    var result = await _monthlyAnalyticsHandler.Handle(
+      new GetMonthlyAnalyticsQuery(profileId, selectedYear));
+
+    if (result.IsFailure)
+      return BadRequest(result.Error);
+
+    return Ok(result.Value);
+  }
+
+  [HttpGet("categories")]
+  public async Task<IActionResult> GetCategoryAnalytics(
+    [FromQuery] Guid profileId,
+    [FromQuery] string type = "Expense",
+    [FromQuery] string? dateFrom = null,
+    [FromQuery] string? dateTo = null)
+  {
+    if (profileId == Guid.Empty)
+      return BadRequest(new { error = "profileId is required." });
+
+    var financialType = type.ToLower() switch
+    {
+      "income" => FinancialType.Income,
+      "expense" => FinancialType.Expense,
+      _ => FinancialType.Expense
+    };
+
+    DateOnly? from = DateOnly.TryParse(dateFrom, out var df) ? df : null;
+    DateOnly? to = DateOnly.TryParse(dateTo, out var dt) ? dt : null;
+
+    var result = await _categoryAnalyticsHandler.Handle(
+      new GetCategoryAnalyticsQuery(profileId, financialType, from, to));
+
+    if (result.IsFailure)
+      return BadRequest(result.Error);
 
     return Ok(result.Value);
   }

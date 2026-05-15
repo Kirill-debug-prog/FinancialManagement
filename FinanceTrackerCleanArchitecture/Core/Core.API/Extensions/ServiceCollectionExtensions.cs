@@ -57,6 +57,7 @@ using Finance.Application.Categories.Commands.ChangeIcon;
 using Finance.Application.Categories.Queries.GetCategoryById;
 using Finance.Application.Categories.Queries.GetCategoriesByProfileId;
 using Finance.Application.Categories.Queries.GetSystemCategories;
+using Finance.Application.Import.Commands.ImportBankStatement;
 using Finance.Application.Transactions.Commands.CreateTransaction;
 using Finance.Application.Transactions.Commands.DeleteTransaction;
 using Finance.Application.Transactions.Commands.ChangeDescription;
@@ -141,6 +142,7 @@ public static class ServiceCollectionExtensions
     services.AddScoped<GetCategoryByIdQueryHandler>();
     services.AddScoped<GetCategoriesByProfileIdQueryHandler>();
     services.AddScoped<GetSystemCategoriesQueryHandler>();
+    services.AddScoped<ImportBankStatementCommandHandler>();
     services.AddScoped<CreateTransactionCommandHandler>();
     services.AddScoped<DeleteTransactionCommandHandler>();
     services.AddScoped<ChangeDescriptionCommandHandler>();

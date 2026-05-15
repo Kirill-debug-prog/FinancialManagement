@@ -231,6 +231,50 @@
     &--purple { color: $purple; }
 }
 
+//! Export dropdown
+.export-menu {
+    position: relative;
+    display: inline-block;
+
+    &__list {
+        position: absolute;
+        right: 0;
+        top: calc(100% + 4px);
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
+        min-width: 220px;
+        z-index: 100;
+        overflow: hidden;
+        list-style: none;
+        margin: 0;
+        padding: 4px 0;
+    }
+
+    &__item {
+        display: block;
+        width: 100%;
+        padding: 10px 16px;
+        text-align: left;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 0.875rem;
+        color: #111827;
+        transition: background 0.15s;
+
+        &:hover {
+            background: #f3f4f6;
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
+}
+
 //! Diagrams
 .report__diagrams {
     display: grid;

@@ -1,45 +1,58 @@
 using Finance.Domain.Entities;
 using Finance.Domain.Enums;
+using Finance.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Infrastructure.Persistence;
 
 public static class FinanceDataSeeder
 {
-  public static async Task SeedAsync(FinanceDbContext context)
+  public static async Task SeedAsync(FinanceDbContext context, ICbrCurrencyRateService cbrService, CancellationToken ct = default)
   {
-    await SeedCurrenciesAsync(context);
+    await SeedCurrenciesAsync(context, cbrService, ct);
     await SeedUnitsAsync(context);
     await SeedCategoriesAsync(context);
   }
 
-  private static async Task SeedCurrenciesAsync(FinanceDbContext context)
+  private static async Task SeedCurrenciesAsync(FinanceDbContext context, ICbrCurrencyRateService cbrService, CancellationToken ct)
   {
-    if (await context.Currencies.AnyAsync())
-      return;
-
-    var currencies = new[]
+    // RUB не возвращается ЦБ — создаём вручную если отсутствует
+    if (!await context.Currencies.AnyAsync(c => c.Code == "RUB", ct))
     {
-      Currency.Create("Российский рубль",    1,   1.0000m,  "643", "RUB", 1.0000m),
-      Currency.Create("Украинская гривна",   1,   1.0000m,  "980", "UAH", 1.0000m),
-      Currency.Create("Доллар США",          1,  41.5000m,  "840", "USD", 41.5000m),
-      Currency.Create("Евро",                1,  46.0000m,  "978", "EUR", 46.0000m),
-      Currency.Create("Фунт стерлингов",     1,  54.0000m,  "826", "GBP", 54.0000m),
-      Currency.Create("Польский злотый",     1,  10.5000m,  "985", "PLN", 10.5000m),
-      Currency.Create("Швейцарский франк",   1,  49.0000m,  "756", "CHF", 49.0000m),
-      Currency.Create("Японская иена",       100, 27.5000m, "392", "JPY", 0.2750m),
-      Currency.Create("Китайский юань",      1,   5.7000m,  "156", "CNY", 5.7000m),
-      Currency.Create("Чешская крона",       10,  1.8500m,  "203", "CZK", 0.1850m),
-      Currency.Create("Венгерский форинт",   100, 11.0000m, "348", "HUF", 0.1100m),
-      Currency.Create("Норвежская крона",    1,   3.9000m,  "578", "NOK", 3.9000m),
-      Currency.Create("Шведская крона",      1,   4.1000m,  "752", "SEK", 4.1000m),
-    };
+      var rub = Currency.Create("Российский рубль", 1, 1.0000m, "643", "RUB", 1.0000m);
+      if (rub.IsSuccess)
+        context.Currencies.Add(rub.Value!);
+      await context.SaveChangesAsync(ct);
+    }
 
-    foreach (var result in currencies)
-      if (result.IsSuccess)
-        context.Currencies.Add(result.Value!);
+    // Синхронизируем курсы с ЦБ при каждом запуске
+    IEnumerable<CbrCurrencyRate> rates;
+    try
+    {
+      rates = await cbrService.GetRatesAsync(ct);
+    }
+    catch
+    {
+      // ЦБ недоступен — не падаем, работаем с тем что есть
+      return;
+    }
 
-    await context.SaveChangesAsync();
+    foreach (var rate in rates)
+    {
+      var existing = await context.Currencies.FirstOrDefaultAsync(c => c.Code == rate.Code, ct);
+      if (existing is not null)
+      {
+        existing.UpdateRate(rate.Rate, rate.UnitRate);
+      }
+      else
+      {
+        var created = Currency.Create(rate.Name, rate.Nominal, rate.Rate, rate.NumericCode, rate.Code, rate.UnitRate);
+        if (created.IsSuccess)
+          context.Currencies.Add(created.Value!);
+      }
+    }
+
+    await context.SaveChangesAsync(ct);
   }
 
   private static async Task SeedUnitsAsync(FinanceDbContext context)

@@ -1,6 +1,6 @@
 import { api, getActiveProfileId } from './client';
+import { getCategoryReport } from './reports';
 
-const CATEGORY_COLORS = ['#ef4444', '#f59e0b', '#8b5cf6', '#3b82f6', '#10b981', '#C224EA', '#5823E8', '#6b7280'];
 
 function getMonthLabel(dateStr) {
     return new Date(dateStr).toLocaleDateString('ru-RU', { month: 'short', year: '2-digit' });
@@ -49,17 +49,23 @@ export async function getDashboardData() {
         return { totalBalance: 0, totalIncome: 0, totalExpense: 0, categoryExpenses: [], monthlyData };
     }
 
-    // Параллельно тянем баланс и транзакции для каждого кошелька
-    // Backend returns: GetWalletBalanceResponse(WalletId, Balance), type as int (0=Income,1=Expense,2=Transfer)
-    const walletResults = await Promise.all(
-        wallets.map(async (wallet) => {
-            const [balData, transactions] = await Promise.all([
-                api.get(`/transaction/balance?walletId=${wallet.id}`),
-                api.get(`/transaction?walletId=${wallet.id}`),
-            ]);
-            return { balance: balData?.balance ?? 0, transactions: transactions ?? [] };
-        })
-    );
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().slice(0, 10);
+
+    // Параллельно тянем баланс, транзакции и категории расходов
+    const [walletResults, categoryExpenses] = await Promise.all([
+        Promise.all(
+            wallets.map(async (wallet) => {
+                const [balData, transactions] = await Promise.all([
+                    api.get(`/transaction/balance?walletId=${wallet.id}`),
+                    api.get(`/transaction?walletId=${wallet.id}`),
+                ]);
+                return { balance: balData?.balance ?? 0, transactions: transactions ?? [] };
+            })
+        ),
+        getCategoryReport('Expense', firstDay, lastDay).then(r => r ?? []),
+    ]);
 
     const totalBalance = walletResults.reduce((sum, { balance }) => sum + balance, 0);
     const allTransactions = walletResults.flatMap(({ transactions }) => transactions);
@@ -72,20 +78,6 @@ export async function getDashboardData() {
     const totalExpense = currentMonthTx
         .filter(t => t.type === 1)
         .reduce((sum, t) => sum + (t.amount ?? 0), 0);
-
-    // Разбивка по категориям (расходы текущего месяца)
-    const categoryMap = {};
-    currentMonthTx
-        .filter(t => t.type === 1)
-        .forEach(t => {
-            const name = t.categoryName || 'Без категории';
-            categoryMap[name] = (categoryMap[name] ?? 0) + (t.amount ?? 0);
-        });
-    const categoryExpenses = Object.entries(categoryMap).map(([name, value], i) => ({
-        name,
-        value,
-        color: CATEGORY_COLORS[i % CATEGORY_COLORS.length],
-    }));
 
     // Доходы/расходы по месяцам за последние 6 месяцев
     const monthLabels = getLast6MonthLabels();

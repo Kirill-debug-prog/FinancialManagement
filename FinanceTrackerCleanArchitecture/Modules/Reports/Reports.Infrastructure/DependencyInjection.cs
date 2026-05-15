@@ -11,6 +11,7 @@ using Hangfire;
 using Hangfire.PostgreSql;
 using Reports.Infrastructure.Pipeline;
 using Reports.Infrastructure.Generators;
+using Reports.Infrastructure.Charts;
 
 namespace Reports.Infrastructure;
 
@@ -48,6 +49,13 @@ public static class DependencyInjection
     services.AddScoped<IReportGenerator, CategoryBreakdownReportGenerator>();
     services.AddScoped<IReportGenerator, FinancialObligationsReportGenerator>();
     services.AddScoped<IReportPipeline, ReportPipeline>();
+
+    services.AddHttpClient<IChartServiceClient, ChartServiceClient>(client =>
+    {
+      var url = configuration["ChartService:BaseUrl"] ?? "http://chart-service:8000";
+      client.BaseAddress = new Uri(url);
+      client.Timeout = TimeSpan.FromSeconds(30);
+    });
     
     services.AddHangfire(config => config
       .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)

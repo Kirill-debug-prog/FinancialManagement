@@ -37,9 +37,25 @@ services:
       S3__SecretKey: ${S3_SECRET_KEY}
       S3__Bucket: ${S3_BUCKET}
       S3__PresignedUrlExpirationMinutes: ${S3_PRESIGNED_URL_EXPIRATION_MINUTES}
+      ChartService__BaseUrl: http://chart-service:8000
     depends_on:
       db:
         condition: service_healthy
+      chart-service:
+        condition: service_healthy
+
+  chart-service:
+    build:
+      context: ./ChartService
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8001:8000"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health')\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   frontend:
     build:
