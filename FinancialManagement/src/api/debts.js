@@ -1,6 +1,7 @@
 import { api, getActiveProfileId } from './client';
 import { buildProfileUrl } from './utils';
 import { getCurrencies } from './currencies';
+import { invalidateCreditsDebtsCache } from './cacheInvalidation';
 
 function toDateOnly(value) {
     if (!value) return null;
@@ -43,22 +44,30 @@ export async function getDebt(id) {
 export async function createDebt(data) {
     const profileId = getActiveProfileId();
     const currencyId = await getDefaultCurrencyId();
-    return api.post('/debt', {
+    const result = await api.post('/debt', {
         profileId,
         currencyId,
         creditorName: data.person || data.name,
         totalAmount: data.amount,
         dueDate: toDateOnly(data.returnDate),
     });
+    invalidateCreditsDebtsCache();
+    return result;
 }
 
 export async function updateDebt(id, data) {
+    let result;
     if (data.status === 'returned') {
-        return api.patch(`/debt/${id}/repay`);
+        result = await api.patch(`/debt/${id}/repay`);
+    } else {
+        result = await api.put(`/debt/${id}/creditor`, data.creditor || data.person || data.name);
     }
-    return api.put(`/debt/${id}/creditor`, data.creditor || data.person || data.name);
+    invalidateCreditsDebtsCache();
+    return result;
 }
 
 export async function deleteDebt(id) {
-    return api.delete(`/debt/${id}`);
+    const result = await api.delete(`/debt/${id}`);
+    invalidateCreditsDebtsCache();
+    return result;
 }

@@ -93,7 +93,7 @@ export function transformAccountFromBackend(account, index = 0, currencyCode = n
 // Transaction Transformers
 // ============================================================================
 
-const TYPE_INT_TO_STR = { 0: 'income', 1: 'expense', 2: 'transfer' };
+const x1TYPE_INT_TO_STR = { 0: 'income', 1: 'expense', 2: 'transfer' };
 
 /**
  * Трансформировать транзакцию с бэкенда в формат фронтенда

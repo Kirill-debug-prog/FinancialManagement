@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getToken, setToken, clearAuth, getActiveProfileId, setActiveProfileId } from '../api/client';
+import { getToken, setToken, clearAuth, getActiveProfileId, setActiveProfileId, isAuthenticated } from '../api/client';
 
 /**
- * Хук для управления авторизацией
+ * Хок для управления авторизацией
  */
 export function useAuth() {
     const [isAuth, setIsAuth] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(
         localStorage.getItem('onboardingCompleted') === 'true'
     );
@@ -14,10 +15,23 @@ export function useAuth() {
 
     // Инициализация при загрузке
     useEffect(() => {
+        // Проверяем не только наличие токена, но и его валидность
         const token = getToken();
-        if (token) {
+        
+        if (token && isAuthenticated()) {
             setIsAuth(true);
+            console.log('[useAuth] Token is valid, user authenticated');
+        } else {
+            // Если токен истек или невалиден, очищаем
+            if (token) {
+                console.log('[useAuth] Token exists but invalid, clearing auth');
+                clearAuth();
+            }
+            setIsAuth(false);
         }
+        
+        // Завершаем загрузку после проверки
+        setIsLoading(false);
     }, []);
 
     const handleLogin = useCallback((needsOnboarding) => {
@@ -38,6 +52,7 @@ export function useAuth() {
 
     return {
         isAuth,
+        isLoading,
         hasCompletedOnboarding,
         handleLogin,
         logout,

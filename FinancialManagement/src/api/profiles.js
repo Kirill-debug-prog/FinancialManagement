@@ -1,4 +1,5 @@
 import { api, getToken, parseJwt } from './client';
+import { invalidateAllCache } from './cacheInvalidation';
 
 function getUserId() {
     const payload = parseJwt(getToken());
@@ -30,6 +31,7 @@ export async function getProfile(profileId) {
  */
 export async function createProfile(name, mainCurrency) {
     const id = await api.post('/profile', { userId: getUserId(), name });
+    invalidateAllCache();
     return { id };
 }
 
@@ -40,12 +42,16 @@ export async function createProfile(name, mainCurrency) {
  * @returns {Promise<Object>} Обновленный профиль
  */
 export async function updateProfile(profileId, name) {
-    return api.put(`/profile/${profileId}/rename`, { name });
+    const result = await api.put(`/profile/${profileId}/rename`, { name });
+    invalidateAllCache();
+    return result;
 }
 
 /**
  * Удалить профиль
- * @param {string} profileId ID профиля
+ * @const result = await api.delete(`/profile/${profileId}`);
+    invalidateAllCache();
+    return result
  * @returns {Promise<void>}
  */
 export async function deleteProfile(profileId) {

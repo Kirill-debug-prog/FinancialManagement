@@ -62,6 +62,13 @@ export function initializeGlobalErrorHandlers() {
                 src: event.target.src || event.target.href,
                 message: event.message
             });
+            
+            // Предотвращаем распространение ошибки загрузки ресурсов
+            // Это предотвратит крах приложения при ошибке CSS/шрифтов
+            if (event.target.tagName === 'LINK' || event.target.tagName === 'SCRIPT' || event.target.tagName === 'IMG') {
+                event.preventDefault();
+                return true;
+            }
         }
     }, true);
 

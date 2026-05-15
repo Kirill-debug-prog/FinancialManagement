@@ -82,7 +82,7 @@ export default function TransactionForm({ onClose, onCreated, initialData }) {
                 return newErrors;
             }
 
-            if(!account) {
+            if (!account) {
                 newErrors.account = 'Пожалуйста, выберите счёт';
                 return newErrors;
             }
@@ -116,13 +116,13 @@ export default function TransactionForm({ onClose, onCreated, initialData }) {
                 newErrors.amount = 'Сумма не может превышать 999,999,999';
                 return newErrors;
             }
-            
+
             if (!category) {
                 newErrors.category = 'Пожалуйста, выберите категорию';
                 return newErrors;
             }
 
-            if(!account) {
+            if (!account) {
                 newErrors.account = 'Пожалуйста, выберите счёт';
                 return newErrors;
             }
@@ -151,6 +151,14 @@ export default function TransactionForm({ onClose, onCreated, initialData }) {
 
         return newErrors;
     };
+
+    const MAX_VALUE = 999999999;
+
+    const formatNumber = (value) => {
+        if (!value) return '';
+        return value.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    };
+    const parseNumber = (value) => value.replace(/\s/g, '');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -234,9 +242,9 @@ export default function TransactionForm({ onClose, onCreated, initialData }) {
 
     return (
         <form onSubmit={handleSubmit} className="transaction-form">
-            <Tabs value={type} onValueChange={(v) => { 
-                setType(v); 
-                setCategory(''); 
+            <Tabs value={type} onValueChange={(v) => {
+                setType(v);
+                setCategory('');
                 setAccount('');
                 setFromAccount('');
                 setToAccount('');
@@ -255,14 +263,16 @@ export default function TransactionForm({ onClose, onCreated, initialData }) {
                             <Label htmlFor="amount">Сумма * {errors.amount && <span className="form-error-icon">⚠️</span>}</Label>
                             <Input
                                 id="amount"
-                                type="number"
+                                type="text"
+                                inputMode="numeric"
                                 placeholder="0"
-                                step="0.01"
-                                min="0"
-                                max="999999999"
-                                value={amount}
+                                value={formatNumber(amount)}
                                 onChange={(e) => {
-                                    setAmount(e.target.value);
+                                    const raw = parseNumber(e.target.value);
+                                    if (!/^\d*$/.test(raw)) return;
+                                    const numeric = Number(raw);
+                                    if (numeric > MAX_VALUE) return;
+                                    setAmount(raw);
                                     setErrors(prev => ({ ...prev, amount: '' }));
                                 }}
                                 className={errors.amount ? 'is-error' : ''}
@@ -310,7 +320,7 @@ export default function TransactionForm({ onClose, onCreated, initialData }) {
 
                     <div className="transaction-form__field">
                         <Label htmlFor="account">Счёт *</Label>
-                        <Select value={account} onValueChange= {(val) => {
+                        <Select value={account} onValueChange={(val) => {
                             setAccount(val);
                             setErrors(prev => ({ ...prev, account: '' }));
                         }}>
@@ -341,8 +351,8 @@ export default function TransactionForm({ onClose, onCreated, initialData }) {
                         </span>
                     </div>
 
-                    <Button 
-                        type="submit" 
+                    <Button
+                        type="submit"
                         disabled={loading}
                         className="transaction-form__submit"
                         style={{ marginTop: '1rem' }}
@@ -358,14 +368,16 @@ export default function TransactionForm({ onClose, onCreated, initialData }) {
                             <Label htmlFor="amount-income">Сумма * {errors.amount && <span className="form-error-icon">⚠️</span>}</Label>
                             <Input
                                 id="amount-income"
-                                type="number"
+                                type="text"
+                                inputMode="numeric"
                                 placeholder="0"
-                                step="0.01"
-                                min="0"
-                                max="999999999"
-                                value={amount}
+                                value={formatNumber(amount)}
                                 onChange={(e) => {
-                                    setAmount(e.target.value);
+                                    const raw = parseNumber(e.target.value);
+                                    if (!/^\d*$/.test(raw)) return;
+                                    const numeric = Number(raw);
+                                    if (numeric > MAX_VALUE) return;
+                                    setAmount(raw);
                                     setErrors(prev => ({ ...prev, amount: '' }));
                                 }}
                                 className={errors.amount ? 'is-error' : ''}
@@ -439,8 +451,8 @@ export default function TransactionForm({ onClose, onCreated, initialData }) {
                         </span>
                     </div>
 
-                    <Button 
-                        type="submit" 
+                    <Button
+                        type="submit"
                         disabled={loading}
                         className="transaction-form__submit"
                         style={{ marginTop: '1rem' }}
@@ -482,14 +494,16 @@ export default function TransactionForm({ onClose, onCreated, initialData }) {
                             <Label htmlFor="amount-transfer">Сумма * {errors.amount && <span className="form-error-icon">⚠️</span>}</Label>
                             <Input
                                 id="amount-transfer"
-                                type="number"
+                                type="text"
+                                inputMode="numeric"
                                 placeholder="0"
-                                step="0.01"
-                                min="0"
-                                max="999999999"
-                                value={amount}
+                                value={formatNumber(amount)}
                                 onChange={(e) => {
-                                    setAmount(e.target.value);
+                                    const raw = parseNumber(e.target.value);
+                                    if (!/^\d*$/.test(raw)) return;
+                                    const numeric = Number(raw);
+                                    if (numeric > MAX_VALUE) return;
+                                    setAmount(raw);
                                     setErrors(prev => ({ ...prev, amount: '' }));
                                 }}
                                 className={errors.amount ? 'is-error' : ''}
@@ -550,8 +564,8 @@ export default function TransactionForm({ onClose, onCreated, initialData }) {
                         </span>
                     </div>
 
-                    <Button 
-                        type="submit" 
+                    <Button
+                        type="submit"
                         disabled={loading}
                         className="transaction-form__submit"
                         style={{ marginTop: '1rem' }}

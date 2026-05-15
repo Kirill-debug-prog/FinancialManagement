@@ -1,6 +1,7 @@
 import { api, getActiveProfileId } from './client';
 import { buildProfileUrl } from './utils';
 import { getCurrencies } from './currencies';
+import { invalidateCreditsDebtsCache } from './cacheInvalidation';
 
 function toDateOnly(value) {
     if (!value) return new Date().toISOString().split('T')[0];
@@ -45,7 +46,7 @@ export async function getCredit(id) {
 export async function createCredit(data) {
     const profileId = getActiveProfileId();
     const currencyId = await getDefaultCurrencyId();
-    return api.post('/credit', {
+    const result = await api.post('/credit', {
         profileId,
         currencyId,
         name: data.name,
@@ -55,6 +56,8 @@ export async function createCredit(data) {
         startDate: toDateOnly(new Date()),
         endDate: toDateOnly(data.endDate),
     });
+    invalidateCreditsDebtsCache();
+    return result;
 }
 
 export async function updateCredit(id, data) {
@@ -74,8 +77,11 @@ export async function updateCredit(id, data) {
     }
 
     if (tasks.length) await Promise.all(tasks);
+    invalidateCreditsDebtsCache();
 }
 
 export async function deleteCredit(id) {
-    return api.delete(`/credit/${id}`);
+    const result = await api.delete(`/credit/${id}`);
+    invalidateCreditsDebtsCache();
+    return result;
 }

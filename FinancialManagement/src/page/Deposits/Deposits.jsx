@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Badge } from "../../components/ui/badge/badge";
 import FinanceProductCard from '../../components/ui/FinanceProductCard/FinanceProductCard'
 import { getDeposits, createDeposit, deleteDeposit, updateDeposit } from '../../api/deposits';
-import { invalidateCreditsDebtsCache } from '../../api/cacheInvalidation';
+import { invalidateDepositsCache } from '../../api/cacheInvalidation';
 import './Deposits.scss'
 
 export default function Deposits() {
@@ -98,6 +98,14 @@ export default function Deposits() {
         return newErrors;
     };
 
+    const MAX_VALUE = 999999999;
+
+    const formatNumber = (value) => {
+        if (!value) return '';
+        return value.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    };
+    const parseNumber = (value) => value.replace(/\s/g, '');
+
     const fetchData = async () => {
         try {
             const data = await getDeposits();
@@ -142,7 +150,7 @@ export default function Deposits() {
             setDepositStartDate('');
             setDepositEndDate('');
             setDepositCapitalization(false);
-            invalidateCreditsDebtsCache();
+            invalidateDepositsCache();
             fetchData();
         } catch (err) {
             toast.error(err.message || 'Ошибка добавления вклада');
@@ -157,7 +165,7 @@ export default function Deposits() {
         try {
             await deleteDeposit(depositId);
             toast.success('Вклад успешно закрыт');
-            invalidateCreditsDebtsCache();
+            invalidateDepositsCache();
             fetchData();
         } catch (err) {
             toast.error(err.message || 'Ошибка закрытия вклада');
@@ -197,7 +205,7 @@ export default function Deposits() {
             });
             toast.success(`Вклад пополнен на ${replenishForm.amount} ₽`);
             setReplenishDialogOpen(false);
-            invalidateCreditsDebtsCache();
+            invalidateDepositsCache();
             fetchData();
         } catch (err) {
             toast.error(err.message || 'Ошибка пополнения вклада');
@@ -305,13 +313,14 @@ export default function Deposits() {
                                     <Input
                                         id="deposit-total-amount"
                                         placeholder="0"
-                                        type="number"
-                                        step="0.01"
-                                        min="0"
-                                        max="999999999"
-                                        value={depositAmount}
+                                        type="text"
+                                        value={formatNumber(depositAmount)}
                                         onChange={(e) => {
-                                            setDepositAmount(e.target.value);
+                                            const raw = parseNumber(e.target.value);
+                                            if (!/^\d*$/.test(raw)) return;
+                                            const numeric = Number(raw);
+                                            if (numeric > MAX_VALUE) return;
+                                            setDepositAmount(raw);
                                             setDepositErrors(prev => ({ ...prev, amount: '' }));
                                         }}
                                         className={depositErrors.amount ? 'is-error' : ''}
@@ -323,13 +332,14 @@ export default function Deposits() {
                                     <Input
                                         id="deposit-interest-rate"
                                         placeholder="0"
-                                        type="number"
-                                        step="0.1"
-                                        min="0"
-                                        max="100"
-                                        value={depositRate}
+                                        type="text"
+                                        value={formatNumber(depositRate)}
                                         onChange={(e) => {
-                                            setDepositRate(e.target.value);
+                                            const raw = parseNumber(e.target.value);
+                                            if (!/^\d*$/.test(raw)) return;
+                                            const numeric = Number(raw);
+                                            if (numeric > 100) return;
+                                            setDepositRate(raw);
                                             setDepositErrors(prev => ({ ...prev, rate: '' }));
                                         }}
                                         className={depositErrors.rate ? 'is-error' : ''}
@@ -382,7 +392,7 @@ export default function Deposits() {
 
                             <div className="transaction-form__buttons">
                                 <Button type="submit" className="transaction-form__button transaction-form__button--primary" onClick={handleAddDeposit}>
-                                    ➕ Добавить вклад
+                                    Добавить вклад
                                 </Button>
                                 <Button type="button" variant="outline" className="transaction-form__button transaction-form__button--outline" onClick={() => {
                                     setDialogOpen(false);
@@ -525,13 +535,14 @@ export default function Deposits() {
                                     <Input
                                         id="replenish-amount"
                                         placeholder="0"
-                                        type="number"
-                                        min="0"
-                                        step="0.01"
-                                        max="999999999"
+                                        type="text"
                                         value={replenishForm.amount}
                                         onChange={(e) => {
-                                            setReplenishForm({ ...replenishForm, amount: e.target.value });
+                                            const raw = parseNumber(e.target.value);
+                                            if (!/^\d*$/.test(raw)) return;
+                                            const numeric = Number(raw);
+                                            if (numeric > MAX_VALUE) return;
+                                            setReplenishForm({ ...replenishForm, amount: raw });
                                             setReplenishErrors(prev => ({ ...prev, amount: '' }));
                                         }}
                                         className={replenishErrors.amount ? 'is-error' : ''}

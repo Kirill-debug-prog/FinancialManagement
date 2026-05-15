@@ -70,7 +70,7 @@ export default function Credits() {
         if (isNaN(rate) || rate < 0 || rate > 100) {
             newErrors.rate = 'Процентная ставка должна быть от 0 до 100';
         }
-        if (!payment || payment <= 0) {
+        if (isNaN(payment) || payment <= 0) {
             newErrors.payment = 'Ежемесячный платеж должен быть больше нуля';
         }
         if (creditEndDate) {
@@ -81,6 +81,38 @@ export default function Credits() {
             }
         }
         if (!creditEndDate) {
+            newErrors.endDate = 'Укажите дату окончания кредита';
+        }
+        return newErrors;
+    };
+
+    // Валидация для формы редактирования кредита
+    const validateEditCredit = () => {
+        const newErrors = {};
+        const totalAmount = parseFloat(editForm.totalAmount);
+        const rate = parseFloat(editForm.interestRate);
+        const payment = parseFloat(editForm.monthlyPayment);
+
+        if (isNaN(totalAmount) || totalAmount <= 0) {
+            newErrors.totalAmount = 'Сумма должна быть больше нуля';
+        }
+        if (totalAmount > 999_999_999) {
+            newErrors.totalAmount = 'Сумма не может превышать 999,999,999';
+        }
+        if (isNaN(rate) || rate < 0 || rate > 100) {
+            newErrors.rate = 'Процентная ставка должна быть от 0 до 100';
+        }
+        if (isNaN(payment) || payment <= 0) {
+            newErrors.payment = 'Ежемесячный платеж должен быть больше нуля';
+        }
+        if (editForm.endDate) {
+            const endDate = new Date(editForm.endDate);
+            const today = new Date();
+            if (endDate < today) {
+                newErrors.endDate = 'Дата конца не может быть в прошлом';
+            }
+        }
+        if (!editForm.endDate) {
             newErrors.endDate = 'Укажите дату окончания кредита';
         }
         return newErrors;
@@ -115,6 +147,14 @@ export default function Credits() {
         }
         return newErrors;
     };
+
+    const MAX_VALUE = 999999999;
+
+    const formatNumber = (value) => {
+        if (!value) return '';
+        return value.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    };
+    const parseNumber = (value) => value.replace(/\s/g, '');
 
     const fetchData = async () => {
         try {
@@ -258,8 +298,8 @@ export default function Credits() {
     };
 
     const handleSaveEditCredit = async () => {
-        // Полная валидация
-        const errors = validateCredit();
+        // Валидация с помощью функции для editForm
+        const errors = validateEditCredit();
         if (Object.keys(errors).length > 0) {
             setCreditErrors(errors);
             toast.error('❌ ' + (Object.values(errors)[0]));
@@ -456,13 +496,14 @@ export default function Credits() {
                                     <Input
                                         id="total-amount"
                                         placeholder="0"
-                                        type="number"
-                                        step="0.01"
-                                        min="0"
-                                        max="999999999"
-                                        value={creditTotalAmount}
+                                        type="text"
+                                        value={formatNumber(creditTotalAmount)}
                                         onChange={(e) => {
-                                            setCreditTotalAmount(e.target.value);
+                                            const raw = parseNumber(e.target.value);
+                                            if (!/^\d*$/.test(raw)) return;
+                                            const numeric = Number(raw);
+                                            if (numeric > MAX_VALUE) return;
+                                            setCreditTotalAmount(raw);
                                             setCreditErrors(prev => ({ ...prev, totalAmount: '' }));
                                         }}
                                         className={creditErrors.totalAmount ? 'is-error' : ''}
@@ -474,13 +515,14 @@ export default function Credits() {
                                     <Input
                                         id="interest-rate"
                                         placeholder="0"
-                                        type="number"
-                                        step="0.1"
-                                        min="0"
-                                        max="100"
-                                        value={creditInterestRate}
+                                        type="text"
+                                        value={formatNumber(creditInterestRate)}
                                         onChange={(e) => {
-                                            setCreditInterestRate(e.target.value);
+                                            const raw = parseNumber(e.target.value);
+                                            if (!/^\d*$/.test(raw)) return;
+                                            const numeric = Number(raw);
+                                            if (numeric > 100) return;
+                                            setCreditInterestRate(raw);
                                             setCreditErrors(prev => ({ ...prev, rate: '' }));
                                         }}
                                         className={creditErrors.rate ? 'is-error' : ''}
@@ -495,12 +537,14 @@ export default function Credits() {
                                     <Input
                                         id="monthly-payment"
                                         placeholder="0"
-                                        type="number"
-                                        step="0.01"
-                                        min="0"
-                                        value={creditMonthlyPayment}
+                                        type="text"
+                                        value={formatNumber(creditMonthlyPayment)}
                                         onChange={(e) => {
-                                            setCreditMonthlyPayment(e.target.value);
+                                            const raw = parseNumber(e.target.value);
+                                            if (!/^\d*$/.test(raw)) return;
+                                            const numeric = Number(raw);
+                                            if (numeric > MAX_VALUE) return;
+                                            setCreditMonthlyPayment(raw);
                                             setCreditErrors(prev => ({ ...prev, payment: '' }));
                                         }}
                                         className={creditErrors.payment ? 'is-error' : ''}
@@ -634,13 +678,14 @@ export default function Credits() {
                                     <Input
                                         id="debt-total-amount"
                                         placeholder="0"
-                                        type="number"
-                                        step="0.01"
-                                        min="0"
-                                        max="999999999"
-                                        value={debtAmount}
+                                        type="text"
+                                        value={formatNumber(debtAmount)}
                                         onChange={(e) => {
-                                            setDebtAmount(e.target.value);
+                                            const raw = parseNumber(e.target.value);
+                                            if (!/^\d*$/.test(raw)) return;
+                                            const numeric = Number(raw);
+                                            if (numeric > MAX_VALUE) return;
+                                            setDebtAmount(raw);
                                             setDebtErrors(prev => ({ ...prev, amount: '' }));
                                         }}
                                         className={debtErrors.amount ? 'is-error' : ''}
@@ -725,12 +770,12 @@ export default function Credits() {
                                     </div>
 
                                     {debt.date && (
-                                    <div className="debt-card__row">
-                                        <span className="debt-card__label">Дата выдачи:</span>
-                                        <span className="debt-card__value">
-                                            {new Date(debt.date).toLocaleDateString('ru-RU')}
-                                        </span>
-                                    </div>
+                                        <div className="debt-card__row">
+                                            <span className="debt-card__label">Дата выдачи:</span>
+                                            <span className="debt-card__value">
+                                                {new Date(debt.date).toLocaleDateString('ru-RU')}
+                                            </span>
+                                        </div>
                                     )}
 
                                     {debt.returnDate && (
@@ -795,7 +840,7 @@ export default function Credits() {
                             <Input
                                 id="edit-credit-name"
                                 value={editForm.name}
-                                onChange={(e) => { 
+                                onChange={(e) => {
                                     setEditForm({ ...editForm, name: e.target.value });
                                 }}
                                 disabled
@@ -815,11 +860,15 @@ export default function Credits() {
                                 <Label htmlFor="edit-payment-amount">Сумма платежа (₽) * {creditErrors.payment && <span className="form-error-icon">⚠️</span>}</Label>
                                 <Input
                                     id="edit-payment-amount"
-                                    type="number"
+                                    type="text"
                                     placeholder="0"
                                     value={editForm.paymentAmount}
                                     onChange={(e) => {
-                                        setEditForm({ ...editForm, paymentAmount: e.target.value })
+                                        const raw = parseNumber(e.target.value);
+                                        if (!/^\d*$/.test(raw)) return;
+                                        const numeric = Number(raw);
+                                        if (numeric > MAX_VALUE) return;
+                                        setEditForm({ ...editForm, paymentAmount: raw });
                                         setCreditErrors(prev => ({ ...prev, payment: '' }));
                                     }}
                                     className={creditErrors.payment ? 'is-error' : ''}
@@ -837,7 +886,7 @@ export default function Credits() {
                             </div>
                         )}
 
-                        
+
                         <div className="credit-form__row">
                             <div className="credit-form__field">
                                 <Label htmlFor="edit-end-date">Дата окончания</Label>

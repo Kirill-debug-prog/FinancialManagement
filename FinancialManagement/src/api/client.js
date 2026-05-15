@@ -1,4 +1,6 @@
 import { API_BASE_URL } from './config';
+import { getMemoryCache, setMemoryCache, getLocalCache, setLocalCache, clearCache as clearCacheUtil, getCacheStats } from './cache';
+import { getLocalStorageSize, getAllLocalStorageKeys, clearLocalStorageByPrefix, getStorageInfo, exportStorageState, importStorageState } from './storageUtils';
 
 // ============================================================================
 // Authentication & Storage Management
@@ -93,7 +95,7 @@ export function parseJwt(token) {
 // ============================================================================
 
 /**
- * Выполнить HTTP запрос с авторизацией
+ * Выполнить HTTP запрос с авторизацией и кешированием для GET
  * @private
  * @param {string} url URL для запроса
  * @param {object} options опции fetch
@@ -111,6 +113,25 @@ async function request(url, options = {}) {
     }
 
     const fullUrl = `${API_BASE_URL}${url}`;
+    
+    // Кеширование для GET запросов
+    if (options.method === 'GET' || !options.method) {
+        // Сначала проверяем память
+        const cachedInMemory = getMemoryCache(url);
+        if (cachedInMemory) {
+            console.log('[Cache] Memory hit for:', url);
+            return cachedInMemory;
+        }
+        
+        // Затем проверяем localStorage
+        const cachedLocal = getLocalCache(url);
+        if (cachedLocal) {
+            console.log('[Cache] localStorage hit for:', url);
+            // Сохраняем в память для быстрого доступа
+            setMemoryCache(url, cachedLocal);
+            return cachedLocal;
+        }
+    }
 
     try {
         const response = await fetch(fullUrl, {
@@ -134,7 +155,15 @@ async function request(url, options = {}) {
         // Обработка 204 No Content
         if (response.status === 204) return null;
         
-        return await response.json();
+        const data = await response.json();
+        
+        // Кешируем результат для GET запросов
+        if (options.method === 'GET' || !options.method) {
+            setMemoryCache(url, data);
+            setLocalCache(url, data);
+        }
+        
+        return data;
     } catch (error) {
         console.error('API Error:', error);
         throw error;
@@ -169,3 +198,79 @@ export const api = {
      */
     delete: (url) => request(url, { method: 'DELETE' }),
 };
+
+// ============================================================================
+// Cache Management Functions
+// ============================================================================
+
+/**
+ * Очистить кеш для конкретного URL
+ */
+export function invalidateCache(url) {
+    clearCacheUtil(url);
+    console.log('[Cache] Invalidated cache for:', url);
+}
+
+/**
+ * Очистить весь кеш
+ */
+export function invalidateAllCache() {
+    // Импортируем и вызываем функцию из cache.js
+    import('./cache').then(module => {
+        module.clearAllCache();
+        console.log('[Cache] Cleared all cache');
+    });
+}
+
+// ============================================================================
+// Storage Management
+// ============================================================================
+
+/**
+ * Получить информацию о текущем использовании хранилища
+ */
+export function getStorageStatus() {
+    return getStorageInfo();
+}
+
+/**
+ * Получить статистику кеша
+ */
+export function getCacheStatus() {
+    return getCacheStats();
+}
+
+/**
+ * Получить размер localStorage в KB
+ */
+export function getStorageSizeKB() {
+    return getLocalStorageSize();
+}
+
+/**
+ * Получить все ключи из localStorage с информацией о размере
+ */
+export function getStorageKeys() {
+    return getAllLocalStorageKeys();
+}
+
+/**
+ * Очистить localStorage по префиксу
+ */
+export function clearStorageByPrefix(prefix) {
+    return clearLocalStorageByPrefix(prefix);
+}
+
+/**
+ * Экспортировать состояние хранилища для резервной копии
+ */
+export function exportStorage() {
+    return exportStorageState();
+}
+
+/**
+ * Импортировать состояние хранилища из резервной копии
+ */
+export function importStorage(state) {
+    return importStorageState(state);
+}

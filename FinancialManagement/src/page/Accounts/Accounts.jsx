@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../../components/ui/dialog_/dialog';
-import { Plus, Wallet as  Edit, Trash2, ArrowRightLeft } from 'lucide-react';
+import { Plus, Wallet as Edit, Trash2, ArrowRightLeft } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card/card'
 import { Button } from '../../components/ui/button/button';
 import { Label } from '../../components/ui/label/label';
@@ -20,7 +20,7 @@ function Accounts() {
     const [accountName, setAccountName] = useState('')
     const [accountType, setAccountType] = useState('')
     const [currency, setCurrency] = useState('RUB')
-    const [intialBalance, setInitialBalance] = useState('')
+    const [initialBalance, setInitialBalance] = useState('')
     const [accountNameErrors, setAccountNameErrors] = useState('')
     const [accountError, setAccountError] = useState({})
 
@@ -83,7 +83,7 @@ function Accounts() {
                 icon: iconMap[accountType] || '💳',
                 sortOrder: accounts.length,
                 currencyId: curr.id,
-                initialBalance: Number(intialBalance),
+                initialBalance: Number(initialBalance),
                 initialBalanceDate: new Date().toISOString(),
             });
             toast.success('Счёт успешно добавлен');
@@ -124,7 +124,7 @@ function Accounts() {
 
         const num = Number(intialBalance);
 
-        if (intialBalance !== '' && Number.isNaN(num)) {
+        if (initialBalance !== '' && Number.isNaN(num)) {
             newErrors.initialBalance = 'Введите корректное число';
         }
         if (!Number.isNaN(num) && num < 0) {
@@ -133,7 +133,7 @@ function Accounts() {
         if (num > 999_999_999) {
             newErrors.initialBalance = 'Начальный баланс не может превышать 999,999,999';
         }
-        if (intialBalance === '' || num === 0) {
+        if (initialBalance === '' || num === 0) {
             newErrors.initialBalance = 'Начальный баланс должен быть больше нуля';
         }
         if (!accountType) {
@@ -233,7 +233,7 @@ function Accounts() {
 
         const amount = parseFloat(transferForm.amount);
 
-        if (!transferForm.toAccountId){
+        if (!transferForm.toAccountId) {
             newErrors.accounts = 'Пожалуйста, выберите счёт для перевода';
         }
         if (isNaN(amount) || amount <= 0) {
@@ -302,18 +302,21 @@ function Accounts() {
         }
     };
 
-    const getTypeLabel = (type) => {
-        switch (type) {
-            case 'card':
-                return 'Карта'
-            case 'cash':
-                return 'Наличные'
-            case 'savings':
-                return 'Сбережения'
-            default:
-                return ''
-        }
-    }
+    const ACCOUNT_TYPE_LABELS = {
+        card: 'Карта',
+        cash: 'Наличные',
+        savings: 'Сбережения',
+        investment: 'Инвестиции',
+    };
+
+    const getTypeLabel = (type) => ACCOUNT_TYPE_LABELS[type] || '';
+
+    const MAX_VALUE = 999_999_999;
+    const formatNumber = (value) => {
+        if (!value) return '';
+        return value.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    };
+    const parseNumber = (value) => value.replace(/\s/g, '');
 
     if (loading) {
         return <div className="accounts"><p>Загрузка...</p></div>;
@@ -397,14 +400,15 @@ function Accounts() {
                                         <Label htmlFor="initial-balance">Начальный баланс * {accountError.initialBalance && <span className="form-error-icon">⚠️</span>}</Label>
                                         <Input
                                             id="initial-balance"
-                                            type="number"
+                                            type="text"
                                             placeholder="0"
-                                            step="0.01"
-                                            min="0"
-                                            max="999999999"
-                                            value={intialBalance}
+                                            value={formatNumber(initialBalance)}
                                             onChange={(e) => {
-                                                setInitialBalance(e.target.value);
+                                                const raw = parseNumber(e.target.value);
+                                                if (!/^\d*$/.test(raw)) return;
+                                                const numeric = Number(raw);
+                                                if (numeric > MAX_VALUE) return;
+                                                setInitialBalance(raw);
                                                 setAccountError(prev => ({ ...prev, initialBalance: '' }));
                                             }}
                                             className={accountError.initialBalance ? 'is-error' : ''}
@@ -587,14 +591,15 @@ function Accounts() {
                             </Label>
                             <Input
                                 id="transfer-amount"
-                                type="number"
+                                type="text"
                                 placeholder="0"
-                                step="0.01"
-                                min="0"
-                                max="999999999"
-                                value={transferForm.amount}
+                                value={formatNumber(transferForm.amount)}
                                 onChange={(e) => {
-                                    setTransferForm({ ...transferForm, amount: e.target.value });
+                                    const raw = parseNumber(e.target.value);
+                                    if (!/^\d*$/.test(raw)) return;
+                                    const numeric = Number(raw);
+                                    if (numeric > MAX_VALUE) return;
+                                    setTransferForm({ ...transferForm, amount: raw });
                                     setTransferErrors(prev => ({ ...prev, amount: '' }));
                                 }}
                                 className={transferErrors.amount ? 'is-error' : ''}

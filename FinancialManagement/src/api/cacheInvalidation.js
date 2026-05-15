@@ -5,19 +5,31 @@
 
 import { clearCache, clearCacheByPattern } from './cache';
 
+// Event Emitter для уведомления компонентов о изменениях данных
+export const dataChangeEmitter = new EventTarget();
+
+/**
+ * Отправить событие об изменении данных
+ */
+function notifyDataChange(type) {
+    const event = new CustomEvent('dataChanged', { detail: { type } });
+    dataChangeEmitter.dispatchEvent(event);
+}
+
 /**
  * Инвалидировать кеш при создании нового счета
  */
 export function invalidateAccountsCache() {
-    clearCacheByPattern('/accounts');
+    clearCacheByPattern('/wallet');
     clearCacheByPattern('/dashboard'); // Dashboard зависит от счетов
+    notifyDataChange('accounts');
 }
 
 /**
  * Инвалидировать кеш при изменении счета
  */
 export function invalidateAccountCache(accountId) {
-    clearCache(`/profiles/*/accounts/${accountId}`);
+    clearCache(`/wallet/${accountId}`);
     invalidateAccountsCache();
 }
 
@@ -25,34 +37,38 @@ export function invalidateAccountCache(accountId) {
  * Инвалидировать кеш при изменении категорий
  */
 export function invalidateCategoriesCache() {
-    clearCacheByPattern('/categories');
+    clearCacheByPattern('/category');
     clearCacheByPattern('/dashboard');
+    notifyDataChange('categories');
 }
 
 /**
  * Инвалидировать кеш при создании транзакции
  */
 export function invalidateTransactionsCache() {
-    clearCacheByPattern('/transactions');
+    clearCacheByPattern('/transaction');
     clearCacheByPattern('/dashboard');
     clearCacheByPattern('/reports');
+    notifyDataChange('transactions');
 }
 
 /**
  * Инвалидировать кеш при изменении кредитов/долгов
  */
 export function invalidateCreditsDebtsCache() {
-    clearCacheByPattern('/credits');
-    clearCacheByPattern('/debts');
+    clearCacheByPattern('/credit');
+    clearCacheByPattern('/debt');
     clearCacheByPattern('/dashboard');
+    notifyDataChange('debts');
 }
 
 /**
  * Инвалидировать кеш при изменении депозитов
  */
 export function invalidateDepositsCache() {
-    clearCacheByPattern('/deposits');
+    clearCacheByPattern('/deposit');
     clearCacheByPattern('/dashboard');
+    notifyDataChange('deposits');
 }
 
 /**
@@ -60,6 +76,7 @@ export function invalidateDepositsCache() {
  */
 export function invalidateAllCache() {
     clearCacheByPattern('');
+    notifyDataChange('all');
 }
 
 /**
@@ -81,23 +98,30 @@ export async function refreshDataInBackground(apiCall, onSuccess) {
  * Batch инвалидация нескольких типов данных
  */
 export function invalidateCacheForResourceTypes(types = []) {
+    const typeSet = new Set();
+    
     types.forEach(type => {
         switch (type) {
             case 'accounts':
                 invalidateAccountsCache();
+                typeSet.add('accounts');
                 break;
             case 'categories':
                 invalidateCategoriesCache();
+                typeSet.add('categories');
                 break;
             case 'transactions':
                 invalidateTransactionsCache();
+                typeSet.add('transactions');
                 break;
             case 'credits':
             case 'debts':
                 invalidateCreditsDebtsCache();
+                typeSet.add('debts');
                 break;
             case 'deposits':
                 invalidateDepositsCache();
+                typeSet.add('deposits');
                 break;
             default:
                 break;

@@ -51,9 +51,14 @@ function LoadingFallback() {
 
 export default function AppRoutes() {
     // Централизованная логика аутентификации из useAuth хука
-    const { isAuth, logout, hasCompletedOnboarding, setHasCompletedOnboarding, handleLogin } = useAuth()
+    const { isAuth, isLoading, logout, hasCompletedOnboarding, setHasCompletedOnboarding, handleLogin } = useAuth()
     const [showWelcomeModal, setShowWelcomeModal] = useState(false)
     const [userName, setUserName] = useState('')
+
+    // Показываем загрузку пока идет проверка авторизации
+    if (isLoading) {
+        return <LoadingFallback />
+    }
 
     return (
         <>

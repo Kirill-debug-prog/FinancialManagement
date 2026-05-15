@@ -1,4 +1,5 @@
 import { api, getActiveProfileId } from './client';
+import { invalidateTransactionsCache } from './cacheInvalidation';
 
 const TYPE_STR_TO_INT = {
     income: 0, expense: 1, transfer: 2,
@@ -34,7 +35,7 @@ export async function getTransaction(id) {
 }
 
 export async function createTransaction(data) {
-    return api.post('/transaction', {
+    const result = await api.post('/transaction', {
         walletId: data.walletId || data.accountId,
         type: TYPE_STR_TO_INT[data.type] ?? 1,
         amount: data.amount,
@@ -43,6 +44,8 @@ export async function createTransaction(data) {
         description: data.description || data.note || null,
         toWalletId: data.toWalletId || null,
     });
+    invalidateTransactionsCache();
+    return result;
 }
 
 export async function updateTransaction(id, data) {
@@ -54,8 +57,11 @@ export async function updateTransaction(id, data) {
         tasks.push(api.patch(`/transaction/${id}/category`, data.categoryId || null));
     }
     if (tasks.length) await Promise.all(tasks);
+    invalidateTransactionsCache();
 }
 
 export async function deleteTransaction(id) {
-    return api.delete(`/transaction/${id}`);
+    const result = await api.delete(`/transaction/${id}`);
+    invalidateTransactionsCache();
+    return result;
 }

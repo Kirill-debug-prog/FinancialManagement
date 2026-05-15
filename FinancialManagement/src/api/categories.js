@@ -1,5 +1,6 @@
 import { api, getActiveProfileId } from './client';
 import { buildProfileUrl } from './utils';
+import { invalidateCategoriesCache } from './cacheInvalidation';
 
 const TYPE_STR_TO_INT = {
     Income: 0, Expense: 1, Transfer: 2,
@@ -26,18 +27,24 @@ export async function getCategory(id) {
 
 export async function createCategory(data) {
     const profileId = getActiveProfileId();
-    return api.post('/category', {
+    const result = await api.post('/category', {
         profileId,
         name: data.name,
         type: TYPE_STR_TO_INT[data.type] ?? 1,
         icon: data.icon || null,
     });
+    invalidateCategoriesCache();
+    return result;
 }
 
 export async function updateCategory(id, data) {
-    return api.put(`/category/${id}/rename`, data.name);
+    const result = await api.put(`/category/${id}/rename`, data.name);
+    invalidateCategoriesCache();
+    return result;
 }
 
 export async function deleteCategory(id) {
-    return api.delete(`/category/${id}`);
+    const result = await api.delete(`/category/${id}`);
+    invalidateCategoriesCache();
+    return result;
 }

@@ -1,6 +1,7 @@
 import { api, getActiveProfileId } from './client';
 import { buildProfileUrl } from './utils';
 import { getCurrencies } from './currencies';
+import { invalidateDepositsCache } from './cacheInvalidation';
 
 function toDateOnly(value) {
     if (!value) return new Date().toISOString().split('T')[0];
@@ -58,6 +59,8 @@ export async function createDeposit(data) {
         endDate: toDateOnly(data.endDate),
         isCapitalized: data.capitalization ?? data.isCapitalized ?? false,
     });
+    invalidateDepositsCache();
+    return result;
 }
 
 export async function updateDeposit(id, data) {
@@ -76,8 +79,11 @@ export async function updateDeposit(id, data) {
     }
 
     if (tasks.length) await Promise.all(tasks);
+    invalidateDepositsCache();
 }
 
 export async function deleteDeposit(id) {
-    return api.delete(`/deposit/${id}`);
+    const result = await api.delete(`/deposit/${id}`);
+    invalidateDepositsCache();
+    return result;
 }

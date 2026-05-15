@@ -1,5 +1,6 @@
 import { api, getActiveProfileId } from './client';
 import { buildProfileUrl } from './utils';
+import { invalidateAccountsCache, invalidateAccountCache } from './cacheInvalidation';
 
 export async function getAccounts() {
     const url = buildProfileUrl('accounts');
@@ -25,7 +26,7 @@ export async function getAccount(id) {
 
 export async function createAccount(data) {
     const profileId = getActiveProfileId();
-    return api.post('/wallet', {
+    const result = await api.post('/wallet', {
         profileId,
         name: data.name,
         sortOrder: data.sortOrder ?? 0,
@@ -34,16 +35,24 @@ export async function createAccount(data) {
         icon: data.icon || null,
         note: data.note || null,
     });
+    invalidateAccountsCache();
+    return result;
 }
 
 export async function updateAccount(id, data) {
-    return api.put(`/wallet/${id}/rename`, data.name);
+    const result = await api.put(`/wallet/${id}/rename`, data.name);
+    invalidateAccountCache(id);
+    return result;
 }
 
 export async function deleteAccount(id) {
-    return api.delete(`/wallet/${id}`);
+    const result = await api.delete(`/wallet/${id}`);
+    invalidateAccountsCache();
+    return result;
 }
 
 export async function archiveAccount(id) {
-    return api.post(`/wallet/${id}/archive`);
+    const result = await api.post(`/wallet/${id}/archive`);
+    invalidateAccountsCache();
+    return result;
 }
