@@ -103,3 +103,21 @@
         padding: 0 0.5rem;
     }
 }
+
+.password-input-wrapper {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 1.3rem;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

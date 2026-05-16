@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/ta
 import { Label } from "../../components/ui/label/label";
 import { Input } from "../../components/ui/input_data/input";
 import { Button } from "../../components/ui/button/button";
+import { Eye, EyeOff } from 'lucide-react';
 import { toast } from "sonner";
 import { useNavigate } from 'react-router-dom'
 import { login, register } from '../../api/auth';
@@ -58,11 +59,14 @@ function Auth({ onLogin }) {
     const [registerConfirmPassword, setRegisterConfirmPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [loginErrors, setLoginErrors] = useState({ email: '', password: '' });
-    const [registerErrors, setRegisterErrors] = useState({ 
-        email: '', 
-        password: '', 
-        confirmPassword: '' 
+    const [registerErrors, setRegisterErrors] = useState({
+        email: '',
+        password: '',
+        confirmPassword: ''
     });
+    const [showPassword, setShowPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const navigate = useNavigate()
 
@@ -107,7 +111,7 @@ function Auth({ onLogin }) {
         } catch (err) {
             console.error('Login error:', err);
             const errorMsg = err.message || 'Ошибка входа';
-            
+
             // Определяем, какое поле содержит ошибку
             if (errorMsg.toLowerCase().includes('email') || errorMsg.toLowerCase().includes('not found') || errorMsg.toLowerCase().includes('не найден')) {
                 setLoginErrors(prev => ({ ...prev, email: 'Email не найден в системе' }));
@@ -256,15 +260,31 @@ function Auth({ onLogin }) {
                             </div>
                             <div className={`data-container ${loginErrors.password ? 'data-container--error' : ''}`}>
                                 <Label className="login-lable" htmlFor="login-register">Пароль</Label>
-                                <Input className="login-input"
-                                    type="password"
-                                    id="login-register"
-                                    placeholder="••••••••"
-                                    value={loginPassword}
-                                    autoComplete="current-password"
-                                    onChange={(e) => handleLoginPasswordChange(e.target.value)}
-                                    aria-invalid={!!loginErrors.password}
-                                    aria-describedby={loginErrors.password ? "login-password-error" : undefined} />
+                                <div className="password-input-wrapper">
+                                    <Input className="login-input"
+                                        type={showPassword ? 'text' : 'password'}
+                                        id="login-register"
+                                        placeholder="••••••••"
+                                        value={loginPassword}
+                                        autoComplete="current-password"
+                                        onChange={(e) => handleLoginPasswordChange(e.target.value)}
+                                        aria-invalid={!!loginErrors.password}
+                                        aria-describedby={loginErrors.password ? "login-password-error" : undefined}
+                                    />
+                                    <button
+                                        type="button"
+                                        className="password-toggle"
+                                        onClick={() =>
+                                            setShowCurrentPassword(!showPassword)
+                                        }
+                                    >
+                                        {showPassword ? (
+                                            <EyeOff size={18} />
+                                        ) : (
+                                            <Eye size={18} />
+                                        )}
+                                    </button>
+                                </div>
                                 {loginErrors.password && (
                                     <span id="login-password-error" className="form-error">
                                         {loginErrors.password}
@@ -311,15 +331,31 @@ function Auth({ onLogin }) {
                             </div>
                             <div className={`data-container ${registerErrors.password ? 'data-container--error' : ''}`}>
                                 <Label className="register-lable" htmlFor="register-password">Пароль</Label>
-                                <Input className="register-input"
-                                    type="password"
-                                    id="register-password"
-                                    placeholder="••••••••"
-                                    value={registerPassword}
-                                    autoComplete="new-password"
-                                    onChange={(e) => handleRegisterPasswordChange(e.target.value)}
-                                    aria-invalid={!!registerErrors.password}
-                                    aria-describedby={registerErrors.password ? "register-password-error" : undefined} />
+                                <div className="password-input-wrapper">
+                                    <Input className="register-input"
+                                        type={showNewPassword ? 'text' : 'password'}
+                                        id="register-password"
+                                        placeholder="••••••••"
+                                        value={registerPassword}
+                                        autoComplete="new-password"
+                                        onChange={(e) => handleRegisterPasswordChange(e.target.value)}
+                                        aria-invalid={!!registerErrors.password}
+                                        aria-describedby={registerErrors.password ? "register-password-error" : undefined}
+                                    />
+                                    <button
+                                        type="button"
+                                        className="password-toggle"
+                                        onClick={() =>
+                                            setShowCurrentPassword(!showNewPassword)
+                                        }
+                                    >
+                                        {showNewPassword ? (
+                                            <EyeOff size={18} />
+                                        ) : (
+                                            <Eye size={18} />
+                                        )}
+                                    </button>
+                                </div>
                                 <span className="password-hint">Минимум {MIN_PASSWORD_LENGTH} символов</span>
                                 {registerErrors.password && (
                                     <span id="register-password-error" className="form-error">
@@ -329,15 +365,31 @@ function Auth({ onLogin }) {
                             </div>
                             <div className={`data-container ${registerErrors.confirmPassword ? 'data-container--error' : ''}`}>
                                 <Label className="register-lable" htmlFor="register-confirm-password">Подтвердить пароль</Label>
-                                <Input className="register-input"
-                                    type="password"
-                                    id="register-confirm-password"
-                                    placeholder="••••••••"
-                                    value={registerConfirmPassword}
-                                    autoComplete="new-password"
-                                    onChange={(e) => handleRegisterConfirmPasswordChange(e.target.value)}
-                                    aria-invalid={!!registerErrors.confirmPassword}
-                                    aria-describedby={registerErrors.confirmPassword ? "register-confirm-error" : undefined} />
+                                <div className="password-input-wrapper">
+                                    <Input className="register-input"
+                                        type={showConfirmPassword ? 'text' : 'password'}
+                                        id="register-confirm-password"
+                                        placeholder="••••••••"
+                                        value={registerConfirmPassword}
+                                        autoComplete="new-password"
+                                        onChange={(e) => handleRegisterConfirmPasswordChange(e.target.value)}
+                                        aria-invalid={!!registerErrors.confirmPassword}
+                                        aria-describedby={registerErrors.confirmPassword ? "register-confirm-error" : undefined}
+                                    />
+                                    <button
+                                        type="button"
+                                        className="password-toggle"
+                                        onClick={() =>
+                                            setShowCurrentPassword(!showConfirmPassword)
+                                        }
+                                    >
+                                        {showConfirmPassword ? (
+                                            <EyeOff size={18} />
+                                        ) : (
+                                            <Eye size={18} />
+                                        )}
+                                    </button>
+                                </div>
                                 {registerErrors.confirmPassword && (
                                     <span id="register-confirm-error" className="form-error">
                                         {registerErrors.confirmPassword}

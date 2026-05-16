@@ -25,6 +25,11 @@ export default function ImportExport() {
     const [exportHistory, setExportHistory] = useState([]);
     const fileInputRef = useRef(null);
 
+    const [qrFile, setQrFile] = useState(null);
+    const [qrPreview, setQrPreview] = useState(null);
+    const [errors, setErrors] = useState({});
+    const [isLoadingQR, setIsLoadingQR] = useState(false);
+
     useEffect(() => {
         getAccounts()
             .then(data => {
@@ -65,11 +70,11 @@ export default function ImportExport() {
 
     const handleExport = async () => {
         if (exporting) return;
-        
+
         const { dateFrom, dateTo } = getPeriodDates(exportPeriod);
         setExporting(true);
         const toastId = toast.loading('Подготовка экспорта...');
-        
+
         try {
             let result;
 
@@ -85,19 +90,19 @@ export default function ImportExport() {
             // Получаем URL для скачивания
             if (result?.reportId) {
                 toast.loading('Генерация файла (ожидание)...', { id: toastId });
-                
+
                 // Ждем готовности отчета
                 try {
                     await waitForReport(result.reportId);
                 } catch (waitErr) {
                     throw new Error(`Отчет не готов: ${waitErr.message}`);
                 }
-                
+
                 // Теперь получаем URL скачивания
                 toast.loading('Получение ссылки на скачивание...', { id: toastId });
                 const downloadResult = await getReportDownloadUrl(result.reportId);
                 const downloadUrl = downloadResult.downloadUrl || downloadResult.url;
-                
+
                 // Добавляем в историю
                 const newExport = {
                     id: Date.now(),
@@ -108,7 +113,7 @@ export default function ImportExport() {
                     downloadUrl
                 };
                 setExportHistory(prev => [newExport, ...prev]);
-                
+
                 // Скачиваем файл
                 if (downloadUrl) {
                     window.open(downloadUrl, '_blank');
@@ -127,7 +132,7 @@ export default function ImportExport() {
     const getPeriodDates = (period) => {
         const now = new Date();
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        
+
         const formatDate = (date) => {
             const y = date.getFullYear();
             const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -190,6 +195,87 @@ export default function ImportExport() {
     const formatDate = (dateStr) => {
         if (!dateStr) return '';
         return new Date(dateStr).toLocaleDateString('ru-RU');
+    };
+
+    useEffect(() => {
+        if (!qrFile) {
+            setQrPreview(null);
+            return;
+        }
+        const reader = new FileReader();
+
+        reader.onloadend = () => {
+            setQrPreview(reader.result);
+        };
+
+        reader.readAsDataURL(qrFile);
+
+    }, [qrFile])
+
+    const validateQr = (file) => {
+        const newErrors = {};
+        if (!file) {
+            newErrors.qr = 'Выберите QR-код';
+            return newErrors;
+        }
+        if (!file.type.startsWith('image/')) {
+            newErrors.qr = 'Можно загружать только изображения';
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            newErrors.qr = 'Размер файла не должен превышать 5MB';
+        }
+        return newErrors;
+    };
+
+    const handleQrChange = (e) => {
+        const file = e.target.files[0];
+
+        // Если пользователь открыл окно выбора и нажал "Отмена", file будет undefined
+        if (!file) return;
+
+        const validationErrors = validateQr(file);
+
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            setQrFile(null);
+            toast.error(Object.values(validationErrors)[0]);
+        } else {
+            setErrors({});
+            setQrFile(file);
+        }
+
+        e.target.value = '';
+    };
+
+    const handleUploadQr = async () => {
+        if (!qrFile) {
+            toast.error('Выберите QR-код');
+            return;
+        }
+
+        setIsLoadingQR(true);
+
+        try {
+            const formData = new FormData();
+            formData.append('qr', qrFile);
+
+            await api.post('/user/upload-qr', formData);
+            toast.success('QR-код успешно загружен');
+        } catch (err) {
+            toast.error(
+                err?.response?.data?.message ||
+                err?.response?.data ||
+                'Ошибка загрузки QR-кода'
+            );
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleCancel = () => {
+        setQrFile(null);
+        setQrPreview(null);
+        setErrors({});
     };
 
     return (
@@ -288,6 +374,56 @@ export default function ImportExport() {
                                     {importing ? 'Импорт...' : 'Начать импорт'}
                                 </Button>
 
+                                <div className="import-export__import-controls">
+                                    <label className={`qr-upload__controls ${errors.qr ? 'is-error' : ''}`}>
+                                        {qrPreview ? (
+                                            <img
+                                                src={qrPreview}
+                                                alt="QR Preview"
+                                                className="qr-upload__image"
+                                            />
+                                        ) : (
+                                            <div className="qr-upload__placeholder">
+                                                <Upload className="import-export__icon" />
+                                                <span className="qr-upload__instruction">Загрузите QR-код</span>
+                                                <span className="qr-upload__description">PNG или JPG до 5MB</span>
+                                            </div>
+                                        )}
+
+                                        <input
+                                            type="file"
+                                            accept="image/png,image/jpeg,image/jpg"
+                                            onChange={handleQrChange}
+                                            style={{ display: 'none' }}
+                                        />
+                                    </label>
+
+                                    {errors.qr && (
+                                        <span className="form-error">{errors.qr}</span>
+                                    )}
+                                </div>
+                                {qrFile && !errors.qr && (
+                                    <div className="qr-upload__actions">
+                                        <Button
+                                            onClick={handleUploadQr}
+                                            disabled={isLoadingQR}
+                                            className="import-export__button"
+                                        >
+                                            {isLoadingQR ? 'Загрузка...' : 'Сохранить QR-код'}
+                                        </Button>
+
+                                        <Button
+                                            onClick={handleCancel}
+                                            variant='destructive'
+                                            size='sm'
+                                            disabled={isLoadingQR}
+                                            className="btn-cancel"
+                                        >
+                                            Удалить
+                                        </Button>
+                                    </div>
+                                )}
+
                                 <div className="import-export__todo">
                                     <h4 className="import-export__todo-title">Как получить выписку</h4>
                                     <ul className="import-export__todo-list">
@@ -347,25 +483,25 @@ export default function ImportExport() {
                                 <div className="import-export__quick-export">
                                     <h4 className="import-export__quick-export-title">Быстрые отчеты</h4>
                                     <div className="import-export__quick-export-buttons">
-                                        <Button 
-                                            variant="white" 
-                                            size="auto" 
+                                        <Button
+                                            variant="white"
+                                            size="auto"
                                             disabled={exporting}
                                             onClick={() => { setExportFormat('transactions'); setTimeout(() => handleExport(), 0); }}
                                         >
                                             Транзакции (PDF)
                                         </Button>
-                                        <Button 
-                                            variant="white" 
-                                            size="auto" 
+                                        <Button
+                                            variant="white"
+                                            size="auto"
                                             disabled={exporting}
                                             onClick={() => { setExportFormat('categories'); setTimeout(() => handleExport(), 0); }}
                                         >
                                             Категории (PDF)
                                         </Button>
-                                        <Button 
-                                            variant="white" 
-                                            size="auto" 
+                                        <Button
+                                            variant="white"
+                                            size="auto"
                                             disabled={exporting}
                                             onClick={() => { setExportFormat('obligations'); setTimeout(() => handleExport(), 0); }}
                                         >
@@ -398,8 +534,8 @@ export default function ImportExport() {
                                                         </p>
                                                     </div>
                                                 </div>
-                                                <Button 
-                                                    variant="transparent" 
+                                                <Button
+                                                    variant="transparent"
                                                     className="import-export__history-item-action"
                                                     onClick={() => item.downloadUrl && window.open(item.downloadUrl, '_blank')}
                                                     disabled={!item.downloadUrl}

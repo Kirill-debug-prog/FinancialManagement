@@ -6,7 +6,7 @@ import { Button } from "../../components/ui/button/button";
 import { Label } from "../../components/ui/label/label";
 import { Card, CardContent, CardTitle, CardHeader } from '../../components/ui/card/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select/select";
-import { Database, Trash2, Plus, Edit } from 'lucide-react';
+import { Database, Trash2, Plus, Edit, Eye, EyeOff } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from "../../components/ui/avatar/avatar";
 import { Switch } from "../../components/ui/switch/switch";
 import { Separator } from "../../components/ui/separator/separator";
@@ -40,6 +40,10 @@ export default function Setting() {
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [passwordErrors, setPasswordErrors] = useState({});
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     useEffect(() => {
         async function loadUser() {
@@ -75,21 +79,48 @@ export default function Setting() {
         }
     };
 
+    const validatePasswordForm = () => {
+        const newErrors = {};
+
+        if (!currentPassword) {
+            newErrors.currentPassword = 'Введите текущий пароль';
+        }
+
+        if (!newPassword) {
+            newErrors.newPassword = 'Введите новый пароль';
+        }
+
+        if (!confirmPassword) {
+            newErrors.confirmPassword = 'Подтвердите пароль';
+        }
+
+        if (newPassword && newPassword.length < 6) {
+            newErrors.newPassword = 'Пароль должен быть минимум 6 символов';
+        }
+
+        if (
+            newPassword &&
+            confirmPassword &&
+            newPassword !== confirmPassword
+        ) {
+            newErrors.confirmPassword = 'Пароли не совпадают';
+        }
+
+        return newErrors;
+    };
+
     const handleChangePassword = async () => {
-        if (!currentPassword || !newPassword || !confirmPassword) {
-            toast.error('Заполните все поля');
+        const errors = validatePasswordForm();
+
+        if (Object.keys(errors).length > 0) {
+            setPasswordErrors(errors);
+
+            toast.error(Object.values(errors)[0]);
+
             return;
         }
 
-        if (newPassword !== confirmPassword) {
-            toast.error('Пароли не совпадают');
-            return;
-        }
-
-        if (newPassword.length < 6) {
-            toast.error('Пароль должен быть минимум 6 символов');
-            return;
-        }
+        setPasswordErrors({});
 
         try {
             await changePassword(currentPassword, newPassword);
@@ -99,8 +130,14 @@ export default function Setting() {
             setCurrentPassword('');
             setNewPassword('');
             setConfirmPassword('');
+
         } catch (err) {
-            toast.error(err.message || 'Ошибка смены пароля');
+            const message =
+                err?.response?.data?.message ||
+                err?.response?.data ||
+                'Ошибка смены пароля';
+
+            toast.error(message);
         }
     };
 
@@ -474,36 +511,87 @@ export default function Setting() {
                         <CardContent className="card-content--spaced">
                             <div className="stack-sm">
                                 <div className="field">
-                                    <Label htmlFor="current-password">Текущий пароль</Label>
-                                    <Input
-                                        id="current-password"
-                                        type="password"
-                                        placeholder="••••••••"
-                                        value={currentPassword}
-                                        onChange={(e) => setCurrentPassword(e.target.value)}
-                                    />
+                                    <Label htmlFor="current-password">Текущий пароль {passwordErrors.currentPassword && <span className="form-error-icon">⚠️</span>}</Label>
+                                    <div className="password-input-wrapper">
+                                        <Input
+                                            id="current-password"
+                                            type={showCurrentPassword ? 'text' : 'password'}
+                                            placeholder="••••••••"
+                                            value={currentPassword}
+                                            onChange={(e) => setCurrentPassword(e.target.value)}
+                                            className={passwordErrors.currentPassword ? 'is-error' : ''}
+                                        />
+                                        <button
+                                            type="button"
+                                            className="password-toggle"
+                                            onClick={() =>
+                                                setShowCurrentPassword(!showCurrentPassword)
+                                            }
+                                        >
+                                            {showCurrentPassword ? (
+                                                <EyeOff size={18} />
+                                            ) : (
+                                                <Eye size={18} />
+                                            )}
+                                        </button>
+                                    </div>
+                                    {passwordErrors.currentPassword && <span className="form-error">{passwordErrors.currentPassword}</span>}
                                 </div>
 
                                 <div className="field">
-                                    <Label htmlFor="new-password">Новый пароль</Label>
-                                    <Input
-                                        id="new-password"
-                                        type="password"
-                                        placeholder="••••••••"
-                                        value={newPassword}
-                                        onChange={(e) => setNewPassword(e.target.value)}
-                                    />
+                                    <Label htmlFor="new-password">Новый пароль {passwordErrors.newPassword && <span className="form-error-icon">⚠️</span>}</Label>
+                                    <div className="password-input-wrapper">
+                                        <Input
+                                            id="new-password"
+                                            type={showCurrentPassword ? 'text' : 'password'}
+                                            placeholder="••••••••"
+                                            value={newPassword}
+                                            onChange={(e) => setNewPassword(e.target.value)}
+                                            className={passwordErrors.newPassword ? 'is-error' : ''}
+                                        />
+                                        <button
+                                            type="button"
+                                            className="password-toggle"
+                                            onClick={() =>
+                                                setShowCurrentPassword(!showNewPassword)
+                                            }
+                                        >
+                                            {showNewPassword ? (
+                                                <EyeOff size={18} />
+                                            ) : (
+                                                <Eye size={18} />
+                                            )}
+                                        </button>
+                                    </div>
+                                    {passwordErrors.newPassword && <span className="form-error">{passwordErrors.newPassword}</span>}
                                 </div>
 
                                 <div className="field">
-                                    <Label htmlFor="confirm-password">Подтвердите пароль</Label>
-                                    <Input
-                                        id="confirm-password"
-                                        type="password"
-                                        placeholder="••••••••"
-                                        value={confirmPassword}
-                                        onChange={(e) => setConfirmPassword(e.target.value)}
-                                    />
+                                    <Label htmlFor="confirm-password">Подтвердите пароль {passwordErrors.confirmPassword && <span className="form-error-icon">⚠️</span>}</Label>
+                                    <div className="password-input-wrapper">
+                                        <Input
+                                            id="confirm-password"
+                                            type={showCurrentPassword ? 'text' : 'password'}
+                                            placeholder="••••••••"
+                                            value={confirmPassword}
+                                            onChange={(e) => setConfirmPassword(e.target.value)}
+                                            className={passwordErrors.confirmPassword ? 'is-error' : ''}
+                                        />
+                                        <button
+                                            type="button"
+                                            className="password-toggle"
+                                            onClick={() =>
+                                                setShowCurrentPassword(!showConfirmPassword)
+                                            }
+                                        >
+                                            {showConfirmPassword ? (
+                                                <EyeOff size={18} />
+                                            ) : (
+                                                <Eye size={18} />
+                                            )}
+                                        </button>
+                                    </div>
+                                    {passwordErrors.confirmPassword && <span className="form-error">{passwordErrors.confirmPassword}</span>}
                                 </div>
 
                                 <Button size="sm" onClick={handleChangePassword}>

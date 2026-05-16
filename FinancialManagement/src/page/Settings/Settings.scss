@@ -287,6 +287,24 @@
     gap: $space-sm;
 }
 
+.password-input-wrapper {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 1.3rem;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .setting-row {
     display: flex;
     align-items: center;
@@ -321,7 +339,9 @@
 }
 
 .info--danger {
-    h3, p {
+
+    h3,
+    p {
         margin-bottom: $space-sm;
     }
 }
@@ -333,4 +353,34 @@
         width: 1rem;
         height: 1rem;
     }
+}
+
+// Оьображение ошибок
+.form-error {
+    font-size: 0.75rem;
+    color: #ef4444;
+    font-weight: 500;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+.form-error-icon {
+    margin-left: 0.5rem;
+    font-size: 1rem;
+}
+
+.is-error {
+    border-color: #ef4444 !important;
+    background-color: #fef2f2 !important;
+
+    &:focus {
+        border-color: #ef4444 !important;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+    }
+}
+
+.account__form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
