@@ -20,6 +20,7 @@ public class GetTransactionsByWalletIdQueryHandler
       t.Id,
       t.WalletId,
       t.CategoryId,
+      t.Category?.Name,
       t.Type,
       t.Amount,
       t.Date,

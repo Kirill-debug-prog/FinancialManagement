@@ -42,6 +42,9 @@ public class UserRepository : IUserRepository
       .ExecuteUpdateAsync(s => s
         .SetProperty(u => u.Email.Value, user.Email.Value)
         .SetProperty(u => u.PasswordHash.Value, user.PasswordHash.Value)
+        .SetProperty(u => u.FirstName, user.FirstName)
+        .SetProperty(u => u.LastName, user.LastName)
+        .SetProperty(u => u.PhoneNumber, user.PhoneNumber)
         .SetProperty(u => u.UpdatedAt, DateTime.UtcNow)
         );
   }

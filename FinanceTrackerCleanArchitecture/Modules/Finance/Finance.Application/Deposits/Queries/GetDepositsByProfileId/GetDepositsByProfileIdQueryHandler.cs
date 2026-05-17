@@ -27,7 +27,8 @@ public class GetDepositsByProfileIdQueryHandler
       d.StartDate,
       d.EndDate,
       d.IsCapitalized,
-      d.IsClosed));
+      d.IsClosed,
+      d.Type));
 
     return Result<IEnumerable<GetDepositsByProfileIdResponse>>.Success(response);
   }

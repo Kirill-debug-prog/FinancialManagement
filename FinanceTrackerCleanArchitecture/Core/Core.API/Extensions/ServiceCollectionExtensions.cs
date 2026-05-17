@@ -3,6 +3,7 @@ using Users.Application.Users.Commands.RegisterUser;
 using Users.Application.Users.Commands.DeleteUser;
 using Users.Application.Users.Commands.ChangeEmail;
 using Users.Application.Users.Commands.ChangePassword;
+using Users.Application.Users.Commands.ChangeProfile;
 using Users.Application.Users.Queries.GetUserById;
 using Users.Application.Profiles.Commands.CreateProfile;
 using Users.Application.Profiles.Commands.DeleteProfile;
@@ -86,6 +87,7 @@ public static class ServiceCollectionExtensions
     services.AddScoped<DeleteUserCommandHandler>();
     services.AddScoped<ChangeEmailCommandHandler>();
     services.AddScoped<ChangePasswordCommandHandler>();
+    services.AddScoped<ChangeProfileCommandHandler>();
     services.AddScoped<GetUserByIdQueryHandler>();
     services.AddScoped<CreateProfileCommandHandler>();
     services.AddScoped<DeleteProfileCommandHandler>();

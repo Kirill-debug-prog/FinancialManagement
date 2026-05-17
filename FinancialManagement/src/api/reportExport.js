@@ -16,11 +16,11 @@ export async function createObligationsReport(from, to) {
 }
 
 export async function getReportStatus(reportId) {
-    return api.get(`/reports/${reportId}`);
+    return api.get(`/reports/${reportId}?_=${Date.now()}`);
 }
 
 export async function getReportDownloadUrl(reportId) {
-    return api.get(`/reports/${reportId}/download`);
+    return api.get(`/reports/${reportId}/download?_=${Date.now()}`);
 }
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));

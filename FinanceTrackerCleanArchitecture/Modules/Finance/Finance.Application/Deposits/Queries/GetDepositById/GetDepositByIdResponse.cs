@@ -1,3 +1,5 @@
+using Finance.Domain.Enums;
+
 namespace Finance.Application.Deposits.Queries.GetDepositById;
 
 public record GetDepositByIdResponse(
@@ -11,4 +13,5 @@ public record GetDepositByIdResponse(
   DateOnly StartDate,
   DateOnly EndDate,
   bool IsCapitalized,
-  bool IsClosed);
+  bool IsClosed,
+  DepositType Type);

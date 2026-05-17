@@ -7,6 +7,9 @@ public class User : BaseEntity
 {
   public Email Email { get; private set; } = null!;
   public PasswordHash PasswordHash { get; private set; } = null!;
+  public string? FirstName { get; private set; }
+  public string? LastName { get; private set; }
+  public string? PhoneNumber { get; private set; }
 
   private readonly List<Profile> _profiles = [];
   public IReadOnlyCollection<Profile> Profiles => _profiles.AsReadOnly();
@@ -36,6 +39,14 @@ public class User : BaseEntity
   public void ChangeHashPassword(PasswordHash newHashPassword)
   {
     PasswordHash = newHashPassword;
+    SetUpdated();
+  }
+
+  public void ChangeProfile(string? firstName, string? lastName, string? phoneNumber)
+  {
+    FirstName = firstName;
+    LastName = lastName;
+    PhoneNumber = phoneNumber;
     SetUpdated();
   }
 

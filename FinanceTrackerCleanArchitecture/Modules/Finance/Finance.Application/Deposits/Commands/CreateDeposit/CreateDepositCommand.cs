@@ -1,3 +1,5 @@
+using Finance.Domain.Enums;
+
 namespace Finance.Application.Deposits.Commands.CreateDeposit;
 
 public record CreateDepositCommand(
@@ -8,4 +10,5 @@ public record CreateDepositCommand(
   decimal InterestRate,
   DateOnly StartDate,
   DateOnly EndDate,
-  bool IsCapitalized);
+  bool IsCapitalized,
+  DepositType Type);

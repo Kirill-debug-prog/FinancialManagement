@@ -1,5 +1,6 @@
 using Core.Domain.Common;
 using Core.Domain.Entities;
+using Finance.Domain.Enums;
 
 namespace Finance.Domain.Entities;
 
@@ -16,11 +17,12 @@ public class Deposit : BaseEntity
   public DateOnly EndDate { get; private set; }
   public bool IsCapitalized { get; private set; }
   public bool IsClosed { get; private set; } = false;
+  public DepositType Type { get; private set; }
 
   private Deposit() : base() { }
 
   private Deposit(Guid id, Guid profileId, Guid currencyId, string name, decimal initialAmount,
-    decimal interestRate, DateOnly startDate, DateOnly endDate, bool isCapitalized) : base(id)
+    decimal interestRate, DateOnly startDate, DateOnly endDate, bool isCapitalized, DepositType type) : base(id)
   {
     ProfileId = profileId;
     CurrencyId = currencyId;
@@ -31,10 +33,11 @@ public class Deposit : BaseEntity
     StartDate = startDate;
     EndDate = endDate;
     IsCapitalized = isCapitalized;
+    Type = type;
   }
 
   public static Result<Deposit> Create(Guid profileId, Guid currencyId, string name, decimal initialAmount,
-    decimal interestRate, DateOnly startDate, DateOnly endDate, bool isCapitalized)
+    decimal interestRate, DateOnly startDate, DateOnly endDate, bool isCapitalized, DepositType type)
   {
     if (profileId == Guid.Empty)
       return Result<Deposit>.Failure(new DomainError("Deposit.InvalidProfileId", "ProfileId is required."));
@@ -58,7 +61,7 @@ public class Deposit : BaseEntity
       return Result<Deposit>.Failure(new DomainError("Deposit.InvalidDates", "End date must be after start date."));
 
     return Result<Deposit>.Success(new Deposit(Guid.NewGuid(), profileId, currencyId, name,
-      initialAmount, interestRate, startDate, endDate, isCapitalized));
+      initialAmount, interestRate, startDate, endDate, isCapitalized, type));
   }
 
   public Result<bool> TopUp(decimal amount)

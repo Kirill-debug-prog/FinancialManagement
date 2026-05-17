@@ -1,4 +1,5 @@
 import io
+import contextlib
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -9,7 +10,19 @@ from fastapi.responses import Response
 from pydantic import BaseModel
 from typing import List
 
-app = FastAPI(title="FinanceTracker Chart Service")
+
+@contextlib.asynccontextmanager
+async def lifespan(_: "FastAPI"):
+    # Pre-render a dummy chart so matplotlib builds its font cache before
+    # the first real request arrives (cold init can take 30–60 s otherwise).
+    fig, ax = plt.subplots()
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png", dpi=72)
+    plt.close(fig)
+    yield
+
+
+app = FastAPI(title="FinanceTracker Chart Service", lifespan=lifespan)
 
 # ─── Theme (matches frontend palette) ────────────────────────────────────────
 C_INCOME  = "#10b981"

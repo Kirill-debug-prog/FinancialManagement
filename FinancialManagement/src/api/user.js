@@ -28,10 +28,10 @@ export async function changePassword(currentPassword, newPassword) {
     });
 }
 
-export async function changeProfile(firstName, lastName, phone) {
+export async function changeProfile(firstName, lastName, phoneNumber) {
     return api.put(`/user/${getUserId()}/change-profile`, {
         firstName,
         lastName,
-        phone,
+        phoneNumber,
     });
 }

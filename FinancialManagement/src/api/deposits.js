@@ -31,7 +31,7 @@ function transformDepositResponse(deposit) {
         capitalization: deposit.isCapitalized ?? false,
         isCapitalized: deposit.isCapitalized ?? false,
         status: deposit.isClosed ? 'closed' : 'active',
-        type: deposit.type ?? 'fixed',
+        type: deposit.type === 1 ? 'replenishable' : 'fixed',
         currencyId: deposit.currencyId,
     };
 }
@@ -58,7 +58,7 @@ export async function createDeposit(data) {
         startDate: toDateOnly(data.startDate),
         endDate: toDateOnly(data.endDate),
         isCapitalized: data.capitalization ?? data.isCapitalized ?? false,
-        type: data.type ?? 'fixed',
+        type: data.type === 'replenishable' ? 1 : 0,
     });
     invalidateDepositsCache();
     return result;

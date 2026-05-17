@@ -54,7 +54,7 @@ public static class DependencyInjection
     {
       var url = configuration["ChartService:BaseUrl"] ?? "http://chart-service:8000";
       client.BaseAddress = new Uri(url);
-      client.Timeout = TimeSpan.FromSeconds(30);
+      client.Timeout = TimeSpan.FromSeconds(60);
     });
     
     services.AddHangfire(config => config

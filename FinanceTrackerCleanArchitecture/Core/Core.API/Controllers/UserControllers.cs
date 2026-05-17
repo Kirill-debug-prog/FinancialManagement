@@ -1,5 +1,6 @@
 using Users.Application.Users.Commands.ChangeEmail;
 using Users.Application.Users.Commands.ChangePassword;
+using Users.Application.Users.Commands.ChangeProfile;
 using Users.Application.Users.Commands.DeleteUser;
 using Users.Application.Users.Commands.LoginUser;
 using Users.Application.Users.Commands.RegisterUser;
@@ -19,6 +20,7 @@ public class UserController : ControllerBase
   private readonly DeleteUserCommandHandler _deleteUserHandler;
   private readonly ChangeEmailCommandHandler _changeEmailHandler;
   private readonly ChangePasswordCommandHandler _changePasswordHandler;
+  private readonly ChangeProfileCommandHandler _changeProfileHandler;
   private readonly GetUserByIdQueryHandler _getUserByIdHandler;
 
   public UserController(
@@ -27,6 +29,7 @@ public class UserController : ControllerBase
     DeleteUserCommandHandler deleteUserHandler,
     ChangeEmailCommandHandler changeEmailHandler,
     ChangePasswordCommandHandler changePasswordHandler,
+    ChangeProfileCommandHandler changeProfileHandler,
     GetUserByIdQueryHandler getUserByIdQueryHandler)
   {
     _registerHandler = registerHandler;
@@ -34,6 +37,7 @@ public class UserController : ControllerBase
     _deleteUserHandler = deleteUserHandler;
     _changeEmailHandler = changeEmailHandler;
     _changePasswordHandler = changePasswordHandler;
+    _changeProfileHandler = changeProfileHandler;
     _getUserByIdHandler = getUserByIdQueryHandler;
   }
 
@@ -84,6 +88,15 @@ public class UserController : ControllerBase
     return NoContent();
   }
 
+  [HttpPut("{id}/change-profile")]
+  public async Task<IActionResult> ChangeProfile(Guid id, [FromBody] ChangeProfileRequest request)
+  {
+    var result = await _changeProfileHandler.Handle(new ChangeProfileCommand(id, request.FirstName, request.LastName, request.PhoneNumber));
+    if (result.IsFailure)
+      return BadRequest(result.Error);
+    return NoContent();
+  }
+
   [HttpDelete("{id}")]
   public async Task<IActionResult> Delete(Guid id)
   {
@@ -93,5 +106,7 @@ public class UserController : ControllerBase
     return NoContent();
   }
 }
+
+public record ChangeProfileRequest(string? FirstName, string? LastName, string? PhoneNumber);
 
 public record ChangePasswordRequest(string CurrentPassword, string NewPassword);

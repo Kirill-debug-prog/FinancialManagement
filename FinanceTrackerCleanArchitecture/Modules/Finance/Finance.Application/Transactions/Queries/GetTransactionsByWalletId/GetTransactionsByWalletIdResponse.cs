@@ -6,6 +6,7 @@ public record GetTransactionsByWalletIdResponse(
   Guid Id,
   Guid WalletId,
   Guid? CategoryId,
+  string? CategoryName,
   FinancialType Type,
   decimal Amount,
   DateOnly Date,

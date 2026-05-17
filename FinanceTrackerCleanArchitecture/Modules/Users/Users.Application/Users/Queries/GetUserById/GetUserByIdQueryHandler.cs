@@ -18,6 +18,6 @@ public class GetUserByIdQueryHandler
     if (user is null)
       return Result<GetUserByIdResponse>.Failure(new DomainError("User.NotFound", "User not found."));
 
-    return Result<GetUserByIdResponse>.Success(new GetUserByIdResponse(user.Id, user.Email.Value));
+    return Result<GetUserByIdResponse>.Success(new GetUserByIdResponse(user.Id, user.Email.Value, user.FirstName, user.LastName, user.PhoneNumber));
   }
 }

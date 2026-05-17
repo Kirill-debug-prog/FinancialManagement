@@ -26,8 +26,8 @@ public class CreateDepositCommandHandler
     if (currency is null)
       return Result<Guid>.Failure(new DomainError("Deposit.CurrencyNotFound", "Currency not found."));
 
-    var (profileId, currencyId, name, initialAmount, interestRate, startDate, endDate, isCapitalized) = command;
-    var deposit = Deposit.Create(profileId, currencyId, name, initialAmount, interestRate, startDate, endDate, isCapitalized);
+    var (profileId, currencyId, name, initialAmount, interestRate, startDate, endDate, isCapitalized, type) = command;
+    var deposit = Deposit.Create(profileId, currencyId, name, initialAmount, interestRate, startDate, endDate, isCapitalized, type);
 
     if (deposit.IsFailure)
       return Result<Guid>.Failure(deposit.Error!);

@@ -51,7 +51,7 @@ export default function Setting() {
                 const user = await getCurrentUser();
                 setFirstName(user.firstName || '');
                 setLastName(user.lastName || '');
-                setPhone(user.phone || '');
+                setPhone(user.phoneNumber || '');
                 setEmail(user.email || '');
             } catch {
                 toast.error('Не удалось загрузить пользователя');

@@ -29,6 +29,7 @@ public class GetDepositByIdQueryHandler
       deposit.StartDate,
       deposit.EndDate,
       deposit.IsCapitalized,
-      deposit.IsClosed));
+      deposit.IsClosed,
+      deposit.Type));
   }
 }

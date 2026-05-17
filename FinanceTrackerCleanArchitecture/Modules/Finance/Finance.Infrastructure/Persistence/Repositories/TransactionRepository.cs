@@ -27,7 +27,11 @@ public class TransactionRepository : ITransactionRepository
 
   public async Task<IEnumerable<Transaction>> GetByWalletIdAsync(Guid walletId)
   {
-    return await _context.Transactions.AsNoTracking().Where(t => t.WalletId == walletId).ToListAsync();
+    return await _context.Transactions
+      .Include(t => t.Category)
+      .AsNoTracking()
+      .Where(t => t.WalletId == walletId)
+      .ToListAsync();
   }
 
   public async Task<IEnumerable<Transaction>> GetIncomingTransfersByWalletIdAsync(Guid walletId)
