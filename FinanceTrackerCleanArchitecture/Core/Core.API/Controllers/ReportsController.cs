@@ -1,9 +1,6 @@
 using System.Security.Claims;
 using System.Text.Json;
 using Reports.Application.Reports.Commands.CreateReport;
-using Finance.Application.Analytics.Queries.GetCategoryAnalytics;
-using Finance.Application.Analytics.Queries.GetMonthlyAnalytics;
-using Finance.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Reports.Application.Reports.Queries.GetReportDownloadUrl;
@@ -25,21 +22,15 @@ public class ReportsController : ControllerBase
   private readonly CreateReportCommandHandler _createReportHandler;
   private readonly GetReportStatusQueryHandler _getReportStatusHandler;
   private readonly GetReportDownloadUrlQueryHandler _getReportDownloadUrlHandler;
-  private readonly GetMonthlyAnalyticsQueryHandler _monthlyAnalyticsHandler;
-  private readonly GetCategoryAnalyticsQueryHandler _categoryAnalyticsHandler;
 
   public ReportsController(
     CreateReportCommandHandler createReportHandler,
     GetReportStatusQueryHandler getReportStatusHandler,
-    GetReportDownloadUrlQueryHandler getReportDownloadUrlHandler,
-    GetMonthlyAnalyticsQueryHandler monthlyAnalyticsHandler,
-    GetCategoryAnalyticsQueryHandler categoryAnalyticsHandler)
+    GetReportDownloadUrlQueryHandler getReportDownloadUrlHandler)
   {
     _createReportHandler = createReportHandler;
     _getReportStatusHandler = getReportStatusHandler;
     _getReportDownloadUrlHandler = getReportDownloadUrlHandler;
-    _monthlyAnalyticsHandler = monthlyAnalyticsHandler;
-    _categoryAnalyticsHandler = categoryAnalyticsHandler;
   }
 
   [HttpPost("profile-transactions")]
@@ -47,7 +38,8 @@ public class ReportsController : ControllerBase
     [FromBody] CreateProfileTransactionsReportRequest request,
     CancellationToken cancellationToken)
   {
-    if (!TryGetUserId(out var userId))
+    var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
+    if (!Guid.TryParse(userIdString, out var userId))
       return Unauthorized();
 
     if (request.From > request.To)
@@ -72,7 +64,8 @@ public class ReportsController : ControllerBase
   [HttpGet("{id:guid}")]
   public async Task<IActionResult> GetStatus(Guid id, CancellationToken cancellationToken)
   {
-    if (!TryGetUserId(out var userId))
+    var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
+    if (!Guid.TryParse(userIdString, out var userId))
       return Unauthorized();
 
     var result = await _getReportStatusHandler.Handle(
@@ -93,7 +86,8 @@ public class ReportsController : ControllerBase
     [FromBody] CreateCategoryBreakdownReportRequest request,
     CancellationToken cancellationToken)
   {
-    if (!TryGetUserId(out var userId))
+    var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
+    if (!Guid.TryParse(userIdString, out var userId))
       return Unauthorized();
 
     if (request.From > request.To)
@@ -120,7 +114,8 @@ public class ReportsController : ControllerBase
     [FromBody] CreateFinancialObligationsReportRequest request,
     CancellationToken cancellationToken)
   {
-    if (!TryGetUserId(out var userId))
+    var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
+    if (!Guid.TryParse(userIdString, out var userId))
       return Unauthorized();
 
     var parameters = JsonSerializer.Serialize(new
@@ -142,7 +137,8 @@ public class ReportsController : ControllerBase
   [HttpGet("{id:guid}/download")]
   public async Task<IActionResult> GetDownloadUrl(Guid id, CancellationToken cancellationToken)
   {
-    if (!TryGetUserId(out var userId))
+    var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
+    if (!Guid.TryParse(userIdString, out var userId))
       return Unauthorized();
 
     var result = await _getReportDownloadUrlHandler.Handle(
@@ -158,60 +154,5 @@ public class ReportsController : ControllerBase
     }
 
     return Ok(result.Value);
-  }
-
-  [HttpGet("monthly")]
-  public async Task<IActionResult> GetMonthlyAnalytics(
-    [FromQuery] Guid profileId,
-    [FromQuery] int? year)
-  {
-    if (profileId == Guid.Empty)
-      return BadRequest(new { error = "profileId is required." });
-
-    var selectedYear = year ?? DateTime.UtcNow.Year;
-    var result = await _monthlyAnalyticsHandler.Handle(
-      new GetMonthlyAnalyticsQuery(profileId, selectedYear));
-
-    if (result.IsFailure)
-      return BadRequest(result.Error);
-
-    return Ok(result.Value);
-  }
-
-  [HttpGet("categories")]
-  public async Task<IActionResult> GetCategoryAnalytics(
-    [FromQuery] Guid profileId,
-    [FromQuery] string type = "Expense",
-    [FromQuery] string? dateFrom = null,
-    [FromQuery] string? dateTo = null)
-  {
-    if (profileId == Guid.Empty)
-      return BadRequest(new { error = "profileId is required." });
-
-    var financialType = type.ToLower() switch
-    {
-      "income" => FinancialType.Income,
-      "expense" => FinancialType.Expense,
-      _ => FinancialType.Expense
-    };
-
-    DateOnly? from = DateOnly.TryParse(dateFrom, out var df) ? df : null;
-    DateOnly? to = DateOnly.TryParse(dateTo, out var dt) ? dt : null;
-
-    var result = await _categoryAnalyticsHandler.Handle(
-      new GetCategoryAnalyticsQuery(profileId, financialType, from, to));
-
-    if (result.IsFailure)
-      return BadRequest(result.Error);
-
-    return Ok(result.Value);
-  }
-
-  private bool TryGetUserId(out Guid userId)
-  {
-    var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier)
-      ?? User.FindFirstValue("sub");
-
-    return Guid.TryParse(userIdString, out userId);
   }
 }

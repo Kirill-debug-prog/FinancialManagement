@@ -1,4 +1,6 @@
+using System.Security.Cryptography.X509Certificates;
 using Finance.Domain.Entities;
+using Finance.Domain.Enums;
 using Finance.Domain.Interfaces;
 using Finance.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -56,4 +58,45 @@ public class TransactionRepository : ITransactionRepository
     _context.Transactions.Remove(transaction);
     await _context.SaveChangesAsync();
   }
+
+  //Analytics CRUD
+  public async Task<IEnumerable<CategoryTotal>> GetCategoryTotalsAsync(Guid profileId, FinancialType type, DateOnly? from, DateOnly? to)
+  {
+    var typeInt = (int)type;
+    return await _context.Database.SqlQuery<CategoryTotal>($"""
+        SELECT COALESCE(c."Name", 'Без категории') as "Name", SUM(t."Amount") as "Total"
+        FROM finance."Transactions" t
+        INNER JOIN finance."Wallets" w ON t."WalletId" = w."Id"
+        LEFT JOIN finance."Categories" c ON t."CategoryId" = c."Id"
+        WHERE w."ProfileId" = {profileId}
+          AND t."Type" = {typeInt}
+          AND ({from}::date IS NULL OR t."Date" >= {from}::date)
+          AND ({to}::date IS NULL OR t."Date" <= {to}::date)
+        GROUP BY c."Name"
+        """)
+        .ToListAsync();
+  }
+
+  public async Task<IEnumerable<MonthlyTotal>> GetMonthlyTotalsAsync(Guid profileId, int year)
+  {
+    var incomeInt = (int)FinancialType.Income;
+    var expenseInt = (int)FinancialType.Expense;
+    var transferInt = (int)FinancialType.Transfer;
+
+    return await _context.Database.SqlQuery<MonthlyTotal>($"""
+        SELECT
+            EXTRACT(MONTH FROM t."Date")::int AS "Month",
+            SUM(CASE WHEN t."Type" = {incomeInt}  THEN t."Amount" ELSE 0 END) AS "Income",
+            SUM(CASE WHEN t."Type" = {expenseInt} THEN t."Amount" ELSE 0 END) AS "Expense"
+        FROM finance."Transactions" t
+        INNER JOIN finance."Wallets" w ON t."WalletId" = w."Id"
+        WHERE w."ProfileId" = {profileId}
+          AND EXTRACT(YEAR FROM t."Date") = {year}
+          AND t."Type" <> {transferInt}
+        GROUP BY EXTRACT(MONTH FROM t."Date")
+        ORDER BY "Month"
+        """)
+        .ToListAsync();
+  }
+
 }
