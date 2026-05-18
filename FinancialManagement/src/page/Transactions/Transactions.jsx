@@ -257,12 +257,12 @@ function Transactions() {
                             </div>
                         </div>
 
-                        <div className="transactions__export">
+                        {/* <div className="transactions__export">
                             <Button variant="white" onClick={handleExport}>
                                 <Download className="icon icon--left" />
                                 Экспорт
                             </Button>
-                        </div>
+                        </div> */}
                     </div>
                 </CardContent>
             </Card>

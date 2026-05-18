@@ -1,7 +1,9 @@
+@use '../../../assets/styles/theme.scss' as *;
+
 .dialog-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: var(--color-overlay);
     z-index: 50;
     animation: fadeIn 0.2s ease-in-out;
 }
@@ -20,12 +22,12 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: #fff;
+    background: var(--color-bg);
     border-radius: 0.75rem;
     padding: 1.5rem;
     width: calc(100% - 2rem);
     max-width: 37.5rem;
-    box-shadow: 0 1.25rem 2.5rem rgba(0, 0, 0, 0.2);
+    box-shadow: 0 1.25rem 2.5rem var(--color-overlay);
     z-index: 51;
     max-height: calc(100vh - 2rem);
     overflow: auto;
@@ -70,7 +72,7 @@
 
 .dialog-close:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 0.1875rem rgba(59, 130, 246, 0.4);
+    box-shadow: 0 0 0 0.1875rem var(--color-focus-ring);
     border-radius: 0.25rem;
 }
 
@@ -91,7 +93,7 @@
 }
 
 .dialog-description {
-    color: #6b7280;
+    color: var(--color-muted);
     margin-top: 0.25rem;
     font-size: 0.875rem;
 

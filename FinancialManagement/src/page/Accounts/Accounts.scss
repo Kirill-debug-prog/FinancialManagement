@@ -1,5 +1,6 @@
 @use '../../assets/styles/base/typography' as *;
 @use '../../assets/styles/variables.scss' as *;
+@use '../../assets/styles/theme.scss' as *;
 @use "sass:color";
 
 .accounts {
@@ -53,7 +54,7 @@
     }
 
     &__subtitle {
-        color: $text-gray;
+        color: var(--color-muted);
         font-size: 0.9375rem;
         font-weight: 500;
         margin: 0;
@@ -73,8 +74,8 @@
         justify-content: center;
         gap: $space-sm;
         padding: 0.625rem 1rem;
-        background-color: $blue;
-        color: $white;
+        background-color: var(--color-primary);
+        color: var(--btn-black-text);
         border-radius: $radius-sm;
         border: none;
         cursor: pointer;
@@ -97,7 +98,7 @@
         }
 
         &:hover {
-            background-color: color.adjust($blue, $lightness: -6%);
+            background-color: var(--color-primary);
         }
 
         &:active {
@@ -238,8 +239,8 @@
 .accounts__balance {
     display: flex;
     align-items: flex-start;
-    color: $white;
-    background-image: linear-gradient(90deg, #3258F2 0%, #4C3BED 100%);
+    color: var(--btn-black-text);
+    background-image: var(--gradient-primary);
     border-radius: $radius-sm;
     padding: $space-sm;
     width: 100%;
@@ -255,7 +256,7 @@
     }
 
     &-title {
-        color: $white;
+        color: var(--btn-black-text);
         font-size: 0.75rem;
         font-weight: 500;
 
@@ -297,7 +298,7 @@
     }
 
     &-subtitle {
-        color: #D7DCFA;
+        color: var(--color-info-bg);
         margin: 0;
         font-size: 0.7rem;
 
@@ -316,7 +317,7 @@
     flex-direction: column;
     row-gap: $space-sm;
     padding: $space-sm;
-    border: 1px solid $color-border;
+    border: 1px solid var(--color-border);
     border-radius: $radius-sm;
     box-shadow: $shadow-sm;
     transition: box-shadow 0.2s ease, transform 0.2s ease;
@@ -415,7 +416,7 @@
     height: 2rem;
     padding: 0.25rem;
     border-radius: $radius-sm;
-    color: $white;
+    color: var(--btn-black-text);
     flex-shrink: 0;
     display: flex;
     align-items: center;
@@ -471,7 +472,7 @@
 // Dialog info box styles
 .dialog-info-box {
     padding: 0.75rem;
-    background-color: #f5f5f5;
+    background-color: var(--color-surface);
     border-radius: 0.5rem;
 
     @include respond-down(sm) {
@@ -487,13 +488,13 @@
 .dialog-info-box__subtitle {
     margin: 0.25rem 0 0 0;
     font-size: 0.9rem;
-    color: #666;
+    color: var(--color-muted);
 }
 
 // Amount display box
 .dialog-amount-box {
     padding: 0.75rem;
-    background-color: #e8f4f8;
+    background-color: var(--color-info-bg);
     border-radius: 0.5rem;
 
     @include respond-down(sm) {
@@ -505,13 +506,13 @@
     margin: 0;
     font-size: 1.25rem;
     font-weight: bold;
-    color: #0066cc;
+    color: var(--color-primary);
 }
 
 // Highlight info box (for transfer preview)
 .dialog-highlight-box {
     padding: 1rem;
-    background-color: #e8f4f8;
+    background-color: var(--color-info-bg);
     border-radius: 0.5rem;
     margin-bottom: 1rem;
 
@@ -524,28 +525,27 @@
 .dialog-highlight-box__label {
     margin: 0 0 0.5rem 0;
     font-size: 0.9rem;
-    color: #0066cc;
+    color: var(--color-primary);
 }
 
 .dialog-highlight-box__value {
     margin: 0;
     font-size: 1.25rem;
     font-weight: bold;
-    color: #0066cc;
+    color: var(--color-primary);
 }
 
 // Empty list message
 .accounts__empty-message {
     text-align: center;
     padding: 2rem;
-    color: #666;
+    color: var(--color-muted);
 }
 
 /* Стили для валидации в формах */
-
 .form-error {
     font-size: 0.75rem;
-    color: #ef4444;
+    color: var(--color-danger);
     font-weight: 500;
     margin-top: 0.25rem;
     display: block;
@@ -557,12 +557,12 @@
 }
 
 .is-error {
-    border-color: #ef4444 !important;
-    background-color: #fef2f2 !important;
+    border-color: var(--color-danger) !important;
+    background-color: var(--color-error-bg) !important;
 
     &:focus {
-        border-color: #ef4444 !important;
-        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+        border-color: var(--color-danger) !important;
+        box-shadow: 0 0 0 3px var(--transaction-error-focus) !important;
     }
 }
 

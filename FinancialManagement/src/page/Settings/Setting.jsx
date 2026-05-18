@@ -15,13 +15,13 @@ import { getCategories, createCategory, deleteCategory } from '../../api/categor
 import { invalidateCategoriesCache } from '../../api/cacheInvalidation';
 import { transformCategoryFromBackend } from '../../api/transformers';
 import { getCurrentUser, changeEmail, changePassword, changeProfile, } from '../../api/user';
+import { useTheme } from "../../components/ThemeProvider";
 import './Settings.scss';
 
 export default function Setting() {
     const [emailNotifications, setEmailNotifications] = useState(false);
     const [pushNotifications, setPushNotifications] = useState(false);
     const [budgetAlerts, setBudgetAlerts] = useState(false);
-    const [theme, setTheme] = useState('light');
     const [currency, setCurrency] = useState('RUB');
     const [language, setLanguage] = useState('ru');
 
@@ -45,17 +45,19 @@ export default function Setting() {
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+    const { theme, setTheme } = useTheme();
+
     async function loadUser() {
-            try {
-                const user = await getCurrentUser();
-                setFirstName(user.firstName || '');
-                setLastName(user.lastName || '');
-                setPhoneNumber(user.phoneNumber || '');
-                setEmail(user.email || '');
-            } catch {
-                toast.error('Не удалось загрузить пользователя');
-            }
+        try {
+            const user = await getCurrentUser();
+            setFirstName(user.firstName || '');
+            setLastName(user.lastName || '');
+            setPhoneNumber(user.phoneNumber || '');
+            setEmail(user.email || '');
+        } catch {
+            toast.error('Не удалось загрузить пользователя');
         }
+    }
 
     useEffect(() => {
         loadUser();
@@ -439,7 +441,7 @@ export default function Setting() {
                                 </Select>
                             </div>
 
-                            <Button size="sm">Сохранить настройки</Button>
+                            {/* <Button size="sm">Сохранить настройки</Button> */}
                         </CardContent>
                     </Card>
                 </TabsContent>

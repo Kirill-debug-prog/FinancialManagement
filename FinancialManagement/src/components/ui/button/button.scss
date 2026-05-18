@@ -1,4 +1,5 @@
 @use '../../../assets/styles/variables.scss' as *;
+@use '../../../assets/styles/theme.scss' as *;
 
 .btn {
     display: flex;
@@ -72,42 +73,42 @@
 
 /* Color variants */
 .btn-destructive {
-    background-color: #DB1515;
-    color: white;
+    background-color: var(--btn-destructive-bg);
+    color: var(--btn-destructive-text);
 
     &:hover {
-        background-color: #c41111;
+        background-color: var(--btn-destructive-bg-hover);
     }
 
     &:active {
-        background-color: #a00e0e;
+        background-color: var(--btn-destructive-bg-active);
     }
 }
 
 .btn-black {
-    background-color: #242424;
-    color: white;
+    background-color: var(--btn-black-bg);
+    color: var(--btn-black-text);
 
     &:hover {
-        background-color: #1a1a1a;
+        background-color: var(--btn-black-bg-hover);
     }
 
     &:active {
-        background-color: #000000;
+        background-color: var(--btn-black-bg-active);
     }
 }
 
 .btn-white {
-    background-color: #FFFFFF;
-    color: #000000;
-    border: 1px solid #e5e7eb;
+    background-color: var(--btn-white-bg);
+    color: var(--btn-white-text);
+    border: 1px solid var(--btn-white-border);
 
     &:hover {
-        background-color: #F3F3F3;
+        background-color: var(--btn-white-bg-hover);
     }
 
     &:active {
-        background-color: #E7E7E7;
+        background-color: var(--btn-white-bg-active);
     }
 }
 
@@ -116,35 +117,35 @@
     justify-content: flex-start;
     width: auto;
     padding: 0;
-    background-color: transparent;
-    color: #000000;
+    background-color: var(--btn-transparent-bg);
+    color: var(--btn-transparent-text);
     border: none;
 }
 
 .btn-blue {
-    background-image: linear-gradient(to right, #0D58D9, rgba(0, 72, 255, 0.5));
-    color: white;
+    background-image: var(--btn-blue-bg);
+    color: var(--btn-blue-text);
     border: none;
 
     &:hover {
-        background-image: linear-gradient(to right, #0057FF, rgba(4, 65, 186, 0.35));
+        background-image: var(--btn-blue-bg-hover);
     }
 
     &:active {
-        background-image: linear-gradient(to right, #0057FF, rgba(17, 62, 154, 0.8));
+        background-image: var(--btn-blue-bg-active);
     }
 }
 
 .btn-green {
-    background-color: rgba(13, 176, 42, 1);
-    color: white;
+    background-color: var(--btn-green-bg);
+    color: var(--btn-green-text);
 
     &:hover {
-        background-color: rgba(11, 153, 36, 1);
+        background-color: var(--btn-green-bg-hover);
     }
 
     &:active {
-        background-color: rgba(9, 130, 30, 1);
+        background-color: var(--btn-green-bg-active);
     }
 }
 
@@ -159,9 +160,9 @@
     height: auto;
     padding: 0.5rem;
 
-    border-radius: 0.5rem; 
+    border-radius: 0.5rem;
     background-color: transparent;
-    color: #6b7280;
+    color: var(--btn-icon-text);
     cursor: pointer;
 
     transition:
@@ -170,7 +171,7 @@
         transform 0.15s ease;
 
     &:hover {
-        color: #111827;
+        color: var(--btn-icon-text-hover);
         transform: scale(1.05);
     }
 
@@ -180,6 +181,6 @@
 
     &:focus-visible {
         outline: none;
-        box-shadow: 0 0 0 0.125rem rgba(59, 130, 246, 0.4);
+        box-shadow: 0 0 0 0.125rem var(--color-focus-ring);
     }
 }

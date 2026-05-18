@@ -1,5 +1,5 @@
 import React from "react";
-import './label.css'
+import './label.scss'
 
 function Label({clasName, ...props}) {
     return (

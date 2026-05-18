@@ -1,5 +1,6 @@
 @use '../../assets/styles/base/typography' as *;
 @use '../../assets/styles/variables.scss' as *;
+@use '../../assets/styles/theme.scss' as *;
 
 .import-export {
     display: flex;
@@ -40,7 +41,7 @@
     }
 
     &__subtitle {
-        color: $text-gray;
+        color: var(--color-muted);
         font-size: 0.875rem;
         margin-top: 0.25rem;
 
@@ -120,7 +121,7 @@
     margin-block: 0.5rem;
     width: 100%;
     min-height: 8rem;
-    border: 0.25rem dashed $border-input;
+    border: 0.25rem dashed var(--input-border);
     border-radius: $radius-md;
     padding: $space-sm;
 
@@ -138,7 +139,7 @@
     & .import-export__icon {
         width: 2.5rem;
         height: 2.5rem;
-        color: $gray-600;
+        color: var(--gray-600);
 
         @include respond(md) {
             width: 3rem;
@@ -180,7 +181,7 @@
 
 .import-export__description {
     font-size: 0.75rem;
-    color: $text-gray;
+    color: var(--color-muted);
 
     @include respond(md) {
         font-size: 0.8125rem;
@@ -225,7 +226,7 @@
     margin-top: $space-sm;
     padding: $space-sm;
     border-radius: 0.75rem;
-    background-color: rgba(231, 242, 254, 1);
+    background-color: var(--color-info-bg);
 
     @include respond(md) {
         gap: $space-sm;
@@ -242,7 +243,7 @@
     }
 
     &-title {
-        color: #083D8B;
+        color: var(--color-info-tex);
         font-size: 0.875rem;
         font-weight: 600;
 
@@ -260,7 +261,7 @@
         flex-direction: column;
         gap: $space-xs;
         padding-left: 1.25rem;
-        color: #093F9D;
+        color: var(--color-info-tex);
         font-size: 0.8125rem;
 
         @include respond(md) {
@@ -293,7 +294,7 @@
     aspect-ratio: 1 / 1;
     max-width: 16rem;
     margin-inline: auto;
-    background-color: $white;
+    background-color: var(--color-bg);
     overflow: hidden;
     transition:
         border-color 0.2s ease,
@@ -349,7 +350,7 @@
 }
 
 .qr-upload__description {
-    color: $text-gray;
+    color: var(--color-muted);
     font-size: 0.75rem;
 
     @include respond(md) {
@@ -401,7 +402,7 @@
 
 .import-export__export-card {
     box-shadow: none;
-    border: 1px solid $border-input;
+    border: 1px solid var(--input-border);
     border-radius: $radius-md;
 
     &-content {
@@ -445,7 +446,7 @@
 
 .import-export__label {
     font-size: 0.75rem;
-    color: $color-text;
+    color: var(--color-text);
     font-weight: 600;
     margin-bottom: 0;
 
@@ -520,7 +521,7 @@
         height: 1rem;
         margin: 0;
         cursor: pointer;
-        accent-color: #2563EB;
+        accent-color: var(--switch-bg-checked);
 
         @include respond(md) {
             width: 1.05rem;
@@ -533,7 +534,7 @@
         cursor: pointer;
         font-size: 0.8125rem;
         font-weight: 400;
-        color: $color-text;
+        color: var(--color-text);
 
         @include respond(md) {
             font-size: 0.875rem;
@@ -547,7 +548,7 @@
 
     &:hover {
         label {
-            color: #2563EB;
+            color: var(--switch-bg-checked);
         }
     }
 }
@@ -570,7 +571,7 @@
 
 .import-export__quick-export {
     margin-top: $space-sm;
-    background-color: #f9fafb;
+    background-color: var(--btn-outline-hover);
     border: 1px solid $border-input;
     border-radius: $radius-md;
     padding: 0.5rem;
@@ -644,7 +645,7 @@
 
 .import-export__card {
     border-radius: $radius-md;
-    border: 1px solid $border-input;
+    border: 1px solid var(--input-border);
     box-shadow: none;
     width: 100%;
 
@@ -680,7 +681,7 @@
     border: 1px solid rgba(15, 23, 42, 0.1);
     border-radius: 0.5rem;
     padding: 0.5rem;
-    background: #fff;
+    background: var(--color-bg);
 
     @include respond(md) {
         border-radius: 0.625rem;
@@ -755,7 +756,7 @@
 
 .import-export__history-date {
     font-size: 0.75rem;
-    color: $text-gray;
+    color: var(--color-muted);
 
     @include respond(md) {
         font-size: 0.8125rem;

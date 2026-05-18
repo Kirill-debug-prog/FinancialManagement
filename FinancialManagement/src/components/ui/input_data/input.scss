@@ -1,14 +1,15 @@
 @use '../../../assets/styles/variables.scss' as *;
 @use "sass:color";
+@use '../../../assets/styles/theme.scss' as *;
 
 .input-box {
     width: 100%;
     height: 2.25rem;
     padding: 0 0.75rem;
-    border: 1px solid $border-input;
+    border: 1px solid var(--input-border);
     border-radius: 0.5rem;
-    background-color: #fff;
-    color: #000;
+    background-color: var(--color-bg);
+    color: var(--color-text);
     font-family: 'Inter', sans-serif;
     font-size: 1rem;
     outline: none;
@@ -29,23 +30,23 @@
     }
 
     &:focus {
-        border-color: $color-selection-bg;
-        box-shadow: 0 0 0 0.1875rem $color-focus-outline;
+        border-color: var(--selection-bg);
+        box-shadow: 0 0 0 0.1875rem var(--focus-outline);
     }
 
     &:disabled {
         cursor: not-allowed;
         opacity: 0.5;
-        background-color: #f5f5f5;
+        background-color: var(--input-border);
     }
 
     &::placeholder {
-        color: #6B7280;
+        color: var(--input-placeholder);
     }
 
     &::selection {
-        background-color: $color-selection-bg;
-        color: #fff;
+        background-color: var(--selection-bg);
+        color: var(--input-bg);
     }
 }
 
@@ -53,7 +54,7 @@
     font-family: 'Inter', sans-serif;
     font-weight: 400;
     font-size: 1rem;
-    color: #000;
+    color: var(--color-text);
 
     @include respond-down(md) {
         font-size: 0.938rem;
@@ -68,7 +69,7 @@
     font-family: 'Inter', sans-serif;
     font-weight: 400;
     font-size: 1rem;
-    color: $text-gray;
+    color: var(--color-muted);
 
     @include respond-down(md) {
         font-size: 0.938rem;

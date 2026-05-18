@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../dialog_/dialog';
 import { CheckCircle, Sparkles, ArrowRight } from 'lucide-react';
-import './WelcomeModal.css';
+import './WelcomeModal.scss';
 
 export default function WelcomeModal({ userName, onClose }) {
     const [currentSlide, setCurrentSlide] = useState(0);

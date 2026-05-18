@@ -12,7 +12,7 @@ import Help from '../page/Help/Help'
 import { useEffect, useState, useRef } from 'react'
 import { useLocation } from "react-router-dom";
 import { Menu, X } from 'lucide-react'
-import './AppLayout.css'
+import './AppLayout.scss'
 
 export default function AppLayout({onLogout}) {
     const [sidebarOpen, setSidebarOpen] = useState(false)

@@ -1,11 +1,12 @@
 @use '../../../assets/styles/variables.scss' as *;
+@use '../../../assets/styles/theme.scss' as *;
 
 .accordion {
     width: 100%;
 }
 
 .accordion__item {
-    border-bottom: 1px solid $color-border;
+    border-bottom: 1px solid var(--color-border);
 
     &:last-child {
         border-bottom: none;
@@ -66,7 +67,7 @@
 .accordion__content-inner {
     padding-bottom: $space-md;
     font-size: 0.875rem;
-    color: $gray-600;
+    color: var(--gray-600);
     line-height: 1.5;
 
     @include respond(md) {

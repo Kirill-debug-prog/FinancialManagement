@@ -1,6 +1,6 @@
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
-import './dialog.css';
+import './dialog.scss';
 
 export function Dialog(props) {
     return <DialogPrimitive.Root {...props} />;

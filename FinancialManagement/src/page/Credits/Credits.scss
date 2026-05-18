@@ -1,5 +1,6 @@
 @use '../../assets/styles/base/typography' as *;
 @use '../../assets/styles/variables.scss' as *;
+@use '../../assets/styles/theme.scss' as *;
 @use "sass:color";
 
 .credits {
@@ -33,7 +34,7 @@
     }
 
     &__subtitle {
-        color: $text-gray;
+        color: var(--color-muted);
         @extend .text-xl;
         margin: 0;
 
@@ -52,8 +53,8 @@
         justify-content: center;
         gap: $space-sm;
         padding: $space-sm $space-md;
-        background-color: $blue;
-        color: $white;
+        background-color: var(--color-primary);
+        color: var(--btn-black-text);
         border-radius: $radius-sm;
         border: none;
         cursor: pointer;
@@ -61,7 +62,7 @@
         white-space: nowrap;
 
         &:hover {
-            background-color: color.adjust($blue, $lightness: -6%);
+            background-color: var(--color-primary);
         }
 
         @include respond-down(md) {
@@ -232,7 +233,7 @@
     box-shadow: none;
     border: 1px solid $color-border;
     border-radius: $radius-md;
-    padding: $space-md;
+    padding: var(--color-border);
 
     @include respond-down(md) {
         padding: $space-sm;
@@ -257,7 +258,7 @@
 
     &__person {
         margin-top: $space-xs;
-        color: $text-gray;
+        color: var(--color-muted);
         @extend .text-base;
 
         @include respond-down(sm) {
@@ -287,7 +288,7 @@
     }
 
     &__label {
-        color: $text-gray;
+        color: var(--color-muted);
 
         @include respond-down(sm) {
             font-size: 0.875rem;
@@ -310,7 +311,7 @@
         padding: $space-sm;
         border-radius: $radius-sm;
         background-color: #fef2f2;
-        color: $red;
+        color: var(--color-danger);
         margin-top: $space-sm;
 
         @include respond-down(sm) {
@@ -342,7 +343,7 @@
 
 .dialog-info-box {
     padding: 0.75rem;
-    background-color: #f5f5f5;
+    background-color: var(--transaction-error-bg);
     border-radius: 0.5rem;
 
     @include respond-down(sm) {
@@ -358,13 +359,13 @@
 .dialog-info-box__subtitle {
     margin: 0.25rem 0 0 0;
     font-size: 0.9rem;
-    color: #666;
+    color: var(--color-muted);
 }
 
 // Amount display box
 .dialog-amount-box {
     padding: 0.75rem;
-    background-color: #e8f4f8;
+    background-color: var(--gray-50);
     border-radius: 0.5rem;
 
     @include respond-down(sm) {
@@ -376,13 +377,13 @@
     margin: 0;
     font-size: 1.25rem;
     font-weight: bold;
-    color: #0066cc;
+    color: var(--indicator-active-bg);
 }
 
 // Warning box
 .dialog-warning-box {
     padding: 1rem;
-    background-color: #fff3cd;
+    background-color: var(--info-box-orange-bg);
     border-radius: 0.5rem;
     margin-bottom: 1rem;
 
@@ -395,14 +396,14 @@
 .dialog-warning-box__text {
     margin: 0;
     font-size: 0.9rem;
-    color: #856404;
+    color: var(--dialog-warning-text);
 }
 
 /* Стили для валидации в формах */
 
 .form-error {
     font-size: 0.75rem;
-    color: #ef4444;
+    color: var(--form-error-text);
     font-weight: 500;
     margin-top: 0.25rem;
     display: block;
@@ -414,12 +415,12 @@
 }
 
 .is-error {
-    border-color: #ef4444 !important;
-    background-color: #fef2f2 !important;
+    border-color: var(--form-error-text) !important;
+    background-color: var(--form-error-bg) !important;
 
     &:focus {
-        border-color: #ef4444 !important;
-        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+        border-color: var(--form-error-text) !important;
+        box-shadow: 0 0 0 3px var(--form-error-focus) !important;
     }
 }
 

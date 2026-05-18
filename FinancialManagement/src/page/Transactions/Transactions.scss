@@ -1,5 +1,6 @@
 @use '../../assets/styles/base/typography' as *;
 @use '../../assets/styles/variables.scss' as *;
+@use '../../assets/styles/theme.scss' as *;
 @use "sass:color";
 
 .transactions {
@@ -41,7 +42,7 @@
 
 .transactions__subtitle {
     margin: 0;
-    color: $text-gray;
+    color: var(--color-muted);
     @extend .text-xl;
 
     @include respond-down(md) {
@@ -115,7 +116,7 @@
     left: 0.5625rem;
     top: 50%;
     transform: translateY(-50%);
-    color: #9ca3af;
+    color: var(--input-placeholder);
 
     @include respond-down(sm) {
         width: 18px;
@@ -155,9 +156,9 @@
     flex: 1 1 1rem;
     min-width: 20rem;
     padding: 0.25rem;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--input-border);
     border-radius: 12px;
-    background: #fff;
+    background: var(--color-bg);
 
     @include respond-down(sm) {
         flex-direction: column;
@@ -192,7 +193,7 @@
     width: 100%;
     padding: 1.5rem;
     box-shadow: none;
-    border: 1px solid $border-input;
+    border: 1px solid var(--input-border);
     border-radius: $radius-lg;
 
     @include respond-down(md) {

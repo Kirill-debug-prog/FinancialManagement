@@ -1,10 +1,11 @@
 @use '../../../assets/styles/variables.scss' as *;
+@use '../../../assets/styles/theme.scss' as *;
 
 .finance-card {
-    border: 1px solid $border-input;
+    border: 1px solid var(--input-border);
     border-radius: 0.75rem;
     padding: 1rem;
-    background: #fff;
+    background: var(--color-bg);
 }
 
 .finance-card__header {
@@ -25,13 +26,13 @@
 
 .finance-card__label {
     font-size: 1rem;
-    color: $text-gray;
+    color: var(--color-muted);
     margin: 0;
     margin-block: 0.5rem;
 }
 
 .finance-card__positive {
-    color: $green;
+    color: var(--color-success);
     margin: 0 0 0.5rem 0;
 }
 
@@ -49,7 +50,7 @@
 .finance-card__progress-info {
     display: flex;
     justify-content: space-between;
-    color: $text-gray;
+    color: var(--color-muted);
     margin-bottom: 0.375rem;
 }
 
@@ -82,6 +83,6 @@
 .finance-card__actions button:disabled {
     opacity: 0.8;
     cursor: not-allowed;
-    color: #888;
+    color: var(--color-muted);
     pointer-events: none;
 }

@@ -1,5 +1,6 @@
 @use '../../assets/styles/base/typography' as *;
 @use '../../assets/styles/variables.scss' as *;
+@use '../../assets/styles/theme.scss' as *;
 
 .help {
     display: flex;
@@ -44,7 +45,7 @@
     }
 
     &__subtitle {
-        color: $gray-600;
+        color: var(--gray-600);
         font-size: 0.9375rem;
         font-weight: 500;
         margin: 0;
@@ -91,7 +92,7 @@
         position: absolute;
         top: 0.5rem;
         left: 0.5rem;
-        color: $text-gray;
+        color: var(--color-muted);
         width: 1rem;
         height: 1rem;
 
@@ -120,7 +121,7 @@
     &__icon {
         width: 2rem;
         height: 2rem;
-        color: $gray-600;
+        color: var(--gray-600);
         margin: 0 auto 0.5rem;
 
         @include respond(md) {
@@ -152,7 +153,7 @@
 
     &__subtitle {
         font-size: 0.875rem;
-        color: $gray-600;
+        color: var(--gray-600);
         margin: 0;
 
         @include respond(md) {
@@ -197,7 +198,7 @@
     }
 
     &:hover {
-        box-shadow: 0 0.625rem 1.25rem rgba(0, 0, 0, 0.08);
+        box-shadow: 0 0.625rem 1.25rem var(--color-shadow-soft);
     }
 
     &__header-content {
@@ -261,7 +262,7 @@
 
     &__description {
         margin-top: 0.25rem;
-        color: $text-gray;
+        color: var(--color-muted);
         font-size: 0.75rem;
         font-weight: 400;
 
@@ -361,7 +362,7 @@
     &__answer {
         padding-left: 1.5rem;
         font-size: 0.8125rem;
-        color: $gray-600;
+        color: var(--gray-600);
         line-height: 1.5;
 
         @include respond(md) {
@@ -393,7 +394,7 @@
         display: flex;
         align-items: center;
         gap: $space-sm;
-        color: #111827;
+        color: var(--color-text);
         font-size: 1rem;
         font-weight: 600;
         margin: 0;
@@ -427,7 +428,7 @@
 
     &__description {
         margin-top: 0.25rem;
-        color: $text-gray;
+        color: var(--color-muted);
         font-size: 0.75rem;
         font-weight: 400;
 
@@ -521,7 +522,7 @@
     &__answer {
         padding-left: 1.5rem;
         font-size: 0.75rem;
-        color: $gray-600;
+        color: var(--gray-600);
         line-height: 1.5;
 
         @include respond(md) {
@@ -546,8 +547,8 @@
 }
 
 .tips-header {
-    background: linear-gradient(135deg, #eff6ff, #eef2ff);
-    border: 1px solid #bfdbfe;
+    background: var(--tips-header-bg);
+    border: 1px solid var(--tips-header-border);
     padding: 0.75rem 1rem;
     border-radius: 0.75rem;
     margin-bottom: 1rem;
@@ -816,8 +817,8 @@
 
 .help-contact {
     margin-top: 1.5rem;
-    background: linear-gradient(135deg, #eff6ff, #eef2ff);
-    border: 1px solid #bfdbfe;
+    background: var(--tips-header-bg);
+    border: 1px solid var(--tips-header-border);
     border-radius: 0.75rem;
     padding: 0.75rem 1rem;
 

@@ -1,6 +1,8 @@
+@use '../../../assets/styles/theme.scss' as *;
+
 .separator {
     flex-shrink: 0;
-    background-color: #e5e7eb;
+    background-color: var(--color-border);
 
     &[data-orientation="horizontal"] {
         width: 100%;

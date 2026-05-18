@@ -1,12 +1,13 @@
 @use '../../../assets/styles/variables.scss' as *;
 @use '../../../assets/styles/base/typography' as *;
+@use '../../../assets/styles/theme.scss' as *;
 
 .sidebar {
     width: 256px;
     height: 100vh;
     font-family: 'Inter', sans-serif;
-    background-color: #fff;
-    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: var(--color-bg);
+    border-right: 1px solid var(--color-border);
     display: flex;
     flex-direction: column;
     overflow-y: auto;
@@ -31,11 +32,11 @@
 
 .sidebar__header {
     padding-bottom: $space-sm;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid var(--color-shadow-soft);
 }
 
 .sidebar__title {
-    color: $color-text;
+    color: var(--color-text);
     text-align: center;
     margin: 0;
     font-size: 1.125rem;
@@ -72,7 +73,7 @@
     padding: $space-sm $space-md;
     font-size: 0.875rem;
     font-weight: 500;
-    color: $text-gray;
+    color: var(--color-muted);
     cursor: pointer;
     text-decoration: none;
     border-radius: $radius-sm;
@@ -83,8 +84,8 @@
 
     &:hover,
     &--active {
-        background-color: rgba(231, 242, 254, 1);
-        color: rgba(17, 90, 219, 1);
+        background-color: var(--color-info-bg);
+        color: var(--color-info-text);
         text-decoration: none;
     }
 
@@ -96,13 +97,13 @@
 }
 
 .sidebar__menu li:nth-child(8) .sidebar__item {
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-top: 1px solid var(--color-shadow-soft);
     margin-top: $space-sm;
     padding-top: $space-md;
 }
 
 .sidebar__footer {
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-top: 1px solid var(--color-shadow-soft);
     padding-top: $space-md;
 }
 
@@ -115,7 +116,7 @@
     padding: $space-sm $space-md;
     font-size: 0.875rem;
     font-weight: 500;
-    color: rgba(213, 95, 90, 1);
+    color: var(--color-danger);
     background: none;
     border: none;
     cursor: pointer;
@@ -129,7 +130,7 @@
     }
 
     &:hover {
-        background-color: rgba(254, 231, 230, 1);
+        background-color: var(--color-error-bg);
     }
 }
 
@@ -147,9 +148,9 @@
         width: 100%;
         max-width: 100%;
         height: calc(100vh - 60px);
-        background-color: #fff;
+        background-color: var(--color-bg);
         border-right: none;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        border-bottom: 1px solid var(--color-shadow-soft);
         z-index: 50;
         transform: translateX(-100%);
         transition: transform 0.3s ease-in-out;

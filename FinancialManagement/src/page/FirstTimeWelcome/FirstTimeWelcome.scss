@@ -1,12 +1,13 @@
 @use '../../assets/styles/base/typography' as *;
 @use '../../assets/styles/variables.scss' as *;
+@use '../../assets/styles/theme.scss' as *;
 @use "sass:color";
 
 :root {
     --main-font-family: 'Ubuntu', sans-serif;
     --main-font-size: 1rem;
-    --color-block: white;
-    --text-grey: #666363;
+    --color-block: var(--color-surface);
+    --text-grey: var(--color-muted);
 }
 
 .main-welcome {
@@ -17,7 +18,7 @@
     height: auto;
     width: 100%;
     min-height: 100vh;
-    background: linear-gradient(#D0EEFF, #FFF2E8);
+    background: linear-gradient(180deg, var(--welcome-gradient-start), var(--welcome-gradient-end));
     padding: $space-sm;
 }
 
@@ -46,14 +47,14 @@
     height: 3rem;
     border-radius: 0.75rem;
     margin-bottom: 1rem;
-    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0.25rem 0.5rem var(--color-shadow-soft);
 
     @include respond(md) {
         width: 4rem;
         height: 4rem;
         border-radius: 0.875rem;
         margin-bottom: 1.25rem;
-        box-shadow: 0 0.625rem 0.9375rem rgba(0, 0, 0, 0.1);
+        box-shadow: 0 0.625rem 0.9375rem var(--color-shadow-soft);
     }
 
     @include respond(lg) {
@@ -67,7 +68,7 @@
 .welcome__icon {
     width: 1.5rem;
     height: 1.5rem;
-    color: white;
+    color: white; 
 
     @include respond(md) {
         width: 2rem;
@@ -81,7 +82,7 @@
 }
 
 .welcome__title {
-    color: #111827;
+    color: var(--color-text);
     margin-bottom: 0.75rem;
     font-size: 1.25rem;
     font-weight: 600;
@@ -163,7 +164,7 @@
     height: 3.5rem;
     border-radius: 0.75rem;
     margin-bottom: 1rem;
-    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0.25rem 0.5rem var(--color-shadow-soft);
 
     @include respond(md) {
         width: 4rem;
@@ -177,13 +178,12 @@
         height: 5rem;
         border-radius: 1rem;
         margin-bottom: 1.5rem;
-        box-shadow: 0 0.625rem 0.9375rem rgba(0, 0, 0, 0.1),
-                    0 0.25rem 0.375rem rgba(0, 0, 0, 0.05);
+        box-shadow: 0 0.625rem 0.9375rem var(--color-shadow-soft);
     }
 }
 
 .welcome__feature-title {
-    color: #111827;
+    color: var(--color-text);
     margin-bottom: 0.5rem;
     text-align: center;
     font-size: 1rem;
@@ -238,7 +238,7 @@
     width: 0.4rem;
     height: 0.4rem;
     border-radius: 9999px;
-    background-color: #D1D5DB;
+    background-color: var(--indicator-bg);
     cursor: pointer;
     transition: all 0.3s ease;
 
@@ -250,7 +250,7 @@
 
 .welcome__indicator--active {
     width: 1.5rem;
-    background-color: #2563EB;
+    background-color: var(--indicator-active-bg);
 
     @include respond(md) {
         width: 2rem;
@@ -308,6 +308,7 @@
     border-radius: 1rem;
     font-size: 0.875rem;
     font-family: var(--main-font-family);
+    box-shadow: 0 0.125rem 0.5rem var(--color-shadow-soft);
 
     @include respond(md) {
         flex: 1 1 13rem;
@@ -344,18 +345,18 @@
 }
 
 .color-green {
-    background-color: #C2FDCB;
-    color: #1B9732;
+    background-color: var(--info-box-green-bg);
+    color: var(--info-box-green-text);
 }
 
 .color-blue {
-    background-color: #DEEAFC;
-    color: #2C5CF2;
+    background-color: var(--welcome-card-blue-bg);
+    color: var(--welcome-card-blue-text);
 }
 
 .color-purple {
-    background-color: #F1E8FD;
-    color: #8B21F1;
+    background-color: var(--welcome-card-purple-bg);
+    color: var(--welcome-card-purple-text);
 }
 
 .block-title,

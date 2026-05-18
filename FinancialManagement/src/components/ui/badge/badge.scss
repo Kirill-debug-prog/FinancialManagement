@@ -1,5 +1,6 @@
 @use '../../../assets/styles/variables.scss' as *;
 @use "sass:color";
+@use '../../../assets/styles/theme.scss' as *;
 
 .badge {
     display: inline-flex;
@@ -25,7 +26,7 @@
 
     &:focus-visible {
         outline: none;
-        box-shadow: 0 0 0 0.1875rem rgba(59, 130, 246, 0.4);
+        box-shadow: 0 0 0 0.1875rem var(--color-focus-ring);
     }
 
     /* Variants */
@@ -68,10 +69,6 @@
         background-color: transparent;
         border-color: $color-border;
         color: $text-gray;
-
-        &:hover {
-            background-color: $gray-50;
-        }
     }
 
     /* Адаптивные размеры для планшетов и десктопов */

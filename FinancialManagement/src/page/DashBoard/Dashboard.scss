@@ -1,5 +1,6 @@
 @use '../../assets/styles/base/typography' as *;
 @use '../../assets/styles/variables.scss' as *;
+@use '../../assets/styles/theme.scss' as *;
 @use "sass:color";
 
 .dashboard {
@@ -33,7 +34,7 @@
     }
 
     &__subtitle {
-        color: $text-gray;
+        color: var(--color-muted);
         @extend .text-xl;
         margin: 0;
         font-size: 1rem;
@@ -53,8 +54,8 @@
         justify-content: center;
         gap: $space-sm;
         padding: 0.625rem 0.75rem;
-        background-color: $blue;
-        color: $white;
+        background-color: var(--color-primary);
+        color: var(--btn-black-text);
         border-radius: $radius-sm;
         border: none;
         cursor: pointer;
@@ -64,7 +65,7 @@
         width: 100%;
 
         &:hover {
-            background-color: color.adjust($blue, $lightness: -6%);
+            background-color: var(--color-primary);
         }
 
         @include respond(md) {
@@ -109,7 +110,7 @@
 }
 
 .card {
-    background-color: $white;
+    background-color: var(--color-bg);
     padding: $space-xs;
     border-radius: $radius-sm;
     box-shadow: $shadow-sm;
@@ -133,7 +134,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        color: $text-gray;
+        color: var(--color-muted);
         margin-bottom: 0.75rem;
 
         @include respond(md) {
@@ -163,36 +164,36 @@
         }
 
         &--blue {
-            color: $blue;
+            color: var(--color-primary);
         }
 
         &--green {
-            color: $green;
+            color: var(--color-success);
         }
 
         &--red {
-            color: $red;
+            color: var(--color-danger);
         }
     }
 
     &__hint {
         margin-top: $space-xs;
-        color: $text-gray;
+        color: var(--color-muted);
         @extend .text-sm;
     }
 }
 
 .icon {
     &--blue {
-        color: $blue;
+        color: var(--color-primary);
     }
 
     &--green {
-        color: $green;
+        color: var(--color-success);
     }
 
     &--red {
-        color: $red;
+        color: var(--color-danger);
     }
 }
 
@@ -208,7 +209,7 @@
     align-items: center;
     gap: $space-sm;
     padding: 0.5rem;
-    background-color: $gray-50;
+    background-color: var(--gray-50);
     border-radius: $radius-lg;
 
     @include respond(md) {
@@ -226,7 +227,7 @@
 
     &__category {
         font-size: 0.875rem;
-        color: $text-gray;
+        color: var(--color-muted);
 
         @include respond(md) {
             font-size: $font-size-base;
@@ -246,7 +247,7 @@
 
         span {
             font-size: 0.875rem;
-            color: $text-gray;
+            color: var(--color-muted);
 
             @include respond(md) {
                 font-size: $font-size-base;

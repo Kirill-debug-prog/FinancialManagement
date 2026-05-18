@@ -1,4 +1,6 @@
 /* ================== Desktop Layout ================== */
+@use '../assets/styles/theme.scss' as *;
+
 .window {
     display: grid;
     grid-template-columns: 256px 1fr;
@@ -10,6 +12,7 @@
     overflow: auto;
     display: flex;
     flex-direction: column;
+    background-color: var(--color-bg);
 }
 
 .mobile-header {
@@ -45,8 +48,8 @@
         align-items: center;
         justify-content: space-between;
         padding: 1rem;
-        background-color: #ffffff;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        background-color: var(--color-bg);
+        border-bottom: 1px solid var(--color-shadow-soft);
         height: 60px;
         z-index: 40;
     }
@@ -67,7 +70,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #000;
+        color: var(--btn-black-bg);
         transition: color 0.2s;
     }
 
@@ -83,7 +86,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: rgba(0, 0, 0, 0.5);
+        background-color: var(--color-overlay);
         z-index: 39;
         animation: fadeIn 0.2s ease-in-out;
     }

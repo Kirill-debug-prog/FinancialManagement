@@ -1,3 +1,5 @@
+@use '../../../assets/styles/theme.scss' as *;
+
 .switch {
     position: relative;
     display: inline-flex;
@@ -15,15 +17,15 @@
     transition: background-color 0.2s ease, box-shadow 0.2s ease;
 
     &[data-state="unchecked"] {
-        background-color: var(--switch-bg, #e5e7eb);
+        background-color: var(--switch-bg);
     }
 
     &[data-state="checked"] {
-        background-color: var(--switch-bg-checked, #2563eb);
+        background-color: var(--switch-bg-checked);
     }
 
     &:focus-visible {
-        box-shadow: 0 0 0 0.1875rem rgba(37, 99, 235, 0.4);
+        box-shadow: 0 0 0 0.1875rem var(--switch-focus);
     }
 
     &:disabled {
@@ -38,7 +40,7 @@
     height: 1rem;
     border-radius: 50%;
 
-    background-color: var(--switch-thumb, #ffffff);
+    background-color: var(--switch-thumb);
     transition: transform 0.2s ease;
 
     &[data-state="unchecked"] {
@@ -47,17 +49,5 @@
 
     &[data-state="checked"] {
         transform: translateX(0.875rem);
-    }
-}
-
-@media (prefers-color-scheme: dark) {
-    .switch {
-        &[data-state="unchecked"] {
-            background-color: #374151;
-        }
-    }
-
-    .switch__thumb {
-        background-color: #f9fafb;
     }
 }
