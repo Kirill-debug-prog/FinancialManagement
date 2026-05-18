@@ -35,7 +35,7 @@ export default function Setting() {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
-    const [phone, setPhone] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
 
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
@@ -45,25 +45,25 @@ export default function Setting() {
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    useEffect(() => {
-        async function loadUser() {
+    async function loadUser() {
             try {
                 const user = await getCurrentUser();
                 setFirstName(user.firstName || '');
                 setLastName(user.lastName || '');
-                setPhone(user.phoneNumber || '');
+                setPhoneNumber(user.phoneNumber || '');
                 setEmail(user.email || '');
             } catch {
                 toast.error('Не удалось загрузить пользователя');
             }
         }
 
+    useEffect(() => {
         loadUser();
     }, []);
 
     const handleSaveProfile = async () => {
         try {
-            await changeProfile(firstName, lastName, phone);
+            await changeProfile(firstName, lastName, phoneNumber);
             toast.success('Профиль обновлён');
         } catch (err) {
             toast.error(`Ошибка: ${err.message}`);
@@ -267,8 +267,8 @@ export default function Setting() {
                                         id="phone"
                                         type="tel"
                                         placeholder="+7 (999) 123-45-67"
-                                        value={phone}
-                                        onChange={(e) => setPhone(e.target.value)}
+                                        value={phoneNumber}
+                                        onChange={(e) => setPhoneNumber(e.target.value)}
                                     />
                                 </div>
                             </div>
