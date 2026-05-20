@@ -1,3 +1,4 @@
+using MediatR;
 using Core.Domain.Common;
 using Hangfire;
 using Reports.Domain.Entities;
@@ -5,7 +6,7 @@ using Reports.Domain.Interfaces;
 
 namespace Reports.Application.Reports.Commands.CreateReport;
 
-public class CreateReportCommandHandler
+public class CreateReportCommandHandler : IRequestHandler<CreateReportCommand, Result<CreateReportResponse>>
 {
   private readonly IReportJobRepository _jobRepository;
   private readonly IBackgroundJobClient _backgroundJobClient;

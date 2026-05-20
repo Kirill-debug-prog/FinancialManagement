@@ -1,3 +1,5 @@
+using MediatR;
+using Core.Domain.Common;
 namespace Finance.Application.Debts.Commands.CreateDebt;
 
 public record CreateDebtCommand(
@@ -5,4 +7,4 @@ public record CreateDebtCommand(
   Guid CurrencyId,
   string CreditorName,
   decimal TotalAmount,
-  DateOnly? DueDate = null);
+  DateOnly? DueDate = null) : IRequest<Result<Guid>>;

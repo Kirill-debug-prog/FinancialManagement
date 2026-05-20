@@ -1,9 +1,10 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.RecurringTransactions.Commands.DeactivateRecurringTransaction;
 
-public class DeactivateRecurringTransactionCommandHandler
+public class DeactivateRecurringTransactionCommandHandler : IRequestHandler<DeactivateRecurringTransactionCommand, Result<bool>>
 {
   private readonly IRecurringTransactionRepository _recurringTransactionRepository;
 
@@ -12,7 +13,7 @@ public class DeactivateRecurringTransactionCommandHandler
     _recurringTransactionRepository = recurringTransactionRepository;
   }
 
-  public async Task<Result<bool>> Handle(DeactivateRecurringTransactionCommand command)
+  public async Task<Result<bool>> Handle(DeactivateRecurringTransactionCommand command, CancellationToken cancellationToken)
   {
     var recurringTransaction = await _recurringTransactionRepository.GetByIdAsync(command.Id);
     if (recurringTransaction is null)

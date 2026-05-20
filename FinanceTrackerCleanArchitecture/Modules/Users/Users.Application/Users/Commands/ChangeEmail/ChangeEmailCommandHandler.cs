@@ -1,3 +1,4 @@
+using MediatR;
 using Users.Application.Interfaces;
 using Core.Domain.Common;
 using Users.Domain.Interfaces;
@@ -5,7 +6,7 @@ using Users.Domain.ValueObject;
 
 namespace Users.Application.Users.Commands.ChangeEmail;
 
-public class ChangeEmailCommandHandler
+public class ChangeEmailCommandHandler : IRequestHandler<ChangeEmailCommand, Result<bool>>
 {
   private readonly IUserRepository _userRepository;
 
@@ -14,7 +15,7 @@ public class ChangeEmailCommandHandler
     _userRepository = userRepository;
   }
 
-  public async Task<Result<bool>> Handle(ChangeEmailCommand command)
+  public async Task<Result<bool>> Handle(ChangeEmailCommand command, CancellationToken cancellationToken)
   {
     var user = await _userRepository.GetByIdAsync(command.Id);
     if (user is null)

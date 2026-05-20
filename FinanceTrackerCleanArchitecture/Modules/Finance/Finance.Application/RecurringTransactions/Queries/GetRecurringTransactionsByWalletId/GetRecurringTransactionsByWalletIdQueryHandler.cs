@@ -1,9 +1,10 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.RecurringTransactions.Queries.GetRecurringTransactionsByWalletId;
 
-public class GetRecurringTransactionsByWalletIdQueryHandler
+public class GetRecurringTransactionsByWalletIdQueryHandler : IRequestHandler<GetRecurringTransactionsByWalletIdQuery, Result<IEnumerable<GetRecurringTransactionsByWalletIdResponse>>>
 {
   private readonly IRecurringTransactionRepository _recurringTransactionRepository;
 
@@ -12,7 +13,7 @@ public class GetRecurringTransactionsByWalletIdQueryHandler
     _recurringTransactionRepository = recurringTransactionRepository;
   }
 
-  public async Task<Result<IEnumerable<GetRecurringTransactionsByWalletIdResponse>>> Handle(GetRecurringTransactionsByWalletIdQuery query)
+  public async Task<Result<IEnumerable<GetRecurringTransactionsByWalletIdResponse>>> Handle(GetRecurringTransactionsByWalletIdQuery query, CancellationToken cancellationToken)
   {
     var recurringTransactions = await _recurringTransactionRepository.GetByWalletIdAsync(query.WalletId);
 

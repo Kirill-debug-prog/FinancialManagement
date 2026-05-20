@@ -1,9 +1,10 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Debts.Commands.MakePayment;
 
-public class MakeDebtPaymentCommandHandler
+public class MakeDebtPaymentCommandHandler : IRequestHandler<MakeDebtPaymentCommand, Result<bool>>
 {
   private readonly IDebtRepository _debtRepository;
 
@@ -12,7 +13,7 @@ public class MakeDebtPaymentCommandHandler
     _debtRepository = debtRepository;
   }
 
-  public async Task<Result<bool>> Handle(MakeDebtPaymentCommand command)
+  public async Task<Result<bool>> Handle(MakeDebtPaymentCommand command, CancellationToken cancellationToken)
   {
     var debt = await _debtRepository.GetByIdAsync(command.DebtId);
     if (debt is null)

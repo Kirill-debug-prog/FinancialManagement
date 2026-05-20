@@ -1,3 +1,4 @@
+using MediatR;
 using Users.Application.Users.Commands.ChangeEmail;
 using Users.Application.Users.Commands.ChangePassword;
 using Users.Application.Users.Commands.ChangeProfile;
@@ -15,37 +16,19 @@ namespace Core.API.Controllers;
 [Route("api/[controller]")]
 public class UserController : ControllerBase
 {
-  private readonly RegisterUserCommandHandler _registerHandler;
-  private readonly LoginUserCommandHandler _loginHandler;
-  private readonly DeleteUserCommandHandler _deleteUserHandler;
-  private readonly ChangeEmailCommandHandler _changeEmailHandler;
-  private readonly ChangePasswordCommandHandler _changePasswordHandler;
-  private readonly ChangeProfileCommandHandler _changeProfileHandler;
-  private readonly GetUserByIdQueryHandler _getUserByIdHandler;
 
-  public UserController(
-    RegisterUserCommandHandler registerHandler,
-    LoginUserCommandHandler loginHandler,
-    DeleteUserCommandHandler deleteUserHandler,
-    ChangeEmailCommandHandler changeEmailHandler,
-    ChangePasswordCommandHandler changePasswordHandler,
-    ChangeProfileCommandHandler changeProfileHandler,
-    GetUserByIdQueryHandler getUserByIdQueryHandler)
+  private readonly IMediator _mediator;
+
+  public UserController(IMediator mediator)
   {
-    _registerHandler = registerHandler;
-    _loginHandler = loginHandler;
-    _deleteUserHandler = deleteUserHandler;
-    _changeEmailHandler = changeEmailHandler;
-    _changePasswordHandler = changePasswordHandler;
-    _changeProfileHandler = changeProfileHandler;
-    _getUserByIdHandler = getUserByIdQueryHandler;
+    _mediator = mediator;
   }
 
   [AllowAnonymous]
   [HttpPost("register")]
   public async Task<IActionResult> Register([FromBody] RegisterUserCommand command)
   {
-    var result = await _registerHandler.Handle(command);
+    var result = await _mediator.Send(command);
     if (result.IsFailure)
       return BadRequest(result.Error);
     return Ok(result.Value);
@@ -55,7 +38,7 @@ public class UserController : ControllerBase
   [HttpPost("login")]
   public async Task<IActionResult> Login([FromBody] LoginUserCommand command)
   {
-    var result = await _loginHandler.Handle(command);
+    var result = await _mediator.Send(command);
     if (result.IsFailure)
       return BadRequest(result.Error);
     return Ok(result.Value);
@@ -64,7 +47,7 @@ public class UserController : ControllerBase
   [HttpGet("{id}")]
   public async Task<IActionResult> GetById(Guid id)
   {
-    var result = await _getUserByIdHandler.Handle(new GetUserByIdQuery(id));
+    var result = await _mediator.Send(new GetUserByIdQuery(id));
     if (result.IsFailure)
       return BadRequest(result.Error);
     return Ok(result.Value);
@@ -73,7 +56,7 @@ public class UserController : ControllerBase
   [HttpPut("{id}/change-email")]
   public async Task<IActionResult> ChangeEmail(Guid id, [FromBody] string newEmail)
   {
-    var result = await _changeEmailHandler.Handle(new ChangeEmailCommand(id, newEmail));
+    var result = await _mediator.Send(new ChangeEmailCommand(id, newEmail));
     if (result.IsFailure)
       return BadRequest(result.Error);
     return NoContent();
@@ -82,7 +65,7 @@ public class UserController : ControllerBase
   [HttpPut("{id}/change-password")]
   public async Task<IActionResult> ChangePassword(Guid id, [FromBody] ChangePasswordRequest request)
   {
-    var result = await _changePasswordHandler.Handle(new ChangePasswordCommand(id, request.CurrentPassword, request.NewPassword));
+    var result = await _mediator.Send(new ChangePasswordCommand(id, request.CurrentPassword, request.NewPassword));
     if (result.IsFailure)
       return BadRequest(result.Error);
     return NoContent();
@@ -91,7 +74,7 @@ public class UserController : ControllerBase
   [HttpPut("{id}/change-profile")]
   public async Task<IActionResult> ChangeProfile(Guid id, [FromBody] ChangeProfileRequest request)
   {
-    var result = await _changeProfileHandler.Handle(new ChangeProfileCommand(id, request.FirstName, request.LastName, request.PhoneNumber));
+    var result = await _mediator.Send(new ChangeProfileCommand(id, request.FirstName, request.LastName, request.PhoneNumber));
     if (result.IsFailure)
       return BadRequest(result.Error);
     return NoContent();
@@ -100,7 +83,7 @@ public class UserController : ControllerBase
   [HttpDelete("{id}")]
   public async Task<IActionResult> Delete(Guid id)
   {
-    var result = await _deleteUserHandler.Handle(new DeleteUserCommand(id));
+    var result = await _mediator.Send(new DeleteUserCommand(id));
     if (result.IsFailure)
       return BadRequest(result.Error);
     return NoContent();

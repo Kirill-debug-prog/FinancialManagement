@@ -1,9 +1,10 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Units.Commands.DeleteUnit;
 
-public class DeleteUnitCommandHandler
+public class DeleteUnitCommandHandler : IRequestHandler<DeleteUnitCommand, Result<bool>>
 {
   private readonly IUnitRepository _unitRepository;
 
@@ -12,7 +13,7 @@ public class DeleteUnitCommandHandler
     _unitRepository = unitRepository;
   }
 
-  public async Task<Result<bool>> Handle(DeleteUnitCommand command)
+  public async Task<Result<bool>> Handle(DeleteUnitCommand command, CancellationToken cancellationToken)
   {
     var unit = await _unitRepository.GetByIdAsync(command.Id);
     if (unit is null)

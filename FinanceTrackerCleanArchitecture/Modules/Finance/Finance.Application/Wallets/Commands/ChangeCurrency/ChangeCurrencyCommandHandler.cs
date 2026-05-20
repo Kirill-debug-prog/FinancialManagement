@@ -1,9 +1,10 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Wallets.Commands.ChangeCurrency;
 
-public class ChangeCurrencyCommandHandler
+public class ChangeCurrencyCommandHandler : IRequestHandler<ChangeCurrencyCommand, Result<bool>>
 {
   private readonly IWalletRepository _walletRepository;
   private readonly ICurrencyRepository _currencyRepository;
@@ -14,7 +15,7 @@ public class ChangeCurrencyCommandHandler
     _currencyRepository = currencyRepository;
   }
 
-  public async Task<Result<bool>> Handle(ChangeCurrencyCommand command)
+  public async Task<Result<bool>> Handle(ChangeCurrencyCommand command, CancellationToken cancellationToken)
   {
     var wallet = await _walletRepository.GetWalletByIdAsync(command.Id);
     if (wallet is null)

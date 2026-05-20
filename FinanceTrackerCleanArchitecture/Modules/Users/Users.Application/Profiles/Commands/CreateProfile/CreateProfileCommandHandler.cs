@@ -1,10 +1,11 @@
+using MediatR;
 using Users.Domain.Entities;
 using Users.Domain.Interfaces;
 using Core.Domain.Common;
 
 namespace Users.Application.Profiles.Commands.CreateProfile;
 
-public class CreateProfileCommandHandler
+public class CreateProfileCommandHandler : IRequestHandler<CreateProfileCommand, Result<Guid>>
 {
   private readonly IProfileRepository _profileRepository;
   private readonly IUserRepository _userRepository;
@@ -15,7 +16,7 @@ public class CreateProfileCommandHandler
     _userRepository = userRepository;
   }
 
-  public async Task<Result<Guid>> Handle(CreateProfileCommand command)
+  public async Task<Result<Guid>> Handle(CreateProfileCommand command, CancellationToken cancellationToken)
   {
     var existUser = await _userRepository.GetByIdAsync(command.UserId);
     if (existUser == null)

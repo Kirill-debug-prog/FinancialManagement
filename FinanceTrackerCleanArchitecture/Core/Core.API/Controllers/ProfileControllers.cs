@@ -1,3 +1,4 @@
+using MediatR;
 using Users.Application.Profiles.Commands.CreateProfile;
 using Users.Application.Profiles.Commands.DeleteProfile;
 using Users.Application.Profiles.Commands.RenameProfile;
@@ -14,33 +15,18 @@ namespace Core.API.Controllers;
 [Route("api/[controller]")]
 public class ProfileController : ControllerBase
 {
-  private readonly CreateProfileCommandHandler _createProfileHandler;
-  private readonly DeleteProfileCommandHandler _deleteProfileHandler;
-  private readonly RenameProfileCommandHandler _renameProfileHandler;
-  private readonly ToggleProfileActiveCommandHandler _toggleProfileActiveHandler;
-  private readonly GetProfilesByUserIdQueryHandler _getProfilesByUserIdHandler;
-  private readonly GetProfileByIdQueryHandler _getProfileByIdHandler;
 
-  public ProfileController(
-    CreateProfileCommandHandler createProfileCommandHandler,
-    DeleteProfileCommandHandler deleteProfileCommandHandler,
-    RenameProfileCommandHandler renameProfileCommandHandler,
-    ToggleProfileActiveCommandHandler toggleProfileActiveCommandHandler,
-    GetProfilesByUserIdQueryHandler getProfilesByUserIdQueryHandler,
-    GetProfileByIdQueryHandler getProfileByIdQueryHandler)
+  private readonly IMediator _mediator;
+
+  public ProfileController(IMediator mediator)
   {
-    _createProfileHandler = createProfileCommandHandler;
-    _deleteProfileHandler = deleteProfileCommandHandler;
-    _renameProfileHandler = renameProfileCommandHandler;
-    _toggleProfileActiveHandler = toggleProfileActiveCommandHandler;
-    _getProfilesByUserIdHandler = getProfilesByUserIdQueryHandler;
-    _getProfileByIdHandler = getProfileByIdQueryHandler;
+    _mediator = mediator;
   }
 
   [HttpPost]
   public async Task<IActionResult> Create([FromBody] CreateProfileCommand command)
   {
-    var result = await _createProfileHandler.Handle(command);
+    var result = await _mediator.Send(command);
     if (result.IsFailure)
       return BadRequest(result.Error);
     return Ok(result.Value);
@@ -49,7 +35,7 @@ public class ProfileController : ControllerBase
   [HttpGet]
   public async Task<IActionResult> GetByUserId([FromQuery] GetProfilesByUserIdQuery query)
   {
-    var result = await _getProfilesByUserIdHandler.Handle(query);
+    var result = await _mediator.Send(query);
     if (result.IsFailure)
       return BadRequest(result.Error);
     return Ok(result.Value);
@@ -58,7 +44,7 @@ public class ProfileController : ControllerBase
   [HttpGet("{id}")]
   public async Task<IActionResult> GetById(Guid id)
   {
-    var result = await _getProfileByIdHandler.Handle(new GetProfileByIdQuery(id));
+    var result = await _mediator.Send(new GetProfileByIdQuery(id));
     if (result.IsFailure)
       return BadRequest(result.Error);
     return Ok(result.Value);
@@ -67,7 +53,7 @@ public class ProfileController : ControllerBase
   [HttpPut("{id}/rename")]
   public async Task<IActionResult> Rename(Guid id, [FromBody] string newName)
   {
-    var result = await _renameProfileHandler.Handle(new RenameProfileCommand(id, newName));
+    var result = await _mediator.Send(new RenameProfileCommand(id, newName));
     if (result.IsFailure)
       return BadRequest(result.Error);
     return NoContent();
@@ -76,7 +62,7 @@ public class ProfileController : ControllerBase
   [HttpPatch("{id}/toggle-active")]
   public async Task<IActionResult> ToggleActive(Guid id)
   {
-    var result = await _toggleProfileActiveHandler.Handle(new ToggleProfileActiveCommand(id));
+    var result = await _mediator.Send(new ToggleProfileActiveCommand(id));
     if (result.IsFailure)
       return BadRequest(result.Error);
     return NoContent();
@@ -85,7 +71,7 @@ public class ProfileController : ControllerBase
   [HttpDelete("{id}")]
   public async Task<IActionResult> Delete(Guid id)
   {
-    var result = await _deleteProfileHandler.Handle(new DeleteProfileCommand(id));
+    var result = await _mediator.Send(new DeleteProfileCommand(id));
     if (result.IsFailure)
       return BadRequest(result.Error);
     return NoContent();

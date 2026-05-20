@@ -1,9 +1,10 @@
+using MediatR;
 using Core.Domain.Common;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Analytics.Queries.GetCategoryAnalytics;
 
-public class GetCategoryAnalyticsQueryHandler
+public class GetCategoryAnalyticsQueryHandler : IRequestHandler<GetCategoryAnalyticsQuery, Result<IEnumerable<GetCategoryAnalyticsResponse>>>
 {
     private readonly ITransactionRepository _transactionRepository;
 
@@ -12,7 +13,7 @@ public class GetCategoryAnalyticsQueryHandler
         _transactionRepository = transactionRepository;
     }
 
-    public async Task<Result<IEnumerable<GetCategoryAnalyticsResponse>>> Handle(GetCategoryAnalyticsQuery query)
+    public async Task<Result<IEnumerable<GetCategoryAnalyticsResponse>>> Handle(GetCategoryAnalyticsQuery query, CancellationToken cancellationToken)
     {
         var totals = await _transactionRepository.GetCategoryTotalsAsync(
             query.ProfileId, query.Type, query.DateFrom, query.DateTo);

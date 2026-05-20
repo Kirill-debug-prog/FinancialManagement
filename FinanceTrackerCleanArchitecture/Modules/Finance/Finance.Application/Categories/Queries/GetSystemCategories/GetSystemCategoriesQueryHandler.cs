@@ -1,9 +1,10 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Categories.Queries.GetSystemCategories;
 
-public class GetSystemCategoriesQueryHandler
+public class GetSystemCategoriesQueryHandler : IRequestHandler<GetSystemCategoriesQuery, Result<IEnumerable<GetSystemCategoriesResponse>>>
 {
   private readonly ICategoryRepository _categoryRepository;
 
@@ -12,7 +13,7 @@ public class GetSystemCategoriesQueryHandler
     _categoryRepository = categoryRepository;
   }
 
-  public async Task<Result<IEnumerable<GetSystemCategoriesResponse>>> Handle(GetSystemCategoriesQuery query)
+  public async Task<Result<IEnumerable<GetSystemCategoriesResponse>>> Handle(GetSystemCategoriesQuery query, CancellationToken cancellationToken)
   {
     var categories = await _categoryRepository.GetSystemCategoriesAsync();
 

@@ -1,3 +1,4 @@
+using MediatR;
 using Finance.Application.Analytics.Queries.GetCategoryAnalytics;
 using Finance.Application.Analytics.Queries.GetMonthlyAnalytics;
 using Finance.Domain.Enums;
@@ -11,15 +12,12 @@ namespace Core.API.Controllers;
 [Route("api/[controller]")]
 public class AnalyticsController : ControllerBase
 {
-  private readonly GetMonthlyAnalyticsQueryHandler _monthlyAnalyticsHandler;
-  private readonly GetCategoryAnalyticsQueryHandler _categoryAnalyticsHandler;
 
-  public AnalyticsController(
-    GetMonthlyAnalyticsQueryHandler monthlyAnalyticsHandler,
-    GetCategoryAnalyticsQueryHandler categoryAnalyticsHandler)
+  private readonly IMediator _mediator;
+
+  public AnalyticsController(IMediator mediator)
   {
-    _monthlyAnalyticsHandler = monthlyAnalyticsHandler;
-    _categoryAnalyticsHandler = categoryAnalyticsHandler;
+    _mediator = mediator;
   }
 
   [HttpGet("monthly")]
@@ -31,7 +29,7 @@ public class AnalyticsController : ControllerBase
       return BadRequest(new { error = "profileId is required." });
 
     var selectedYear = year ?? DateTime.UtcNow.Year;
-    var result = await _monthlyAnalyticsHandler.Handle(
+    var result = await _mediator.Send(
       new GetMonthlyAnalyticsQuery(profileId, selectedYear));
 
     if (result.IsFailure)
@@ -60,7 +58,7 @@ public class AnalyticsController : ControllerBase
     DateOnly? from = DateOnly.TryParse(dateFrom, out var df) ? df : null;
     DateOnly? to = DateOnly.TryParse(dateTo, out var dt) ? dt : null;
 
-    var result = await _categoryAnalyticsHandler.Handle(
+    var result = await _mediator.Send(
       new GetCategoryAnalyticsQuery(profileId, financialType, from, to));
 
     if (result.IsFailure)

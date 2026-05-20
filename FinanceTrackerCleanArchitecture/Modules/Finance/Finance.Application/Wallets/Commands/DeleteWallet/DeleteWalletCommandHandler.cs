@@ -1,9 +1,10 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Wallets.Commands.DeleteWallet;
 
-public class DeleteWalletCommandHandler
+public class DeleteWalletCommandHandler : IRequestHandler<DeleteWalletCommand, Result<bool>>
 {
   private readonly IWalletRepository _walletRepository;
 
@@ -12,7 +13,7 @@ public class DeleteWalletCommandHandler
     _walletRepository = walletRepository;
   }
 
-  public async Task<Result<bool>> Handle(DeleteWalletCommand command)
+  public async Task<Result<bool>> Handle(DeleteWalletCommand command, CancellationToken cancellationToken)
   {
     var wallet = await _walletRepository.GetWalletByIdAsync(command.Id);
     if (wallet is null)

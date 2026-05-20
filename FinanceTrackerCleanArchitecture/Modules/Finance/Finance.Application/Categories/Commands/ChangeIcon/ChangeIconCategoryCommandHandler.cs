@@ -1,9 +1,10 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Categories.Commands.ChangeIcon;
 
-public class ChangeIconCategoryCommandHandler
+public class ChangeIconCategoryCommandHandler : IRequestHandler<ChangeIconCategoryCommand, Result<bool>>
 {
   private readonly ICategoryRepository _categoryRepository;
 
@@ -12,7 +13,7 @@ public class ChangeIconCategoryCommandHandler
     _categoryRepository = categoryRepository;
   }
 
-  public async Task<Result<bool>> Handle(ChangeIconCategoryCommand command)
+  public async Task<Result<bool>> Handle(ChangeIconCategoryCommand command, CancellationToken cancellationToken)
   {
     var category = await _categoryRepository.GetByIdAsync(command.Id);
     if (category is null)

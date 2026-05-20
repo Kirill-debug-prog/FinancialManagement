@@ -1,4 +1,5 @@
-﻿using Users.Domain.Interfaces;
+using MediatR;
+using Users.Domain.Interfaces;
 using Users.Domain.ValueObject;
 using Users.Application.Interfaces;
 using Core.Domain.Common;
@@ -6,7 +7,7 @@ using Core.Domain.Common;
 
 namespace Users.Application.Users.Commands.LoginUser;
 
-public class LoginUserCommandHandler
+public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, Result<LoginUserResponse>>
 {
   private readonly IUserRepository _userRepository;
   private readonly IPasswordHasher _passwordHasher;
@@ -19,7 +20,7 @@ public class LoginUserCommandHandler
     _userRepository = userRepository;
   }
 
-  public async Task<Result<LoginUserResponse>> Handle(LoginUserCommand command)
+  public async Task<Result<LoginUserResponse>> Handle(LoginUserCommand command, CancellationToken cancellationToken)
   {
     var email = Email.Create(command.Email);
     if (email.IsFailure)

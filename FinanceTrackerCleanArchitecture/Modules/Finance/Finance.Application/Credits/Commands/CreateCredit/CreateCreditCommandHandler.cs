@@ -1,10 +1,11 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Entities;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Credits.Commands.CreateCredit;
 
-public class CreateCreditCommandHandler
+public class CreateCreditCommandHandler : IRequestHandler<CreateCreditCommand, Result<Guid>>
 {
   private readonly ICreditRepository _creditRepository;
   private readonly IProfileChecker _profileChecker;
@@ -17,7 +18,7 @@ public class CreateCreditCommandHandler
     _currencyRepository = currencyRepository;
   }
 
-  public async Task<Result<Guid>> Handle(CreateCreditCommand command)
+  public async Task<Result<Guid>> Handle(CreateCreditCommand command, CancellationToken cancellationToken)
   {
     if (!await _profileChecker.ExistsAsync(command.ProfileId))
       return Result<Guid>.Failure(new DomainError("Credit.ProfileNotFound", "Profile not found."));

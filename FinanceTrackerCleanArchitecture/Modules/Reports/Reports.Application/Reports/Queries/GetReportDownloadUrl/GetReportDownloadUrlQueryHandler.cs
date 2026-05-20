@@ -1,11 +1,12 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Microsoft.Extensions.Configuration;
 using Reports.Domain.Enums;
 using Reports.Domain.Interfaces;
 
 namespace Reports.Application.Reports.Queries.GetReportDownloadUrl;
 
-public class GetReportDownloadUrlQueryHandler
+public class GetReportDownloadUrlQueryHandler : IRequestHandler<GetReportDownloadUrlQuery, Result<GetReportDownloadUrlResponse>>
 {
   private readonly IReportJobRepository _jobRepository;
   private readonly IFileStorage _fileStorage;

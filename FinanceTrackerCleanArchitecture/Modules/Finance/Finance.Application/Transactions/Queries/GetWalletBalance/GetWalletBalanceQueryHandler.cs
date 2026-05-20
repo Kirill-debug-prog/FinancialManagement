@@ -1,10 +1,11 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Enums;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Transactions.Queries.GetWalletBalance;
 
-public class GetWalletBalanceQueryHandler
+public class GetWalletBalanceQueryHandler : IRequestHandler<GetWalletBalanceQuery, Result<GetWalletBalanceResponse>>
 {
   private readonly IWalletRepository _walletRepository;
   private readonly ITransactionRepository _transactionRepository;
@@ -15,7 +16,7 @@ public class GetWalletBalanceQueryHandler
     _transactionRepository = transactionRepository;
   }
 
-  public async Task<Result<GetWalletBalanceResponse>> Handle(GetWalletBalanceQuery query)
+  public async Task<Result<GetWalletBalanceResponse>> Handle(GetWalletBalanceQuery query, CancellationToken cancellationToken)
   {
     var wallet = await _walletRepository.GetWalletByIdAsync(query.WalletId);
     if (wallet is null)

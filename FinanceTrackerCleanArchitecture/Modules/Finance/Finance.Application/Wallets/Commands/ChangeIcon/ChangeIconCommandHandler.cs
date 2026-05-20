@@ -1,9 +1,10 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Wallets.Commands.ChangeIcon;
 
-public class ChangeIconCommandHandler
+public class ChangeIconCommandHandler : IRequestHandler<ChangeIconCommand, Result<bool>>
 {
   private readonly IWalletRepository _walletRepository;
 
@@ -12,7 +13,7 @@ public class ChangeIconCommandHandler
     _walletRepository = walletRepository;
   }
 
-  public async Task<Result<bool>> Handle(ChangeIconCommand command)
+  public async Task<Result<bool>> Handle(ChangeIconCommand command, CancellationToken cancellationToken)
   {
     var wallet = await _walletRepository.GetWalletByIdAsync(command.Id);
     if (wallet is null)

@@ -1,10 +1,11 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Entities;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Categories.Commands.CreateCategory;
 
-public class CreateCategoryCommandHandler
+public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, Result<Guid>>
 {
   private readonly ICategoryRepository _categoryRepository;
   private readonly IProfileChecker _profileChecker;
@@ -15,7 +16,7 @@ public class CreateCategoryCommandHandler
     _profileChecker = profileChecker;
   }
 
-  public async Task<Result<Guid>> Handle(CreateCategoryCommand command)
+  public async Task<Result<Guid>> Handle(CreateCategoryCommand command, CancellationToken cancellationToken)
   {
     if (!await _profileChecker.ExistsAsync(command.ProfileId))
       return Result<Guid>.Failure(new DomainError("Category.ProfileNotFound", "Profile not found."));

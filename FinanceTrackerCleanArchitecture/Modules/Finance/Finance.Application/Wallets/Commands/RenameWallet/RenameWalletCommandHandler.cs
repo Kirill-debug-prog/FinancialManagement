@@ -1,9 +1,10 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Wallets.Commands.RenameWallet;
 
-public class RenameWalletCommandHandler
+public class RenameWalletCommandHandler : IRequestHandler<RenameWalletCommand, Result<bool>>
 {
   private readonly IWalletRepository _walletRepository;
 
@@ -12,7 +13,7 @@ public class RenameWalletCommandHandler
     _walletRepository = walletRepository;
   }
 
-  public async Task<Result<bool>> Handle(RenameWalletCommand command)
+  public async Task<Result<bool>> Handle(RenameWalletCommand command, CancellationToken cancellationToken)
   {
     var wallet = await _walletRepository.GetWalletByIdAsync(command.Id);
     if (wallet is null)

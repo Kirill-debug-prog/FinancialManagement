@@ -1,9 +1,10 @@
+using MediatR;
 using Core.Domain.Common;
 using Users.Domain.Interfaces;
 
 namespace Users.Application.Profiles.Commands.RenameProfile;
 
-public class RenameProfileCommandHandler
+public class RenameProfileCommandHandler : IRequestHandler<RenameProfileCommand, Result<bool>>
 {
   private readonly IProfileRepository _profileRepository;
 
@@ -12,7 +13,7 @@ public class RenameProfileCommandHandler
     _profileRepository = profileRepository;
   }
 
-  public async Task<Result<bool>> Handle(RenameProfileCommand command)
+  public async Task<Result<bool>> Handle(RenameProfileCommand command, CancellationToken cancellationToken)
   {
     var profile = await _profileRepository.GetByIdProfileAsync(command.Id);
     if (profile is null)

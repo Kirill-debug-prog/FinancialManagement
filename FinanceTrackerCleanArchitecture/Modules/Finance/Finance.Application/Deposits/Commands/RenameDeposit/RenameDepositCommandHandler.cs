@@ -1,9 +1,10 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Deposits.Commands.RenameDeposit;
 
-public class RenameDepositCommandHandler
+public class RenameDepositCommandHandler : IRequestHandler<RenameDepositCommand, Result<bool>>
 {
   private readonly IDepositRepository _depositRepository;
 
@@ -12,7 +13,7 @@ public class RenameDepositCommandHandler
     _depositRepository = depositRepository;
   }
 
-  public async Task<Result<bool>> Handle(RenameDepositCommand command)
+  public async Task<Result<bool>> Handle(RenameDepositCommand command, CancellationToken cancellationToken)
   {
     var deposit = await _depositRepository.GetByIdAsync(command.Id);
     if (deposit is null)

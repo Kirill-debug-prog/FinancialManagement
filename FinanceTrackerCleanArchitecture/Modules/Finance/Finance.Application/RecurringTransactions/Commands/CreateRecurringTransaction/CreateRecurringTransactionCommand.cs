@@ -1,3 +1,5 @@
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Enums;
 
 namespace Finance.Application.RecurringTransactions.Commands.CreateRecurringTransaction;
@@ -11,4 +13,4 @@ public record CreateRecurringTransactionCommand(
   Guid? CategoryId = null,
   string? Description = null,
   Guid? ToWalletId = null,
-  DateOnly? EndDate = null);
+  DateOnly? EndDate = null) : IRequest<Result<Guid>>;

@@ -1,10 +1,11 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Entities;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Wallets.Commands.CreateWallet;
 
-public class CreateWalletCommandHandler
+public class CreateWalletCommandHandler : IRequestHandler<CreateWalletCommand, Result<Guid>>
 {
   private readonly IWalletRepository _walletRepository;
   private readonly IProfileChecker _profileChecker;
@@ -17,7 +18,7 @@ public class CreateWalletCommandHandler
     _currencyRepository = currencyRepository;
   }
 
-  public async Task<Result<Guid>> Handle(CreateWalletCommand command)
+  public async Task<Result<Guid>> Handle(CreateWalletCommand command, CancellationToken cancellationToken)
   {
     if (!await _profileChecker.ExistsAsync(command.ProfileId))
       return Result<Guid>.Failure(new DomainError("Wallet.ProfileNotFound", "Profile not found."));

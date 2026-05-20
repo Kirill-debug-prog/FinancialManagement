@@ -1,9 +1,10 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Units.Commands.RenameUnit;
 
-public class RenameUnitCommandHandler
+public class RenameUnitCommandHandler : IRequestHandler<RenameUnitCommand, Result<bool>>
 {
   private readonly IUnitRepository _unitRepository;
 
@@ -12,7 +13,7 @@ public class RenameUnitCommandHandler
     _unitRepository = unitRepository;
   }
 
-  public async Task<Result<bool>> Handle(RenameUnitCommand command)
+  public async Task<Result<bool>> Handle(RenameUnitCommand command, CancellationToken cancellationToken)
   {
     var unit = await _unitRepository.GetByIdAsync(command.Id);
     if (unit is null)

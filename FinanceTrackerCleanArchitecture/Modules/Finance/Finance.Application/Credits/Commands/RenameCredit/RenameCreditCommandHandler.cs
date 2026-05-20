@@ -1,9 +1,10 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Credits.Commands.RenameCredit;
 
-public class RenameCreditCommandHandler
+public class RenameCreditCommandHandler : IRequestHandler<RenameCreditCommand, Result<bool>>
 {
   private readonly ICreditRepository _creditRepository;
 
@@ -12,7 +13,7 @@ public class RenameCreditCommandHandler
     _creditRepository = creditRepository;
   }
 
-  public async Task<Result<bool>> Handle(RenameCreditCommand command)
+  public async Task<Result<bool>> Handle(RenameCreditCommand command, CancellationToken cancellationToken)
   {
     var credit = await _creditRepository.GetByIdAsync(command.Id);
     if (credit is null)

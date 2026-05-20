@@ -1,3 +1,5 @@
+using MediatR;
+using Core.Domain.Common;
 namespace Finance.Application.Wallets.Commands.CreateWallet;
 
 public record CreateWalletCommand(
@@ -7,4 +9,4 @@ public record CreateWalletCommand(
   Guid CurrencyId,
   decimal InitialBalance,
   string? Icon = null,
-  string? Note = null);
+  string? Note = null) : IRequest<Result<Guid>>;

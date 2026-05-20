@@ -1,9 +1,10 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Deposits.Commands.DeleteDeposit;
 
-public class DeleteDepositCommandHandler
+public class DeleteDepositCommandHandler : IRequestHandler<DeleteDepositCommand, Result<bool>>
 {
   private readonly IDepositRepository _depositRepository;
 
@@ -12,7 +13,7 @@ public class DeleteDepositCommandHandler
     _depositRepository = depositRepository;
   }
 
-  public async Task<Result<bool>> Handle(DeleteDepositCommand command)
+  public async Task<Result<bool>> Handle(DeleteDepositCommand command, CancellationToken cancellationToken)
   {
     var deposit = await _depositRepository.GetByIdAsync(command.Id);
     if (deposit is null)

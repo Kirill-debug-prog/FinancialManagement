@@ -1,9 +1,10 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Transactions.Commands.ChangeCategory;
 
-public class ChangeCategoryTransactionCommandHandler
+public class ChangeCategoryTransactionCommandHandler : IRequestHandler<ChangeCategoryTransactionCommand, Result<bool>>
 {
   private readonly ITransactionRepository _transactionRepository;
 
@@ -12,7 +13,7 @@ public class ChangeCategoryTransactionCommandHandler
     _transactionRepository = transactionRepository;
   }
 
-  public async Task<Result<bool>> Handle(ChangeCategoryTransactionCommand command)
+  public async Task<Result<bool>> Handle(ChangeCategoryTransactionCommand command, CancellationToken cancellationToken)
   {
     var transaction = await _transactionRepository.GetByIdAsync(command.Id);
     if (transaction is null)
