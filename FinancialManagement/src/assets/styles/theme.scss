@@ -1,319 +1,323 @@
 :root {
-    --color-text: #000000;
-    --color-bg: #ffffff;
-    --color-surface: #f9fafb;
-    --color-border: #e5e7eb;
-    --color-muted: #666363;
+        --color-text: #000000;
+        --color-bg: #ffffff;
+        --color-surface: #f9fafb;
+        --color-border: #e5e7eb;
+        --color-muted: #666363;
 
-    --gray-600: #6b7280;
-    --gray-50: #e8f4f8;
+        --gray-600: #6b7280;
+        --gray-50: #e8f4f8;
 
-    --color-primary: #2563eb;
-    --color-success: #0fcc35;
-    --color-danger: #ef4444;
-    --color-warning: #e1a312;
-    --color-purple: #c224ea;
-    --color-indigo: #5823e8;
+        --color-primary: #2563eb;
+        --color-primary-hover: #1d4ed8;
+        --color-success: #0fcc35;
+        --color-danger: #ef4444;
+        --color-warning: #e1a312;
+        --color-purple: #c224ea;
+        --color-indigo: #5823e8;
 
-    --color-overlay: rgba(0, 0, 0, 0.5);
-    --color-select-border: #d1d5db;
+        --color-overlay: rgba(0, 0, 0, 0.5);
+        --color-select-border: #d1d5db;
 
-    --input-bg: #ffffff;
-    --input-text: #000000;
-    --input-border: #e5e7eb;
-    --input-placeholder: #9ca3af;
+        --input-bg: #ffffff;
+        --input-text: #000000;
+        --input-border: #e5e7eb;
+        --input-placeholder: #9ca3af;
 
-    --focus-outline: rgba(99, 102, 241, 0.3);
-    --selection-bg: #6366f1;
+        --focus-outline: rgba(99, 102, 241, 0.3);
+        --selection-bg: #6366f1;
 
-    --color-info-bg: rgba(231, 242, 254, 1);
-    --color-info-text: rgba(17, 90, 219, 1);
-    --color-shadow-soft: rgba(0, 0, 0, 0.1);
-    --color-error-bg: rgba(254, 231, 230, 1);
-    --color-focus-ring: rgba(59, 130, 246, 0.4);
+        --color-info-bg: rgba(231, 242, 254, 1);
+        --color-info-text: rgba(17, 90, 219, 1);
+        --color-shadow-soft: rgba(0, 0, 0, 0.1);
+        --color-error-bg: rgba(254, 231, 230, 1);
+        --color-focus-ring: rgba(59, 130, 246, 0.4);
 
-    /* Table tokens */
-    --table-foreground: #0f172a;
-    --table-muted: #f3f4f6;
-    --table-muted-foreground: #6b7280;
-    --table-border: #e5e7eb;
-    --table-hover-bg: rgba(15, 23, 42, 0.03);
-    --table-footer-bg: rgba(243, 244, 246, 0.6);
-    --table-selected-bg: rgba(243, 244, 246, 0.9);
-    --table-caption: #6b7280;
+        --gradient-primary: linear-gradient(90deg, #3258F2 0%, #4C3BED 100%);
 
-    /* Switch */
-    --switch-bg: #e5e7eb;
-    --switch-bg-checked: #2563eb;
-    --switch-thumb: #ffffff;
-    --switch-focus: rgba(37, 99, 235, 0.4);
+        /* Table tokens */
+        --table-foreground: #0f172a;
+        --table-muted: #f3f4f6;
+        --table-muted-foreground: #6b7280;
+        --table-border: #e5e7eb;
+        --table-hover-bg: rgba(15, 23, 42, 0.03);
+        --table-footer-bg: rgba(243, 244, 246, 0.6);
+        --table-selected-bg: rgba(243, 244, 246, 0.9);
+        --table-caption: #6b7280;
 
-    /* Button tokens */
-    --btn-destructive-bg: #db1515;
-    --btn-destructive-bg-hover: #c41111;
-    --btn-destructive-bg-active: #a00e0e;
-    --btn-destructive-text: #ffffff;
+        /* Switch */
+        --switch-bg: #e5e7eb;
+        --switch-bg-checked: #2563eb;
+        --switch-thumb: #ffffff;
+        --switch-focus: rgba(37, 99, 235, 0.4);
 
-    --btn-black-bg: #242424;
-    --btn-black-bg-hover: #1a1a1a;
-    --btn-black-bg-active: #000000;
-    --btn-black-text: #ffffff;
+        /* Button tokens */
+        --btn-destructive-bg: #db1515;
+        --btn-destructive-bg-hover: #c41111;
+        --btn-destructive-bg-active: #a00e0e;
+        --btn-destructive-text: #ffffff;
 
-    --btn-white-bg: #ffffff;
-    --btn-white-bg-hover: #f3f3f3;
-    --btn-white-bg-active: #e7e7e7;
-    --btn-white-text: #000000;
-    --btn-white-border: #e5e7eb;
+        --btn-black-bg: #242424;
+        --btn-black-bg-hover: #1a1a1a;
+        --btn-black-bg-active: #000000;
+        --btn-black-text: #ffffff;
 
-    --btn-transparent-bg: transparent;
-    --btn-transparent-text: #000000;
+        --btn-white-bg: #ffffff;
+        --btn-white-bg-hover: #f3f3f3;
+        --btn-white-bg-active: #e7e7e7;
+        --btn-white-text: #000000;
+        --btn-white-border: #e5e7eb;
 
-    --btn-blue-bg: linear-gradient(to right, #0d58d9, rgba(0, 72, 255, 0.5));
-    --btn-blue-bg-hover: linear-gradient(to right, #0057ff, rgba(4, 65, 186, 0.35));
-    --btn-blue-bg-active: linear-gradient(to right, #0057ff, rgba(17, 62, 154, 0.8));
-    --btn-blue-text: #ffffff;
+        --btn-transparent-bg: transparent;
+        --btn-transparent-text: #000000;
 
-    --btn-green-bg: rgba(13, 176, 42, 1);
-    --btn-green-bg-hover: rgba(11, 153, 36, 1);
-    --btn-green-bg-active: rgba(9, 130, 30, 1);
-    --btn-green-text: #ffffff;
+        --btn-blue-bg: linear-gradient(to right, #0d58d9, rgba(0, 72, 255, 0.5));
+        --btn-blue-bg-hover: linear-gradient(to right, #0057ff, rgba(4, 65, 186, 0.35));
+        --btn-blue-bg-active: linear-gradient(to right, #0057ff, rgba(17, 62, 154, 0.8));
+        --btn-blue-text: #ffffff;
 
-    --btn-icon-text: #6b7280;
-    --btn-icon-text-hover: #111827;
+        --btn-green-bg: rgba(13, 176, 42, 1);
+        --btn-green-bg-hover: rgba(11, 153, 36, 1);
+        --btn-green-bg-active: rgba(9, 130, 30, 1);
+        --btn-green-text: #ffffff;
 
-    /* TransactionForm */
-    --transaction-error-text: #ef4444;
-    --transaction-error-bg: #fef2f2;
-    --transaction-error-border: #fecaca;
-    --transaction-error-focus: rgba(239, 68, 68, 0.1);
+        --btn-icon-text: #6b7280;
+        --btn-icon-text-hover: #111827;
 
-    --transaction-success-bg: #f0fdf4;
-    --transaction-success-border: #bbf7d0;
-    --transaction-success-text: #166534;
-    --transaction-success-strong: #15803d;
+        /* TransactionForm */
+        --transaction-error-text: #ef4444;
+        --transaction-error-bg: #fef2f2;
+        --transaction-error-border: #fecaca;
+        --transaction-error-focus: rgba(239, 68, 68, 0.1);
 
-    --transaction-warning-bg: #fef3c7;
-    --transaction-warning-border: #fcd34d;
-    --transaction-warning-text: #92400e;
-    --transaction-warning-strong: #d97706;
+        --transaction-success-bg: #f0fdf4;
+        --transaction-success-border: #bbf7d0;
+        --transaction-success-text: #166534;
+        --transaction-success-strong: #15803d;
 
-    /* Welcome */
-    --welcome-gradient-start: #eff6ff;
-    --welcome-gradient-end: #eef2ff;
-    --welcome-card-blue-bg: rgba(231, 242, 254, 1);
-    --welcome-card-blue-text: #5365a5;
-    --welcome-card-purple-bg: rgba(249, 245, 254, 1);
-    --welcome-card-purple-text: #521b86;
-    --welcome-card-indigo-bg: rgba(239, 242, 254, 1);
-    --welcome-card-indigo-text: #302c80;
-    --welcome-feature-border: rgba(140, 140, 140, 1);
-    --welcome-feature-text: #596270;
-    --welcome-step-number-bg: #2563eb;
-    --welcome-step-number-text: #fff;
-    --welcome-step-text: #223bb1;
-    --info-box-green-bg: #ecfdf5;
-    --info-box-orange-bg: #fff7ed;
-    --info-box-green-text: rgba(62, 163, 75, 1);
-    --info-box-orange-text: rgba(189, 74, 23, 1);
-    --info-box-title-green: rgba(65, 138, 77, 1);
-    --checkbox-bg: #fff;
-    --checkbox-border-radius: 0.9375rem;
-    --checkbox-title-color: #121827;
-    --checkbox-text-color: #596270;
-    --indicator-bg: #d1d5db;
-    --indicator-active-bg: #2563eb;
-    --emoji-box-bg: #f1e8fd;
-    --btn-primary-bg: #242424;
-    --btn-primary-hover: #3b3737;
-    --btn-primary-text: #fff;
-    --btn-outline-border: #d1d5db;
-    --btn-outline-bg: #fff;
-    --btn-outline-hover: #f9fafb;
-    --btn-outline-text: inherit;
-    --btn-ghost-color: inherit;
+        --transaction-warning-bg: #fef3c7;
+        --transaction-warning-border: #fcd34d;
+        --transaction-warning-text: #92400e;
+        --transaction-warning-strong: #d97706;
 
-    --form-error-text: #ef4444;
-    --form-error-bg: #fef2f2;
-    --form-error-border: #fecaca;
-    --form-error-focus: rgba(239, 68, 68, 0.1);
+        /* Welcome */
+        --welcome-gradient-start: #eff6ff;
+        --welcome-gradient-end: #eef2ff;
+        --welcome-card-blue-bg: rgba(231, 242, 254, 1);
+        --welcome-card-blue-text: #5365a5;
+        --welcome-card-purple-bg: rgba(249, 245, 254, 1);
+        --welcome-card-purple-text: #521b86;
+        --welcome-card-indigo-bg: rgba(239, 242, 254, 1);
+        --welcome-card-indigo-text: #302c80;
+        --welcome-feature-border: rgba(140, 140, 140, 1);
+        --welcome-feature-text: #596270;
+        --welcome-step-number-bg: #2563eb;
+        --welcome-step-number-text: #fff;
+        --welcome-step-text: #223bb1;
+        --info-box-green-bg: #ecfdf5;
+        --info-box-orange-bg: #fff7ed;
+        --info-box-green-text: rgba(62, 163, 75, 1);
+        --info-box-orange-text: rgba(189, 74, 23, 1);
+        --info-box-title-green: rgba(65, 138, 77, 1);
+        --checkbox-bg: #fff;
+        --checkbox-border-radius: 0.9375rem;
+        --checkbox-title-color: #121827;
+        --checkbox-text-color: #596270;
+        --indicator-bg: #d1d5db;
+        --indicator-active-bg: #2563eb;
+        --emoji-box-bg: #f1e8fd;
+        --btn-primary-bg: #242424;
+        --btn-primary-hover: #3b3737;
+        --btn-primary-text: #fff;
+        --btn-outline-border: #d1d5db;
+        --btn-outline-bg: #fff;
+        --btn-outline-hover: #f9fafb;
+        --btn-outline-text: inherit;
+        --btn-ghost-color: inherit;
 
-    --dialog-warning-text: #856404;
+        --form-error-text: #ef4444;
+        --form-error-bg: #fef2f2;
+        --form-error-border: #fecaca;
+        --form-error-focus: rgba(239, 68, 68, 0.1);
 
-    --auth-bg-start: #d0eeff;
-    --auth-bg-end: #fff2e8;
+        --dialog-warning-text: #856404;
 
-    --auth-bg-gradient: linear-gradient(180deg,
-            var(--auth-bg-start),
-            var(--auth-bg-end));
+        --auth-bg-start: #d0eeff;
+        --auth-bg-end: #fff2e8;
 
-    --gradient-success: linear-gradient(135deg,
-            #ecfdf5,
-            #d1fae5,
-            #ccfbf1);
+        --auth-bg-gradient: linear-gradient(180deg,
+                        var(--auth-bg-start),
+                        var(--auth-bg-end));
 
-    --tips-header-bg: linear-gradient(135deg,
-            #eff6ff,
-            #eef2ff);
-    --tips-header-border: #bfdbfe;
+        --gradient-success: linear-gradient(135deg,
+                        #ecfdf5,
+                        #d1fae5,
+                        #ccfbf1);
+
+        --tips-header-bg: linear-gradient(135deg,
+                        #eff6ff,
+                        #eef2ff);
+        --tips-header-border: #bfdbfe;
 }
 
 [data-theme='dark'] {
-    --color-text: #ffffff;
-    --color-bg: #111827;
-    --color-surface: #1f2937;
-    --color-border: #374151;
-    --color-muted: #9ca3af;
+        --color-text: #ffffff;
+        --color-bg: #111827;
+        --color-surface: #1f2937;
+        --color-border: #374151;
+        --color-muted: #9ca3af;
 
-    --gray-50: #1f2937;
-    --gray-600: #9ca3af;
+        --gray-50: #1f2937;
+        --gray-600: #9ca3af;
 
-    --color-primary: #60a5fa;
-    --color-success: #4ade80;
-    --color-danger: #f87171;
-    --color-warning: #fbbf24;
-    --color-purple: #d946ef;
-    --color-indigo: #818cf8;
+        --color-primary: #60a5fa;
+        --color-primary-hover: #3b82f6;
+        --color-success: #4ade80;
+        --color-danger: #f87171;
+        --color-warning: #fbbf24;
+        --color-purple: #d946ef;
+        --color-indigo: #818cf8;
 
-    --color-overlay: rgba(0, 0, 0, 0.7);
-    --color-select-border: #374151;
+        --color-overlay: rgba(0, 0, 0, 0.7);
+        --color-select-border: #374151;
 
-    --input-bg: #1f2937;
-    --input-text: #f9fafb;
-    --input-border: #374151;
-    --input-placeholder: #6b7280;
+        --input-bg: #1f2937;
+        --input-text: #f9fafb;
+        --input-border: #374151;
+        --input-placeholder: #6b7280;
 
-    --focus-outline: rgba(96, 165, 250, 0.3);
-    --selection-bg: #818cf8;
+        --focus-outline: rgba(96, 165, 250, 0.3);
+        --selection-bg: #818cf8;
 
-    --color-info-bg: rgba(30, 58, 138, 0.25);
-    --color-info-text: rgba(147, 197, 253, 1);
-    --color-shadow-soft: rgba(0, 0, 0, 0.1);
-    --color-error-bg: rgba(127, 29, 29, 0.25);
-    --color-focus-ring: rgba(96, 165, 250, 0.35);
+        --color-info-bg: rgba(30, 58, 138, 0.25);
+        --color-info-text: rgba(147, 197, 253, 1);
+        --color-shadow-soft: rgba(0, 0, 0, 0.1);
+        --color-error-bg: rgba(127, 29, 29, 0.25);
+        --color-focus-ring: rgba(96, 165, 250, 0.35);
 
-    --gradient-primary: linear-gradient(90deg, #4f7cff 0%, #6a5cff 100%);
+        --gradient-primary: linear-gradient(90deg, #2352df 0%, #352d95 100%);
 
-    /* Table tokens */
-    --table-foreground: #f9fafb;
-    --table-muted: #1f2937;
-    --table-muted-foreground: #9ca3af;
-    --table-border: #374151;
-    --table-hover-bg: rgba(255, 255, 255, 0.04);
-    --table-footer-bg: rgba(31, 41, 55, 0.9);
-    --table-selected-bg: rgba(55, 65, 81, 0.85);
-    --table-caption: #9ca3af;
+        /* Table tokens */
+        --table-foreground: #f9fafb;
+        --table-muted: #1f2937;
+        --table-muted-foreground: #9ca3af;
+        --table-border: #374151;
+        --table-hover-bg: rgba(255, 255, 255, 0.04);
+        --table-footer-bg: rgba(31, 41, 55, 0.9);
+        --table-selected-bg: rgba(55, 65, 81, 0.85);
+        --table-caption: #9ca3af;
 
-    /* Switch */
-    --switch-bg: #374151;
-    --switch-bg-checked: #60a5fa;
-    --switch-thumb: #f9fafb;
-    --switch-focus: rgba(96, 165, 250, 0.35);
+        /* Switch */
+        --switch-bg: #374151;
+        --switch-bg-checked: #60a5fa;
+        --switch-thumb: #f9fafb;
+        --switch-focus: rgba(96, 165, 250, 0.35);
 
-    /* Button tokens */
-    --btn-destructive-bg: #b91c1c;
-    --btn-destructive-bg-hover: #991b1b;
-    --btn-destructive-bg-active: #7f1d1d;
-    --btn-destructive-text: #ffffff;
+        /* Button tokens */
+        --btn-destructive-bg: #b91c1c;
+        --btn-destructive-bg-hover: #991b1b;
+        --btn-destructive-bg-active: #7f1d1d;
+        --btn-destructive-text: #ffffff;
 
-    --btn-black-bg: #ffffff;
-    --btn-black-bg-hover: #dfe6f6;
-    --btn-black-bg-active: #e9e7e7;
-    --btn-black-text: #000000;
+        --btn-black-bg: #ffffff;
+        --btn-black-bg-hover: #dfe6f6;
+        --btn-black-bg-active: #e9e7e7;
+        --btn-black-text: #000000;
 
-    --btn-white-bg: #1f2937;
-    --btn-white-bg-hover: #374151;
-    --btn-white-bg-active: #4b5563;
-    --btn-white-text: #f9fafb;
-    --btn-white-border: #4b5563;
+        --btn-white-bg: #1f2937;
+        --btn-white-bg-hover: #374151;
+        --btn-white-bg-active: #4b5563;
+        --btn-white-text: #f9fafb;
+        --btn-white-border: #4b5563;
 
-    --btn-transparent-bg: transparent;
-    --btn-transparent-text: #f3f4f6;
+        --btn-transparent-bg: transparent;
+        --btn-transparent-text: #f3f4f6;
 
-    --btn-blue-bg: linear-gradient(to right, #2563eb, rgba(37, 99, 235, 0.55));
-    --btn-blue-bg-hover: linear-gradient(to right, #1d4ed8, rgba(37, 99, 235, 0.45));
-    --btn-blue-bg-active: linear-gradient(to right, #1e40af, rgba(30, 64, 175, 0.85));
-    --btn-blue-text: #ffffff;
+        --btn-blue-bg: linear-gradient(to right, #2563eb, rgba(37, 99, 235, 0.55));
+        --btn-blue-bg-hover: linear-gradient(to right, #1d4ed8, rgba(37, 99, 235, 0.45));
+        --btn-blue-bg-active: linear-gradient(to right, #1e40af, rgba(30, 64, 175, 0.85));
+        --btn-blue-text: #ffffff;
 
-    --btn-green-bg: rgba(22, 163, 74, 1);
-    --btn-green-bg-hover: rgba(21, 128, 61, 1);
-    --btn-green-bg-active: rgba(20, 83, 45, 1);
-    --btn-green-text: #ffffff;
+        --btn-green-bg: rgba(22, 163, 74, 1);
+        --btn-green-bg-hover: rgba(21, 128, 61, 1);
+        --btn-green-bg-active: rgba(20, 83, 45, 1);
+        --btn-green-text: #ffffff;
 
-    --btn-icon-text: #9ca3af;
-    --btn-icon-text-hover: #f9fafb;
+        --btn-icon-text: #9ca3af;
+        --btn-icon-text-hover: #f9fafb;
 
-    /* TransactionForm */
-    --transaction-error-text: #f87171;
-    --transaction-error-bg: rgba(127, 29, 29, 0.25);
-    --transaction-error-border: rgba(248, 113, 113, 0.3);
-    --transaction-error-focus: rgba(248, 113, 113, 0.2);
+        /* TransactionForm */
+        --transaction-error-text: #f87171;
+        --transaction-error-bg: rgba(127, 29, 29, 0.25);
+        --transaction-error-border: rgba(248, 113, 113, 0.3);
+        --transaction-error-focus: rgba(248, 113, 113, 0.2);
 
-    --transaction-success-bg: rgba(20, 83, 45, 0.35);
-    --transaction-success-border: rgba(74, 222, 128, 0.25);
-    --transaction-success-text: #bbf7d0;
-    --transaction-success-strong: #86efac;
+        --transaction-success-bg: rgba(20, 83, 45, 0.35);
+        --transaction-success-border: rgba(74, 222, 128, 0.25);
+        --transaction-success-text: #bbf7d0;
+        --transaction-success-strong: #86efac;
 
-    --transaction-warning-bg: rgba(120, 53, 15, 0.35);
-    --transaction-warning-border: rgba(251, 191, 36, 0.25);
-    --transaction-warning-text: #fcd34d;
-    --transaction-warning-strong: #fbbf24;
+        --transaction-warning-bg: rgba(120, 53, 15, 0.35);
+        --transaction-warning-border: rgba(251, 191, 36, 0.25);
+        --transaction-warning-text: #fcd34d;
+        --transaction-warning-strong: #fbbf24;
 
-    /* Welcome */
-    --welcome-gradient-start: #1e293b;
-    --welcome-gradient-end: #0f172a;
-    --welcome-card-blue-bg: rgba(30, 58, 138, 0.35);
-    --welcome-card-blue-text: #a5c9ff;
-    --welcome-card-purple-bg: rgba(88, 28, 135, 0.35);
-    --welcome-card-purple-text: #d8b4fe;
-    --welcome-card-indigo-bg: rgba(49, 46, 129, 0.35);
-    --welcome-card-indigo-text: #a5b4fc;
-    --welcome-feature-border: #4b5563;
-    --welcome-feature-text: #9ca3af;
-    --welcome-step-number-bg: #3b82f6;
-    --welcome-step-number-text: #fff;
-    --welcome-step-text: #93c5fd;
-    --info-box-green-bg: rgba(20, 83, 45, 0.25);
-    --info-box-orange-bg: rgba(120, 53, 15, 0.35);
-    --info-box-green-text: #4ade80;
-    --info-box-orange-text: #fdba74;
-    --info-box-title-green: #86efac;
-    --checkbox-bg: #1f2937;
-    --checkbox-title-color: #f9fafb;
-    --checkbox-text-color: #9ca3af;
-    --indicator-bg: #4b5563;
-    --indicator-active-bg: #60a5fa;
-    --emoji-box-bg: #3b2e4a;
-    --btn-primary-bg: #1e293b;
-    --btn-primary-hover: #334155;
-    --btn-primary-text: #f1f5f9;
-    --btn-outline-border: #475569;
-    --btn-outline-bg: #1e293b;
-    --btn-outline-hover: #2d3a4e;
-    --btn-outline-text: #e2e8f0;
-    --btn-ghost-color: #e2e8f0;
+        /* Welcome */
+        --welcome-gradient-start: #1e293b;
+        --welcome-gradient-end: #0f172a;
+        --welcome-card-blue-bg: rgba(30, 58, 138, 0.35);
+        --welcome-card-blue-text: #a5c9ff;
+        --welcome-card-purple-bg: rgba(88, 28, 135, 0.35);
+        --welcome-card-purple-text: #d8b4fe;
+        --welcome-card-indigo-bg: rgba(49, 46, 129, 0.35);
+        --welcome-card-indigo-text: #a5b4fc;
+        --welcome-feature-border: #4b5563;
+        --welcome-feature-text: #9ca3af;
+        --welcome-step-number-bg: #3b82f6;
+        --welcome-step-number-text: #fff;
+        --welcome-step-text: #93c5fd;
+        --info-box-green-bg: rgba(20, 83, 45, 0.25);
+        --info-box-orange-bg: rgba(120, 53, 15, 0.35);
+        --info-box-green-text: #4ade80;
+        --info-box-orange-text: #fdba74;
+        --info-box-title-green: #86efac;
+        --checkbox-bg: #1f2937;
+        --checkbox-title-color: #f9fafb;
+        --checkbox-text-color: #9ca3af;
+        --indicator-bg: #4b5563;
+        --indicator-active-bg: #60a5fa;
+        --emoji-box-bg: #3b2e4a;
+        --btn-primary-bg: #1e293b;
+        --btn-primary-hover: #334155;
+        --btn-primary-text: #f1f5f9;
+        --btn-outline-border: #475569;
+        --btn-outline-bg: #1e293b;
+        --btn-outline-hover: #2d3a4e;
+        --btn-outline-text: #e2e8f0;
+        --btn-ghost-color: #e2e8f0;
 
-    --form-error-text: #f87171;
-    --form-error-bg: rgba(127, 29, 29, 0.25);
-    --form-error-border: rgba(248, 113, 113, 0.3);
-    --form-error-focus: rgba(248, 113, 113, 0.2);
+        --form-error-text: #f87171;
+        --form-error-bg: rgba(127, 29, 29, 0.25);
+        --form-error-border: rgba(248, 113, 113, 0.3);
+        --form-error-focus: rgba(248, 113, 113, 0.2);
 
-    --dialog-warning-text: #fbbf24;
+        --dialog-warning-text: #fbbf24;
 
-    --auth-bg-start: #111827;
-    --auth-bg-end: #1f2937;
+        --auth-bg-start: #111827;
+        --auth-bg-end: #1f2937;
 
-    --auth-bg-gradient: linear-gradient(180deg,
-            var(--auth-bg-start),
-            var(--auth-bg-end));
+        --auth-bg-gradient: linear-gradient(180deg,
+                        var(--auth-bg-start),
+                        var(--auth-bg-end));
 
-    --gradient-success: linear-gradient(135deg,
-            #064e3b,
-            #065f46,
-            #134e4a);
+        --gradient-success: linear-gradient(135deg,
+                        #064e3b,
+                        #065f46,
+                        #134e4a);
 
-    --tips-header-bg: linear-gradient(135deg,
-            #1e3a8a,
-            #312e81);
+        --tips-header-bg: linear-gradient(135deg,
+                        #1e3a8a,
+                        #312e81);
 
-    --tips-header-border: #3b82f6;
+        --tips-header-border: #3b82f6;
 }

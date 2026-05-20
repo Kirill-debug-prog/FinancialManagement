@@ -31,6 +31,34 @@ export default function Credits() {
     const [creditErrors, setCreditErrors] = useState({})
     const [debtErrors, setDebtErrors] = useState({})
 
+    const CREDIT_FORM_DRAFT_KEY = 'creditFormDraft'
+    const DEBT_FORM_DRAFT_KEY = 'debtFormDraft'
+
+    const loadDraft = (key) => {
+        try {
+            const raw = localStorage.getItem(key)
+            return raw ? JSON.parse(raw) : null
+        } catch {
+            return null
+        }
+    }
+
+    const saveDraft = (key, draft) => {
+        try {
+            localStorage.setItem(key, JSON.stringify(draft))
+        } catch {
+            // ignore write errors
+        }
+    }
+
+    const clearDraft = (key) => {
+        try {
+            localStorage.removeItem(key)
+        } catch {
+            // ignore remove errors
+        }
+    }
+
     const [editForm, setEditForm] = useState({
         name: '',
         type: '',
@@ -170,6 +198,48 @@ export default function Credits() {
 
     useEffect(() => { fetchData(); }, []);
 
+    useEffect(() => {
+        const draft = loadDraft(CREDIT_FORM_DRAFT_KEY)
+        if (draft) {
+            setCreditName(draft.creditName || '')
+            setCreditType(draft.creditType || '')
+            setCreditTotalAmount(draft.creditTotalAmount || '')
+            setCreditInterestRate(draft.creditInterestRate || '')
+            setCreditMonthlyPayment(draft.creditMonthlyPayment || '')
+            setCreditEndDate(draft.creditEndDate || '')
+        }
+
+        const draftDebt = loadDraft(DEBT_FORM_DRAFT_KEY)
+        if (draftDebt) {
+            setDebtsName(draftDebt.debtsName || '')
+            setDebtAmount(draftDebt.debtAmount || '')
+            setDebtPerson(draftDebt.debtPerson || '')
+            setDebtStartDate(draftDebt.debtStartDate || '')
+            setDebtReturnDate(draftDebt.debtReturnDate || '')
+        }
+    }, []);
+
+    useEffect(() => {
+        saveDraft(CREDIT_FORM_DRAFT_KEY, {
+            creditName,
+            creditType,
+            creditTotalAmount,
+            creditInterestRate,
+            creditMonthlyPayment,
+            creditEndDate,
+        })
+    }, [creditName, creditType, creditTotalAmount, creditInterestRate, creditMonthlyPayment, creditEndDate]);
+
+    useEffect(() => {
+        saveDraft(DEBT_FORM_DRAFT_KEY, {
+            debtsName,
+            debtAmount,
+            debtPerson,
+            debtStartDate,
+            debtReturnDate,
+        })
+    }, [debtsName, debtAmount, debtPerson, debtStartDate, debtReturnDate]);
+
     const handleAddCredit = async () => {
         // Полная валидация
         const errors = validateCredit();
@@ -198,6 +268,7 @@ export default function Credits() {
             setCreditInterestRate('');
             setCreditMonthlyPayment('');
             setCreditEndDate('');
+            clearDraft(CREDIT_FORM_DRAFT_KEY);
             invalidateCreditsDebtsCache();
             fetchData();
         } catch (err) {
@@ -230,6 +301,7 @@ export default function Credits() {
             setDebtPerson('');
             setDebtStartDate('');
             setDebtReturnDate('');
+            clearDraft(DEBT_FORM_DRAFT_KEY);
             invalidateCreditsDebtsCache();
             fetchData();
         } catch (err) {

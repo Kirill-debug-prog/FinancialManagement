@@ -25,6 +25,34 @@ export default function Deposits() {
     const [depositCapitalization, setDepositCapitalization] = useState(false)
     const [depositErrors, setDepositErrors] = useState({})
 
+    const DEPOSIT_FORM_DRAFT_KEY = 'depositFormDraft'
+    const REPLENISH_FORM_DRAFT_KEY = 'replenishFormDraft'
+
+    const loadDraft = (key) => {
+        try {
+            const raw = localStorage.getItem(key)
+            return raw ? JSON.parse(raw) : null
+        } catch {
+            return null
+        }
+    }
+
+    const saveDraft = (key, draft) => {
+        try {
+            localStorage.setItem(key, JSON.stringify(draft))
+        } catch {
+            // ignore write errors
+        }
+    }
+
+    const clearDraft = (key) => {
+        try {
+            localStorage.removeItem(key)
+        } catch {
+            // ignore remove errors
+        }
+    }
+
     const [replenishDialogOpen, setReplenishDialogOpen] = useState(false)
     const [replenishingDepositId, setReplenishingDepositId] = useState(null)
     const [replenishForm, setReplenishForm] = useState({ amount: '', replenishmentDate: '' })
@@ -119,6 +147,41 @@ export default function Deposits() {
 
     useEffect(() => { fetchData(); }, []);
 
+    useEffect(() => {
+        const draft = loadDraft(DEPOSIT_FORM_DRAFT_KEY)
+        if (draft) {
+            setDepositName(draft.depositName || '')
+            setDepositType(draft.depositType || '')
+            setDepositBank(draft.depositBank || '')
+            setDepositAmount(draft.depositAmount || '')
+            setDepositRate(draft.depositRate || '')
+            setDepositStartDate(draft.depositStartDate || '')
+            setDepositEndDate(draft.depositEndDate || '')
+            setDepositCapitalization(draft.depositCapitalization || false)
+        }
+    }, []);
+
+    useEffect(() => {
+        saveDraft(DEPOSIT_FORM_DRAFT_KEY, {
+            depositName,
+            depositType,
+            depositBank,
+            depositAmount,
+            depositRate,
+            depositStartDate,
+            depositEndDate,
+            depositCapitalization,
+        })
+    }, [depositName, depositType, depositBank, depositAmount, depositRate, depositStartDate, depositEndDate, depositCapitalization]);
+
+    useEffect(() => {
+        saveDraft(REPLENISH_FORM_DRAFT_KEY, {
+            replenishingDepositId,
+            amount: replenishForm.amount,
+            replenishmentDate: replenishForm.replenishmentDate,
+        })
+    }, [replenishingDepositId, replenishForm]);
+
     const handleAddDeposit = async () => {
         // Полная валидация
         const errors = validateDeposit();
@@ -150,6 +213,7 @@ export default function Deposits() {
             setDepositStartDate('');
             setDepositEndDate('');
             setDepositCapitalization(false);
+            clearDraft(DEPOSIT_FORM_DRAFT_KEY);
             invalidateDepositsCache();
             fetchData();
         } catch (err) {
@@ -174,10 +238,19 @@ export default function Deposits() {
 
     const handleOpenReplenishDialog = (deposit) => {
         setReplenishingDepositId(deposit.id);
-        setReplenishForm({
-            amount: '',
-            replenishmentDate: new Date().toISOString().split('T')[0]
-        });
+
+        const draft = loadDraft(REPLENISH_FORM_DRAFT_KEY)
+        if (draft && draft.replenishingDepositId === deposit.id) {
+            setReplenishForm({
+                amount: draft.amount || '',
+                replenishmentDate: draft.replenishmentDate || new Date().toISOString().split('T')[0]
+            });
+        } else {
+            setReplenishForm({
+                amount: '',
+                replenishmentDate: new Date().toISOString().split('T')[0]
+            });
+        }
         setReplenishDialogOpen(true);
     };
 
@@ -205,6 +278,7 @@ export default function Deposits() {
             });
             toast.success(`Вклад пополнен на ${replenishForm.amount} ₽`);
             setReplenishDialogOpen(false);
+            clearDraft(REPLENISH_FORM_DRAFT_KEY);
             invalidateDepositsCache();
             fetchData();
         } catch (err) {

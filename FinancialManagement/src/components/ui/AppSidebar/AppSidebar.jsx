@@ -11,6 +11,7 @@ import {
     Shield,
     LogOut,
     HelpCircle,
+    Landmark,
 } from 'lucide-react';
 import { NavLink, useNavigate } from 'react-router-dom'
 import './AppSidebar.scss';
@@ -22,11 +23,9 @@ const menuItems = [
     { route: '/app/credits', label: 'Кредиты и долги', icon: CreditCard },
     { route: '/app/deposits', label: 'Вклады', icon: PiggyBank },
     { route: '/app/reports', label: 'Отчёты', icon: BarChart3 },
-    // { route: '/app/notifications', label: 'Уведомления', icon: Bell },
     { route: '/app/importExport', label: 'Импорт/Экспорт', icon: Download },
     { route: '/app/settings', label: 'Настройки', icon: Settings },
     { route: '/app/help', label: 'Помощь', icon: HelpCircle},
-    // { route: '/app/admin', label: 'Админ-панель', icon: Shield },
 ];
 
 export default function AppSidebar({onLogout, isOpen, onNavigate}) {
@@ -37,7 +36,10 @@ export default function AppSidebar({onLogout, isOpen, onNavigate}) {
         <aside className={`sidebar ${isOpen ? 'sidebar--open' : ''}`}>
             <div className="sidebar__container">
                 <div className="sidebar__header">
-                    <h1 className="sidebar__title">Финансовый помощник</h1>
+                    <div className="sidebar__brand">
+                        <Landmark className="sidebar__brand-icon" />
+                        <h1 className="sidebar__title">Финансовый помощник</h1>
+                    </div>
                 </div>
 
                 <nav className="sidebar__nav">

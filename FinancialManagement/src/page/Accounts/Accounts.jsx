@@ -33,6 +33,34 @@ function Accounts() {
     const [transferForm, setTransferForm] = useState({ fromAccountId: null, toAccountId: null, amount: '' })
     const [transferErrors, setTransferErrors] = useState({})
 
+    const ACCOUNT_FORM_DRAFT_KEY = 'accountFormDraft'
+    const TRANSFER_FORM_DRAFT_KEY = 'accountTransferFormDraft'
+
+    const loadDraft = (key) => {
+        try {
+            const raw = localStorage.getItem(key)
+            return raw ? JSON.parse(raw) : null
+        } catch {
+            return null
+        }
+    }
+
+    const saveDraft = (key, draft) => {
+        try {
+            localStorage.setItem(key, JSON.stringify(draft))
+        } catch {
+            // ignore write errors
+        }
+    }
+
+    const clearDraft = (key) => {
+        try {
+            localStorage.removeItem(key)
+        } catch {
+            // ignore remove errors
+        }
+    }
+
     const [accounts, setAccounts] = useState([])
     const [currencies, setCurrencies] = useState([])
     const [loading, setLoading] = useState(true)
@@ -53,6 +81,37 @@ function Accounts() {
     };
 
     useEffect(() => { fetchData(); }, []);
+
+    useEffect(() => {
+        const draft = loadDraft(ACCOUNT_FORM_DRAFT_KEY)
+        if (draft) {
+            setAccountName(draft.accountName || '')
+            setAccountType(draft.accountType || '')
+            setCurrency(draft.currency || 'RUB')
+            setInitialBalance(draft.initialBalance || '')
+        }
+        const transferDraft = loadDraft(TRANSFER_FORM_DRAFT_KEY)
+        if (transferDraft) {
+            setTransferForm({
+                fromAccountId: transferDraft.fromAccountId ?? null,
+                toAccountId: transferDraft.toAccountId ?? null,
+                amount: transferDraft.amount || ''
+            })
+        }
+    }, []);
+
+    useEffect(() => {
+        saveDraft(ACCOUNT_FORM_DRAFT_KEY, {
+            accountName,
+            accountType,
+            currency,
+            initialBalance,
+        })
+    }, [accountName, accountType, currency, initialBalance]);
+
+    useEffect(() => {
+        saveDraft(TRANSFER_FORM_DRAFT_KEY, transferForm)
+    }, [transferForm]);
 
     const totlalBalance = accounts
         .filter(account => account.currency === 'RUB')
@@ -93,6 +152,7 @@ function Accounts() {
             setCurrency('RUB');
             setInitialBalance('');
             setAccountNameErrors('');
+            clearDraft(ACCOUNT_FORM_DRAFT_KEY);
             invalidateAccountsCache();
             fetchData();
         } catch (err) {
@@ -295,6 +355,7 @@ function Accounts() {
             setTransferDialogOpen(false);
             setTransferForm({ fromAccountId: null, toAccountId: null, amount: '' });
             setTransferErrors({});
+            clearDraft(TRANSFER_FORM_DRAFT_KEY);
             invalidateAccountsCache();
             fetchData();
         } catch (err) {

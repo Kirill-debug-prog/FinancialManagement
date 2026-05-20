@@ -30,6 +30,86 @@ export default function TransactionForm({ onClose, onCreated, initialData }) {
     const [loading, setLoading] = useState(false)
     const [errors, setErrors] = useState({})
 
+    const TRANSACTION_DRAFT_KEY = 'transactionFormDraft'
+
+    const loadDraft = () => {
+        try {
+            const raw = localStorage.getItem(TRANSACTION_DRAFT_KEY)
+            return raw ? JSON.parse(raw) : null
+        } catch {
+            return null
+        }
+    }
+
+    const saveDraft = (draft) => {
+        try {
+            localStorage.setItem(TRANSACTION_DRAFT_KEY, JSON.stringify(draft))
+        } catch {
+            // ignore write errors
+        }
+    }
+
+    const clearDraft = () => {
+        try {
+            localStorage.removeItem(TRANSACTION_DRAFT_KEY)
+        } catch {
+            // ignore remove errors
+        }
+    }
+
+    useEffect(() => {
+        const draft = loadDraft()
+        if (!initialData && draft) {
+            setType(draft.type || 'expense')
+            setAmount(draft.amount || '')
+            setCategory(draft.category || '')
+            setAccount(draft.account || '')
+            setFromAccount(draft.fromAccount || '')
+            setToAccount(draft.toAccount || '')
+            setDate(draft.date || new Date().toISOString().split('T')[0])
+            setDescription(draft.description || '')
+        }
+    }, [initialData])
+
+    useEffect(() => {
+        if (initialData?.id) return
+
+        saveDraft({
+            type,
+            amount,
+            category,
+            account,
+            fromAccount,
+            toAccount,
+            date,
+            description,
+        })
+    }, [type, amount, category, account, fromAccount, toAccount, date, description, initialData])
+
+    useEffect(() => {
+        if (initialData?.id) {
+            clearDraft()
+        }
+    }, [initialData])
+
+    useEffect(() => {
+        const handleBeforeUnload = () => {
+            saveDraft({
+                type,
+                amount,
+                category,
+                account,
+                fromAccount,
+                toAccount,
+                date,
+                description,
+            })
+        }
+
+        window.addEventListener('beforeunload', handleBeforeUnload)
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+    }, [type, amount, category, account, fromAccount, toAccount, date, description])
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -225,6 +305,7 @@ export default function TransactionForm({ onClose, onCreated, initialData }) {
                 }
             }
 
+            clearDraft()
             if (onCreated) onCreated();
             else onClose();
         } catch (err) {

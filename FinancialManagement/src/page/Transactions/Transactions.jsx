@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card/card';
 import { Button } from '../../components/ui/button/button';
@@ -16,21 +16,39 @@ import { invalidateTransactionsCache } from '../../api/cacheInvalidation';
 import { useDebounce } from '../../hooks/usePerformance';
 import "./Transactions.scss"
 
+const TRANSACTIONS_FILTERS_KEY = 'transactionsFilters';
+
+function loadSavedTransactionFilters() {
+    if (typeof window === 'undefined') return {};
+    try {
+        return JSON.parse(window.localStorage.getItem(TRANSACTIONS_FILTERS_KEY)) || {};
+    } catch {
+        return {};
+    }
+}
+
+function saveTransactionFilters(filters) {
+    if (typeof window === 'undefined') return;
+    window.localStorage.setItem(TRANSACTIONS_FILTERS_KEY, JSON.stringify(filters));
+}
+
 function Transactions() {
+    const savedFilters = loadSavedTransactionFilters();
     const [dialogOpen, setDialogOpen] = useState(false)
     const [editTransaction, setEditTransaction] = useState(null);
-    const [filterType, setFilterType] = useState('all')
-    const [filterAccount, setFilterAccount] = useState('all')
-    const [searchQuery, setSearchQuery] = useState('')
-    const [dateFrom, setDateFrom] = useState('')
-    const [dateTo, setDateTo] = useState('')
+    const [filterType, setFilterType] = useState(savedFilters.filterType ?? 'all')
+    const [filterAccount, setFilterAccount] = useState(savedFilters.filterAccount ?? 'all')
+    const [searchQuery, setSearchQuery] = useState(savedFilters.searchQuery ?? '')
+    const [dateFrom, setDateFrom] = useState(savedFilters.dateFrom ?? '')
+    const [dateTo, setDateTo] = useState(savedFilters.dateTo ?? '')
     // eslint-disable-next-line no-unused-vars
-    const [minAmount, setMinAmount] = useState('')
+    const [minAmount, setMinAmount] = useState(savedFilters.minAmount ?? '')
     // eslint-disable-next-line no-unused-vars
-    const [maxAmount, setMaxAmount] = useState('')
+    const [maxAmount, setMaxAmount] = useState(savedFilters.maxAmount ?? '')
     const [transactions, setTransactions] = useState([])
     const [accounts, setAccounts] = useState([])
     const [loading, setLoading] = useState(true)
+    const initialLoadRef = useRef(true);
 
     // Debounced поиск для оптимизации производительности (500ms задержка)
     const debouncedSearch = useDebounce(() => {
@@ -68,10 +86,28 @@ function Transactions() {
     }, []);
 
     useEffect(() => {
-        if (accounts.length > 0) {
-            fetchTransactions();
+        if (accounts.length === 0) return;
+        if (!initialLoadRef.current) return;
+        initialLoadRef.current = false;
+
+        const filters = {};
+        if (filterAccount && filterAccount !== 'all') {
+            filters.accountId = filterAccount;
         }
-    }, [accounts, fetchTransactions]);
+        fetchTransactions(filters);
+    }, [accounts, fetchTransactions, filterAccount]);
+
+    useEffect(() => {
+        saveTransactionFilters({
+            filterType,
+            filterAccount,
+            searchQuery,
+            dateFrom,
+            dateTo,
+            minAmount,
+            maxAmount,
+        });
+    }, [filterType, filterAccount, searchQuery, dateFrom, dateTo, minAmount, maxAmount]);
 
     const handleFilterChange = (newFilters) => {
         const filters = {};
@@ -79,12 +115,23 @@ function Transactions() {
             filters.accountId = newFilters.accountId;
         }
         if (newFilters.dateFrom) {
-            filters.dateFrom = new Date(newFilters.dateFrom).toISOString();
+            filters.dateFrom = newFilters.dateFrom;
         }
         if (newFilters.dateTo) {
-            filters.dateTo = new Date(newFilters.dateTo).toISOString();
+            filters.dateTo = newFilters.dateTo;
         }
         fetchTransactions(filters);
+    };
+
+    const handleResetFilters = () => {
+        setFilterType('all');
+        setFilterAccount('all');
+        setSearchQuery('');
+        setDateFrom('');
+        setDateTo('');
+        setMinAmount('');
+        setMaxAmount('');
+        fetchTransactions();
     };
 
     const filteredTransactions = transactions.filter(t => {
@@ -95,8 +142,11 @@ function Transactions() {
         const minAmountNum = minAmount ? parseFloat(minAmount) : 0
         const maxAmountNum = maxAmount ? parseFloat(maxAmount) : Infinity
         const matchesAmount = t.amount >= minAmountNum && t.amount <= maxAmountNum
+        const dateOnly = t.date ? t.date.split('T')[0] : ''
+        const matchesDateFrom = !dateFrom || dateOnly >= dateFrom
+        const matchesDateTo = !dateTo || dateOnly <= dateTo
 
-        return matchesType && matchesAccount && matchesSearch && matchesAmount
+        return matchesType && matchesAccount && matchesSearch && matchesAmount && matchesDateFrom && matchesDateTo
     })
 
     const getTypeBadge = (type) => {
@@ -255,6 +305,12 @@ function Transactions() {
                                     title="До даты"
                                 />
                             </div>
+                        </div>
+
+                        <div className="transactions__filter-actions">
+                            <Button variant="outline" onClick={handleResetFilters}>
+                                Сбросить фильтры
+                            </Button>
                         </div>
 
                         {/* <div className="transactions__export">

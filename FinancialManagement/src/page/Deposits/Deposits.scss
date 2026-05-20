@@ -62,7 +62,7 @@
         white-space: nowrap;
 
         &:hover {
-            background-color: var(--color-primary);
+            background-color: var(--color-primary-hover);
         }
 
         @include respond-down(md) {

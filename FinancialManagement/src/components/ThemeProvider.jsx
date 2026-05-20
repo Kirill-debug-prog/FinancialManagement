@@ -10,7 +10,11 @@ function getSystemTheme() {
 
 export function ThemeProvider({ children }) {
     const [theme, setTheme] = useState(() => {
-        return localStorage.getItem('theme') || 'auto';
+        try {
+            return localStorage.getItem('theme') || 'auto';
+        } catch {
+            return 'auto';
+        }
     });
 
     useEffect(() => {
@@ -23,7 +27,11 @@ export function ThemeProvider({ children }) {
 
         root.setAttribute('data-theme', appliedTheme);
 
-        localStorage.setItem('theme', theme);
+        try {
+            localStorage.setItem('theme', theme);
+        } catch (err) {
+            console.warn('Не удалось сохранить тему в localStorage:', err);
+        }
     }, [theme]);
 
     useEffect(() => {

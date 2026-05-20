@@ -65,7 +65,7 @@
         width: 100%;
 
         &:hover {
-            background-color: var(--color-primary);
+            background-color: var(--color-primary-hover);
         }
 
         @include respond(md) {

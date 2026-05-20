@@ -10,6 +10,7 @@ class ErrorBoundary extends Component {
         super(props);
         this.state = {
             hasError: false,
+            error: null,
             errorInfo: null,
             errorCount: 0
         };
@@ -26,13 +27,14 @@ class ErrorBoundary extends Component {
 
         // Сохраняем информацию об ошибке в state
         this.setState(prevState => ({
+            error,
             errorInfo,
             errorCount: prevState.errorCount + 1
         }));
 
         // Отправляем ошибку на сервер для мониторинга (если нужно)
-        // eslint-disable-next-line no-undef
-        if (process.env.NODE_ENV === 'production') {
+        const isDevMode = import.meta.env.DEV ?? process.env.NODE_ENV !== 'production';
+        if (!isDevMode) {
             this.logErrorToServer(error, errorInfo);
         }
     }
@@ -90,20 +92,17 @@ class ErrorBoundary extends Component {
                             К сожалению, приложение встретило неожиданную ошибку
                         </p>
 
-                        {/* eslint-disable-next-line no-undef */}
-                        {process.env.NODE_ENV !== 'production' && (
-                            <div style={styles.errorDetails}>
-                                <h3 style={styles.errorTitle}>Детали ошибки:</h3>
+                        <div style={styles.errorDetails}>
+                            <h3 style={styles.errorTitle}>Детали ошибки:</h3>
+                            <pre style={styles.errorText}>
+                                {this.state.error?.toString()}
+                            </pre>
+                            {this.state.errorInfo && (
                                 <pre style={styles.errorText}>
-                                    {this.state.error?.toString()}
+                                    {this.state.errorInfo.componentStack}
                                 </pre>
-                                {this.state.errorInfo && (
-                                    <pre style={styles.errorText}>
-                                        {this.state.errorInfo.componentStack}
-                                    </pre>
-                                )}
-                            </div>
-                        )}
+                            )}
+                        </div>
 
                         <p style={styles.tryText}>
                             Попробуйте одно из следующих действий:
@@ -168,14 +167,14 @@ const styles = {
     card: {
         backgroundColor: 'white',
         borderRadius: '12px',
-        padding: '3rem 2rem',
+        padding: '2rem 2rem',
         maxWidth: '500px',
         width: '100%',
         boxShadow: '0 10px 40px rgba(0, 0, 0, 0.1)',
         textAlign: 'center'
     },
     iconContainer: {
-        marginBottom: '2rem'
+        marginBottom: '0.5rem'
     },
     title: {
         fontSize: '1.75rem',
@@ -192,7 +191,7 @@ const styles = {
         backgroundColor: '#fef2f2',
         borderLeft: '4px solid #ef4444',
         padding: '1rem',
-        marginBottom: '1.5rem',
+        marginBottom: '1rem',
         textAlign: 'left',
         borderRadius: '4px'
     },

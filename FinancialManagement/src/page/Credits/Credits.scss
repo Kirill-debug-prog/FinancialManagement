@@ -62,7 +62,7 @@
         white-space: nowrap;
 
         &:hover {
-            background-color: var(--color-primary);
+            background-color: var(--color-primary-hover);
         }
 
         @include respond-down(md) {
@@ -231,9 +231,9 @@
 
 .debt-card {
     box-shadow: none;
-    border: 1px solid $color-border;
+    border: 1px solid var(--color-border);
     border-radius: $radius-md;
-    padding: var(--color-border);
+    padding: $space-md;
 
     @include respond-down(md) {
         padding: $space-sm;
