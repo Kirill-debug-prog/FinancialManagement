@@ -1,9 +1,10 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Debts.Commands.ChangeDueDate;
 
-public class ChangeDueDateCommandHandler
+public class ChangeDueDateCommandHandler : IRequestHandler<ChangeDueDateCommand, Result<bool>>
 {
   private readonly IDebtRepository _debtRepository;
 
@@ -12,7 +13,7 @@ public class ChangeDueDateCommandHandler
     _debtRepository = debtRepository;
   }
 
-  public async Task<Result<bool>> Handle(ChangeDueDateCommand command)
+  public async Task<Result<bool>> Handle(ChangeDueDateCommand command, CancellationToken cancellationToken)
   {
     var debt = await _debtRepository.GetByIdAsync(command.Id);
     if (debt is null)

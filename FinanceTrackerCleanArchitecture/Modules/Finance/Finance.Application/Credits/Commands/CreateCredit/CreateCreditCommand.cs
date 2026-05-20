@@ -1,3 +1,5 @@
+using MediatR;
+using Core.Domain.Common;
 namespace Finance.Application.Credits.Commands.CreateCredit;
 
 public record CreateCreditCommand(
@@ -8,4 +10,4 @@ public record CreateCreditCommand(
   decimal MonthlyPayment,
   decimal InterestRate,
   DateOnly StartDate,
-  DateOnly EndDate);
+  DateOnly EndDate) : IRequest<Result<Guid>>;

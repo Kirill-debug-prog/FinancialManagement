@@ -1,9 +1,10 @@
+using MediatR;
 using Core.Domain.Common;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Analytics.Queries.GetMonthlyAnalytics;
 
-public class GetMonthlyAnalyticsQueryHandler
+public class GetMonthlyAnalyticsQueryHandler : IRequestHandler<GetMonthlyAnalyticsQuery, Result<IEnumerable<GetMonthlyAnalyticsResponse>>>
 {
     private readonly ITransactionRepository _transactionRepository;
 
@@ -12,7 +13,7 @@ public class GetMonthlyAnalyticsQueryHandler
         _transactionRepository = transactionRepository;
     }
 
-    public async Task<Result<IEnumerable<GetMonthlyAnalyticsResponse>>> Handle(GetMonthlyAnalyticsQuery query)
+    public async Task<Result<IEnumerable<GetMonthlyAnalyticsResponse>>> Handle(GetMonthlyAnalyticsQuery query, CancellationToken cancellationToken)
     {
         var totals = await _transactionRepository.GetMonthlyTotalsAsync(query.ProfileId, query.Year);
         var byMonth = totals.ToDictionary(t => t.Month);

@@ -1,3 +1,4 @@
+using MediatR;
 using Finance.Application.Currencies.Commands.UpdateCurrencyRate;
 using Finance.Application.Currencies.Queries.GetAllCurrencies;
 using Finance.Application.Currencies.Queries.GetCurrencyById;
@@ -11,24 +12,18 @@ namespace Core.API.Controllers;
 [Route("api/[controller]")]
 public class CurrencyController : ControllerBase
 {
-  private readonly GetAllCurrenciesQueryHandler _getAllHandler;
-  private readonly GetCurrencyByIdQueryHandler _getByIdHandler;
-  private readonly UpdateCurrencyRateCommandHandler _updateRateHandler;
 
-  public CurrencyController(
-    GetAllCurrenciesQueryHandler getAllHandler,
-    GetCurrencyByIdQueryHandler getByIdHandler,
-    UpdateCurrencyRateCommandHandler updateRateHandler)
+  private readonly IMediator _mediator;
+
+  public CurrencyController(IMediator mediator)
   {
-    _getAllHandler = getAllHandler;
-    _getByIdHandler = getByIdHandler;
-    _updateRateHandler = updateRateHandler;
+    _mediator = mediator;
   }
 
   [HttpGet]
   public async Task<IActionResult> GetAll()
   {
-    var result = await _getAllHandler.Handle(new GetAllCurrenciesQuery());
+    var result = await _mediator.Send(new GetAllCurrenciesQuery());
     if (result.IsFailure)
       return BadRequest(result.Error);
     return Ok(result.Value);
@@ -37,7 +32,7 @@ public class CurrencyController : ControllerBase
   [HttpGet("{id}")]
   public async Task<IActionResult> GetById(Guid id)
   {
-    var result = await _getByIdHandler.Handle(new GetCurrencyByIdQuery(id));
+    var result = await _mediator.Send(new GetCurrencyByIdQuery(id));
     if (result.IsFailure)
       return BadRequest(result.Error);
     return Ok(result.Value);
@@ -46,7 +41,7 @@ public class CurrencyController : ControllerBase
   [HttpPatch("{id}/rate")]
   public async Task<IActionResult> UpdateRate(Guid id, [FromBody] UpdateCurrencyRateCommand command)
   {
-    var result = await _updateRateHandler.Handle(command with { Id = id });
+    var result = await _mediator.Send(command with { Id = id });
     if (result.IsFailure)
       return BadRequest(result.Error);
     return NoContent();

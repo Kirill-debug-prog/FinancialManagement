@@ -1,9 +1,10 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Wallets.Commands.ChangeSortOrder;
 
-public class ChangeSortOrderCommandHandler
+public class ChangeSortOrderCommandHandler : IRequestHandler<ChangeSortOrderCommand, Result<bool>>
 {
   private readonly IWalletRepository _walletRepository;
 
@@ -12,7 +13,7 @@ public class ChangeSortOrderCommandHandler
     _walletRepository = walletRepository;
   }
 
-  public async Task<Result<bool>> Handle(ChangeSortOrderCommand command)
+  public async Task<Result<bool>> Handle(ChangeSortOrderCommand command, CancellationToken cancellationToken)
   {
     var wallet = await _walletRepository.GetWalletByIdAsync(command.Id);
     if (wallet is null)

@@ -1,9 +1,10 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Credits.Queries.GetCreditById;
 
-public class GetCreditByIdQueryHandler
+public class GetCreditByIdQueryHandler : IRequestHandler<GetCreditByIdQuery, Result<GetCreditByIdResponse>>
 {
   private readonly ICreditRepository _creditRepository;
 
@@ -12,7 +13,7 @@ public class GetCreditByIdQueryHandler
     _creditRepository = creditRepository;
   }
 
-  public async Task<Result<GetCreditByIdResponse>> Handle(GetCreditByIdQuery query)
+  public async Task<Result<GetCreditByIdResponse>> Handle(GetCreditByIdQuery query, CancellationToken cancellationToken)
   {
     var credit = await _creditRepository.GetByIdAsync(query.Id);
     if (credit is null)

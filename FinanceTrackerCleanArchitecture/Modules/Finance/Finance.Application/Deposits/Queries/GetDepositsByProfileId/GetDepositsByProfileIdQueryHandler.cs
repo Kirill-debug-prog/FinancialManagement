@@ -1,9 +1,10 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Deposits.Queries.GetDepositsByProfileId;
 
-public class GetDepositsByProfileIdQueryHandler
+public class GetDepositsByProfileIdQueryHandler : IRequestHandler<GetDepositsByProfileIdQuery, Result<IEnumerable<GetDepositsByProfileIdResponse>>>
 {
   private readonly IDepositRepository _depositRepository;
 
@@ -12,7 +13,7 @@ public class GetDepositsByProfileIdQueryHandler
     _depositRepository = depositRepository;
   }
 
-  public async Task<Result<IEnumerable<GetDepositsByProfileIdResponse>>> Handle(GetDepositsByProfileIdQuery query)
+  public async Task<Result<IEnumerable<GetDepositsByProfileIdResponse>>> Handle(GetDepositsByProfileIdQuery query, CancellationToken cancellationToken)
   {
     var deposits = await _depositRepository.GetByProfileIdAsync(query.ProfileId);
 

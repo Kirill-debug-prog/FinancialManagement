@@ -1,9 +1,10 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Credits.Commands.CloseCredit;
 
-public class CloseCreditCommandHandler
+public class CloseCreditCommandHandler : IRequestHandler<CloseCreditCommand, Result<bool>>
 {
   private readonly ICreditRepository _creditRepository;
 
@@ -12,7 +13,7 @@ public class CloseCreditCommandHandler
     _creditRepository = creditRepository;
   }
 
-  public async Task<Result<bool>> Handle(CloseCreditCommand command)
+  public async Task<Result<bool>> Handle(CloseCreditCommand command, CancellationToken cancellationToken)
   {
     var credit = await _creditRepository.GetByIdAsync(command.Id);
     if (credit is null)

@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Reports.Domain\Reports.Domain.csproj" />
+    <PackageReference Include="MediatR" Version="12.4.1" />
     <PackageReference Include="Hangfire.Core" Version="1.8.23" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />

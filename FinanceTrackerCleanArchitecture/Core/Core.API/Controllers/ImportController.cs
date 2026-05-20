@@ -1,3 +1,4 @@
+using MediatR;
 using Finance.Application.Import.Commands.ImportBankStatement;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,11 +10,12 @@ namespace Core.API.Controllers;
 [Route("api/[controller]")]
 public class ImportController : ControllerBase
 {
-  private readonly ImportBankStatementCommandHandler _importHandler;
 
-  public ImportController(ImportBankStatementCommandHandler importHandler)
+  private readonly IMediator _mediator;
+
+  public ImportController(IMediator mediator)
   {
-    _importHandler = importHandler;
+    _mediator = mediator;
   }
 
   [HttpPost("bank-statement")]
@@ -35,7 +37,7 @@ public class ImportController : ControllerBase
       bytes = ms.ToArray();
     }
 
-    var result = await _importHandler.Handle(new ImportBankStatementCommand(walletId, bytes));
+    var result = await _mediator.Send(new ImportBankStatementCommand(walletId, bytes));
 
     if (result.IsFailure)
       return BadRequest(result.Error);

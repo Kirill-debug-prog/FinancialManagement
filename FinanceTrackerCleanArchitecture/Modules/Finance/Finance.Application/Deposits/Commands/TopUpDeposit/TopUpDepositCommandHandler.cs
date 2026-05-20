@@ -1,9 +1,10 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Deposits.Commands.TopUpDeposit;
 
-public class TopUpDepositCommandHandler
+public class TopUpDepositCommandHandler : IRequestHandler<TopUpDepositCommand, Result<bool>>
 {
   private readonly IDepositRepository _depositRepository;
 
@@ -12,7 +13,7 @@ public class TopUpDepositCommandHandler
     _depositRepository = depositRepository;
   }
 
-  public async Task<Result<bool>> Handle(TopUpDepositCommand command)
+  public async Task<Result<bool>> Handle(TopUpDepositCommand command, CancellationToken cancellationToken)
   {
     var deposit = await _depositRepository.GetByIdAsync(command.DepositId);
     if (deposit is null)

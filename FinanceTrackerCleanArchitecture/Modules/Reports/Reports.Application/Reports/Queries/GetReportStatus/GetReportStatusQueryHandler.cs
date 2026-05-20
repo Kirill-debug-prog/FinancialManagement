@@ -1,9 +1,10 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Reports.Domain.Interfaces;
 
 namespace Reports.Application.Reports.Queries.GetReportStatus;
 
-public class GetReportStatusQueryHandler
+public class GetReportStatusQueryHandler : IRequestHandler<GetReportStatusQuery, Result<GetReportStatusResponse>>
 {
   private readonly IReportJobRepository _jobRepository;
 

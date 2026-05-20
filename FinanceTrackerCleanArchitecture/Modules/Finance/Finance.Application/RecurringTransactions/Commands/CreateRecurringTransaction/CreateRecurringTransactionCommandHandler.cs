@@ -1,10 +1,11 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Entities;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.RecurringTransactions.Commands.CreateRecurringTransaction;
 
-public class CreateRecurringTransactionCommandHandler
+public class CreateRecurringTransactionCommandHandler : IRequestHandler<CreateRecurringTransactionCommand, Result<Guid>>
 {
   private readonly IRecurringTransactionRepository _recurringTransactionRepository;
   private readonly IWalletRepository _walletRepository;
@@ -15,7 +16,7 @@ public class CreateRecurringTransactionCommandHandler
     _walletRepository = walletRepository;
   }
 
-  public async Task<Result<Guid>> Handle(CreateRecurringTransactionCommand command)
+  public async Task<Result<Guid>> Handle(CreateRecurringTransactionCommand command, CancellationToken cancellationToken)
   {
     var wallet = await _walletRepository.GetWalletByIdAsync(command.WalletId);
     if (wallet is null)

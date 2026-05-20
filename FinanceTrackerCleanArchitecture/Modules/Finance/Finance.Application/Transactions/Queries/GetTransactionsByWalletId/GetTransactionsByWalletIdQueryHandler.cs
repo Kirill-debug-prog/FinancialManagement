@@ -1,9 +1,10 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Transactions.Queries.GetTransactionsByWalletId;
 
-public class GetTransactionsByWalletIdQueryHandler
+public class GetTransactionsByWalletIdQueryHandler : IRequestHandler<GetTransactionsByWalletIdQuery, Result<IEnumerable<GetTransactionsByWalletIdResponse>>>
 {
   private readonly ITransactionRepository _transactionRepository;
 
@@ -12,7 +13,7 @@ public class GetTransactionsByWalletIdQueryHandler
     _transactionRepository = transactionRepository;
   }
 
-  public async Task<Result<IEnumerable<GetTransactionsByWalletIdResponse>>> Handle(GetTransactionsByWalletIdQuery query)
+  public async Task<Result<IEnumerable<GetTransactionsByWalletIdResponse>>> Handle(GetTransactionsByWalletIdQuery query, CancellationToken cancellationToken)
   {
     var transactions = await _transactionRepository.GetByWalletIdAsync(query.WalletId);
 

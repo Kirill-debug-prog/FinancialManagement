@@ -1,9 +1,10 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Credits.Queries.GetCreditsByProfileId;
 
-public class GetCreditsByProfileIdQueryHandler
+public class GetCreditsByProfileIdQueryHandler : IRequestHandler<GetCreditsByProfileIdQuery, Result<IEnumerable<GetCreditsByProfileIdResponse>>>
 {
   private readonly ICreditRepository _creditRepository;
 
@@ -12,7 +13,7 @@ public class GetCreditsByProfileIdQueryHandler
     _creditRepository = creditRepository;
   }
 
-  public async Task<Result<IEnumerable<GetCreditsByProfileIdResponse>>> Handle(GetCreditsByProfileIdQuery query)
+  public async Task<Result<IEnumerable<GetCreditsByProfileIdResponse>>> Handle(GetCreditsByProfileIdQuery query, CancellationToken cancellationToken)
   {
     var credits = await _creditRepository.GetByProfileIdAsync(query.ProfileId);
 

@@ -1,3 +1,4 @@
+using MediatR;
 using Users.Application.Interfaces;
 using Users.Domain.Interfaces;
 using Users.Domain.ValueObject;
@@ -5,7 +6,7 @@ using Users.Domain.Entities;
 using Core.Domain.Common;
 
 namespace Users.Application.Users.Commands.RegisterUser;
-public class RegisterUserCommandHandler
+public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, Result<Guid>>
 {
   private readonly IUserRepository _userRepository;
   private readonly IPasswordHasher _passwordHasher;
@@ -15,7 +16,7 @@ public class RegisterUserCommandHandler
     _passwordHasher = passwordHasher;
   }
 
-  public async Task<Result<Guid>> Handle(RegisterUserCommand command)
+  public async Task<Result<Guid>> Handle(RegisterUserCommand command, CancellationToken cancellationToken)
   {
     Result<Email> email = Email.Create(command.Email);
     if (email.IsFailure)

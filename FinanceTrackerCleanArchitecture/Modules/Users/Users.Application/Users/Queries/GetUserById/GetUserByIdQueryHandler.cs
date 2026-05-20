@@ -1,9 +1,10 @@
-﻿using Users.Domain.Interfaces;
+using MediatR;
+using Users.Domain.Interfaces;
 using Core.Domain.Common;
 
 namespace Users.Application.Users.Queries.GetUserById;
 
-public class GetUserByIdQueryHandler
+public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, Result<GetUserByIdResponse>>
 {
   private readonly IUserRepository _userRepository;
 
@@ -12,7 +13,7 @@ public class GetUserByIdQueryHandler
     _userRepository = userRepository;
   }
 
-  public async Task<Result<GetUserByIdResponse>> Handle(GetUserByIdQuery query)
+  public async Task<Result<GetUserByIdResponse>> Handle(GetUserByIdQuery query, CancellationToken cancellationToken)
   {
     var user = await _userRepository.GetByIdAsync(query.Id);
     if (user is null)

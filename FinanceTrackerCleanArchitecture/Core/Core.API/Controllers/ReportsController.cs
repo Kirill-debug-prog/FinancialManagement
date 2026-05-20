@@ -1,3 +1,4 @@
+using MediatR;
 using System.Security.Claims;
 using System.Text.Json;
 using Reports.Application.Reports.Commands.CreateReport;
@@ -19,18 +20,12 @@ public class ReportsController : ControllerBase
     PropertyNamingPolicy = JsonNamingPolicy.CamelCase
   };
 
-  private readonly CreateReportCommandHandler _createReportHandler;
-  private readonly GetReportStatusQueryHandler _getReportStatusHandler;
-  private readonly GetReportDownloadUrlQueryHandler _getReportDownloadUrlHandler;
 
-  public ReportsController(
-    CreateReportCommandHandler createReportHandler,
-    GetReportStatusQueryHandler getReportStatusHandler,
-    GetReportDownloadUrlQueryHandler getReportDownloadUrlHandler)
+  private readonly IMediator _mediator;
+
+  public ReportsController(IMediator mediator)
   {
-    _createReportHandler = createReportHandler;
-    _getReportStatusHandler = getReportStatusHandler;
-    _getReportDownloadUrlHandler = getReportDownloadUrlHandler;
+    _mediator = mediator;
   }
 
   [HttpPost("profile-transactions")]
@@ -53,7 +48,7 @@ public class ReportsController : ControllerBase
     }, JsonOptions);
 
     var command = new CreateReportCommand(ReportType.ProfileTransactions, userId, parameters);
-    var result = await _createReportHandler.Handle(command, cancellationToken);
+    var result = await _mediator.Send(command, cancellationToken);
 
     if (result.IsFailure)
       return BadRequest(result.Error);
@@ -68,7 +63,7 @@ public class ReportsController : ControllerBase
     if (!Guid.TryParse(userIdString, out var userId))
       return Unauthorized();
 
-    var result = await _getReportStatusHandler.Handle(
+    var result = await _mediator.Send(
       new GetReportStatusQuery(id, userId), cancellationToken);
 
     if (result.IsFailure)
@@ -101,7 +96,7 @@ public class ReportsController : ControllerBase
     }, JsonOptions);
 
     var command = new CreateReportCommand(ReportType.CategoryBreakdown, userId, parameters);
-    var result = await _createReportHandler.Handle(command, cancellationToken);
+    var result = await _mediator.Send(command, cancellationToken);
 
     if (result.IsFailure)
       return BadRequest(result.Error);
@@ -126,7 +121,7 @@ public class ReportsController : ControllerBase
     }, JsonOptions);
 
     var command = new CreateReportCommand(ReportType.FinancialObligations, userId, parameters);
-    var result = await _createReportHandler.Handle(command, cancellationToken);
+    var result = await _mediator.Send(command, cancellationToken);
 
     if (result.IsFailure)
       return BadRequest(result.Error);
@@ -141,7 +136,7 @@ public class ReportsController : ControllerBase
     if (!Guid.TryParse(userIdString, out var userId))
       return Unauthorized();
 
-    var result = await _getReportDownloadUrlHandler.Handle(
+    var result = await _mediator.Send(
       new GetReportDownloadUrlQuery(id, userId), cancellationToken);
 
     if (result.IsFailure)

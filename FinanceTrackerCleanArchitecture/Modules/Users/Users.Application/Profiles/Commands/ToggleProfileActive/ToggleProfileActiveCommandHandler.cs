@@ -1,9 +1,10 @@
+using MediatR;
 using Core.Domain.Common;
 using Users.Domain.Interfaces;
 
 namespace Users.Application.Profiles.Commands.ToggleProfileActive;
 
-public class ToggleProfileActiveCommandHandler
+public class ToggleProfileActiveCommandHandler : IRequestHandler<ToggleProfileActiveCommand, Result<bool>>
 {
   private readonly IProfileRepository _profileRepository;
 
@@ -12,7 +13,7 @@ public class ToggleProfileActiveCommandHandler
     _profileRepository = profileRepository;
   }
 
-  public async Task<Result<bool>> Handle(ToggleProfileActiveCommand command)
+  public async Task<Result<bool>> Handle(ToggleProfileActiveCommand command, CancellationToken cancellationToken)
   {
     var profile = await _profileRepository.GetByIdProfileAsync(command.Id);
     if (profile is null)

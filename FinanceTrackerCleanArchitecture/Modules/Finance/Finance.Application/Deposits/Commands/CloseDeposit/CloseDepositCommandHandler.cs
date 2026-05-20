@@ -1,9 +1,10 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Deposits.Commands.CloseDeposit;
 
-public class CloseDepositCommandHandler
+public class CloseDepositCommandHandler : IRequestHandler<CloseDepositCommand, Result<bool>>
 {
   private readonly IDepositRepository _depositRepository;
 
@@ -12,7 +13,7 @@ public class CloseDepositCommandHandler
     _depositRepository = depositRepository;
   }
 
-  public async Task<Result<bool>> Handle(CloseDepositCommand command)
+  public async Task<Result<bool>> Handle(CloseDepositCommand command, CancellationToken cancellationToken)
   {
     var deposit = await _depositRepository.GetByIdAsync(command.Id);
     if (deposit is null)

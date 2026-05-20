@@ -1,9 +1,10 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Categories.Commands.RenameCategory;
 
-public class RenameCategoryCommandHandler
+public class RenameCategoryCommandHandler : IRequestHandler<RenameCategoryCommand, Result<bool>>
 {
   private readonly ICategoryRepository _categoryRepository;
 
@@ -12,7 +13,7 @@ public class RenameCategoryCommandHandler
     _categoryRepository = categoryRepository;
   }
 
-  public async Task<Result<bool>> Handle(RenameCategoryCommand command)
+  public async Task<Result<bool>> Handle(RenameCategoryCommand command, CancellationToken cancellationToken)
   {
     var category = await _categoryRepository.GetByIdAsync(command.Id);
     if (category is null)

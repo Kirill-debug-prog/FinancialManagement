@@ -1,3 +1,4 @@
+using MediatR;
 using Core.Domain.Common;
 using Finance.Domain.Entities;
 using Finance.Domain.Enums;
@@ -5,7 +6,7 @@ using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Import.Commands.ImportBankStatement;
 
-public class ImportBankStatementCommandHandler
+public class ImportBankStatementCommandHandler : IRequestHandler<ImportBankStatementCommand, Result<ImportBankStatementResponse>>
 {
   private readonly IBankStatementParser _parser;
   private readonly ITransactionRepository _transactionRepository;
@@ -21,7 +22,7 @@ public class ImportBankStatementCommandHandler
     _walletRepository = walletRepository;
   }
 
-  public async Task<Result<ImportBankStatementResponse>> Handle(ImportBankStatementCommand command)
+  public async Task<Result<ImportBankStatementResponse>> Handle(ImportBankStatementCommand command, CancellationToken cancellationToken)
   {
     var wallet = await _walletRepository.GetWalletByIdAsync(command.WalletId);
     if (wallet is null)

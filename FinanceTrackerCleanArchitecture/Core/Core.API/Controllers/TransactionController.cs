@@ -1,3 +1,4 @@
+using MediatR;
 using Finance.Application.Transactions.Commands.ChangeCategory;
 using Finance.Application.Transactions.Commands.ChangeDescription;
 using Finance.Application.Transactions.Commands.CreateTransaction;
@@ -15,36 +16,18 @@ namespace Core.API.Controllers;
 [Route("api/[controller]")]
 public class TransactionController : ControllerBase
 {
-  private readonly CreateTransactionCommandHandler _createTransactionHandler;
-  private readonly DeleteTransactionCommandHandler _deleteTransactionHandler;
-  private readonly ChangeDescriptionCommandHandler _changeDescriptionHandler;
-  private readonly ChangeCategoryTransactionCommandHandler _changeCategoryHandler;
-  private readonly GetTransactionByIdQueryHandler _getTransactionByIdHandler;
-  private readonly GetTransactionsByWalletIdQueryHandler _getTransactionsByWalletIdHandler;
-  private readonly GetWalletBalanceQueryHandler _getWalletBalanceHandler;
 
-  public TransactionController(
-    CreateTransactionCommandHandler createTransactionHandler,
-    DeleteTransactionCommandHandler deleteTransactionHandler,
-    ChangeDescriptionCommandHandler changeDescriptionHandler,
-    ChangeCategoryTransactionCommandHandler changeCategoryHandler,
-    GetTransactionByIdQueryHandler getTransactionByIdHandler,
-    GetTransactionsByWalletIdQueryHandler getTransactionsByWalletIdHandler,
-    GetWalletBalanceQueryHandler getWalletBalanceHandler)
+  private readonly IMediator _mediator;
+
+  public TransactionController(IMediator mediator)
   {
-    _createTransactionHandler = createTransactionHandler;
-    _deleteTransactionHandler = deleteTransactionHandler;
-    _changeDescriptionHandler = changeDescriptionHandler;
-    _changeCategoryHandler = changeCategoryHandler;
-    _getTransactionByIdHandler = getTransactionByIdHandler;
-    _getTransactionsByWalletIdHandler = getTransactionsByWalletIdHandler;
-    _getWalletBalanceHandler = getWalletBalanceHandler;
+    _mediator = mediator;
   }
 
   [HttpPost]
   public async Task<IActionResult> Create([FromBody] CreateTransactionCommand command)
   {
-    var result = await _createTransactionHandler.Handle(command);
+    var result = await _mediator.Send(command);
     if (result.IsFailure)
       return BadRequest(result.Error);
     return Ok(result.Value);
@@ -53,7 +36,7 @@ public class TransactionController : ControllerBase
   [HttpGet("{id}")]
   public async Task<IActionResult> GetById(Guid id)
   {
-    var result = await _getTransactionByIdHandler.Handle(new GetTransactionByIdQuery(id));
+    var result = await _mediator.Send(new GetTransactionByIdQuery(id));
     if (result.IsFailure)
       return BadRequest(result.Error);
     return Ok(result.Value);
@@ -62,7 +45,7 @@ public class TransactionController : ControllerBase
   [HttpGet]
   public async Task<IActionResult> GetByWalletId([FromQuery] Guid walletId)
   {
-    var result = await _getTransactionsByWalletIdHandler.Handle(new GetTransactionsByWalletIdQuery(walletId));
+    var result = await _mediator.Send(new GetTransactionsByWalletIdQuery(walletId));
     if (result.IsFailure)
       return BadRequest(result.Error);
     return Ok(result.Value);
@@ -71,7 +54,7 @@ public class TransactionController : ControllerBase
   [HttpGet("balance")]
   public async Task<IActionResult> GetWalletBalance([FromQuery] Guid walletId)
   {
-    var result = await _getWalletBalanceHandler.Handle(new GetWalletBalanceQuery(walletId));
+    var result = await _mediator.Send(new GetWalletBalanceQuery(walletId));
     if (result.IsFailure)
       return BadRequest(result.Error);
     return Ok(result.Value);
@@ -80,7 +63,7 @@ public class TransactionController : ControllerBase
   [HttpPatch("{id}/description")]
   public async Task<IActionResult> ChangeDescription(Guid id, [FromBody] string? newDescription)
   {
-    var result = await _changeDescriptionHandler.Handle(new ChangeDescriptionCommand(id, newDescription));
+    var result = await _mediator.Send(new ChangeDescriptionCommand(id, newDescription));
     if (result.IsFailure)
       return BadRequest(result.Error);
     return NoContent();
@@ -89,7 +72,7 @@ public class TransactionController : ControllerBase
   [HttpPatch("{id}/category")]
   public async Task<IActionResult> ChangeCategory(Guid id, [FromBody] Guid? newCategoryId)
   {
-    var result = await _changeCategoryHandler.Handle(new ChangeCategoryTransactionCommand(id, newCategoryId));
+    var result = await _mediator.Send(new ChangeCategoryTransactionCommand(id, newCategoryId));
     if (result.IsFailure)
       return BadRequest(result.Error);
     return NoContent();
@@ -98,7 +81,7 @@ public class TransactionController : ControllerBase
   [HttpDelete("{id}")]
   public async Task<IActionResult> Delete(Guid id)
   {
-    var result = await _deleteTransactionHandler.Handle(new DeleteTransactionCommand(id));
+    var result = await _mediator.Send(new DeleteTransactionCommand(id));
     if (result.IsFailure)
       return BadRequest(result.Error);
     return NoContent();

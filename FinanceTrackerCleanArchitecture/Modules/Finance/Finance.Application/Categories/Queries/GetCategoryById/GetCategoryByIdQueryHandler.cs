@@ -1,9 +1,10 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Categories.Queries.GetCategoryById;
 
-public class GetCategoryByIdQueryHandler
+public class GetCategoryByIdQueryHandler : IRequestHandler<GetCategoryByIdQuery, Result<GetCategoryByIdResponse>>
 {
   private readonly ICategoryRepository _categoryRepository;
 
@@ -12,7 +13,7 @@ public class GetCategoryByIdQueryHandler
     _categoryRepository = categoryRepository;
   }
 
-  public async Task<Result<GetCategoryByIdResponse>> Handle(GetCategoryByIdQuery query)
+  public async Task<Result<GetCategoryByIdResponse>> Handle(GetCategoryByIdQuery query, CancellationToken cancellationToken)
   {
     var category = await _categoryRepository.GetByIdAsync(query.Id);
     if (category is null)

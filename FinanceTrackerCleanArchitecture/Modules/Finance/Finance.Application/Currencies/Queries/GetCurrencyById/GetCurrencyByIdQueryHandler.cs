@@ -1,9 +1,10 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Currencies.Queries.GetCurrencyById;
 
-public class GetCurrencyByIdQueryHandler
+public class GetCurrencyByIdQueryHandler : IRequestHandler<GetCurrencyByIdQuery, Result<GetCurrencyByIdResponse>>
 {
   private readonly ICurrencyRepository _currencyRepository;
 
@@ -12,7 +13,7 @@ public class GetCurrencyByIdQueryHandler
     _currencyRepository = currencyRepository;
   }
 
-  public async Task<Result<GetCurrencyByIdResponse>> Handle(GetCurrencyByIdQuery query)
+  public async Task<Result<GetCurrencyByIdResponse>> Handle(GetCurrencyByIdQuery query, CancellationToken cancellationToken)
   {
     var currency = await _currencyRepository.GetByIdAsync(query.Id);
     if (currency is null)

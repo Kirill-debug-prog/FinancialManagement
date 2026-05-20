@@ -1,9 +1,10 @@
-﻿using Core.Domain.Common;
+using MediatR;
+using Core.Domain.Common;
 using Finance.Domain.Interfaces;
 
 namespace Finance.Application.Currencies.Commands.UpdateCurrencyRate;
 
-public class UpdateCurrencyRateCommandHandler
+public class UpdateCurrencyRateCommandHandler : IRequestHandler<UpdateCurrencyRateCommand, Result<bool>>
 {
   private readonly ICurrencyRepository _currencyRepository;
 
@@ -12,7 +13,7 @@ public class UpdateCurrencyRateCommandHandler
     _currencyRepository = currencyRepository;
   }
 
-  public async Task<Result<bool>> Handle(UpdateCurrencyRateCommand command)
+  public async Task<Result<bool>> Handle(UpdateCurrencyRateCommand command, CancellationToken cancellationToken)
   {
     var currency = await _currencyRepository.GetByIdAsync(command.Id);
     if (currency is null)

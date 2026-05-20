@@ -1,9 +1,10 @@
+using MediatR;
 using Core.Domain.Common;
 using Users.Domain.Interfaces;
 
 namespace Users.Application.Users.Commands.ChangeProfile;
 
-public class ChangeProfileCommandHandler
+public class ChangeProfileCommandHandler : IRequestHandler<ChangeProfileCommand, Result<bool>>
 {
   private readonly IUserRepository _userRepository;
 
@@ -12,7 +13,7 @@ public class ChangeProfileCommandHandler
     _userRepository = userRepository;
   }
 
-  public async Task<Result<bool>> Handle(ChangeProfileCommand command)
+  public async Task<Result<bool>> Handle(ChangeProfileCommand command, CancellationToken cancellationToken)
   {
     var user = await _userRepository.GetByIdAsync(command.UserId);
     if (user is null)
