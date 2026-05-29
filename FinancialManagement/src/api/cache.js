@@ -3,6 +3,8 @@
  * Поддерживает в памяти и localStorage кеширование
  */
 
+import { recordMemoryCacheHit, recordLocalCacheHit } from './performanceMetrics.js'
+
 const CACHE_STORAGE = 'APP_CACHE_';
 const CACHE_TIMESTAMP = '_TIMESTAMP_';
 const MAX_CACHE_SIZE = 5 * 1024 * 1024; // 5MB максимум для localStorage
@@ -91,6 +93,7 @@ export function getMemoryCache(url) {
         return null;
     }
     
+    recordMemoryCacheHit(url)
     return entry.data;
 }
 
@@ -125,6 +128,7 @@ export function getLocalCache(url) {
             return null;
         }
         
+        recordLocalCacheHit(url)
         return parsed;
     } catch (error) {
         console.warn('Error reading from localStorage cache:', error);

@@ -1,6 +1,7 @@
 import { API_BASE_URL } from './config';
 import { getMemoryCache, setMemoryCache, getLocalCache, setLocalCache, clearCache as clearCacheUtil, getCacheStats } from './cache';
 import { getLocalStorageSize, getAllLocalStorageKeys, clearLocalStorageByPrefix, getStorageInfo, exportStorageState, importStorageState } from './storageUtils';
+import { recordNetworkRequest } from './performanceMetrics.js';
 
 // ============================================================================
 // Authentication & Storage Management
@@ -156,6 +157,11 @@ async function request(url, options = {}) {
         if (response.status === 204) return null;
         
         const data = await response.json();
+        
+        // Логируем сетевой запрос (для GET запросов)
+        if (options.method === 'GET' || !options.method) {
+            recordNetworkRequest(url)
+        }
         
         // Кешируем результат для GET запросов
         if (options.method === 'GET' || !options.method) {

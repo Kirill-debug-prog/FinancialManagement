@@ -1,0 +1,392 @@
+.performance-dashboard {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    border-radius: 8px;
+
+    .performance-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        color: white;
+
+        h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+
+        .performance-controls {
+            display: flex;
+            gap: 1rem;
+
+            .btn {
+                padding: 0.75rem 1.5rem;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-weight: 600;
+                transition: all 0.3s ease;
+                background-color: rgba(255, 255, 255, 0.2);
+                color: white;
+                border: 2px solid rgba(255, 255, 255, 0.5);
+
+                &:hover {
+                    background-color: rgba(255, 255, 255, 0.3);
+                    transform: translateY(-2px);
+                }
+
+                &.active {
+                    background-color: rgba(76, 175, 80, 0.8);
+                    border-color: #4CAF50;
+                }
+
+                &.btn-reset {
+                    background-color: rgba(244, 67, 54, 0.2);
+                    border-color: rgba(244, 67, 54, 0.8);
+
+                    &:hover {
+                        background-color: rgba(244, 67, 54, 0.4);
+                    }
+                }
+            }
+        }
+    }
+
+    // Сетка метрик
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+
+        .metric-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+            &:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            }
+
+            .metric-label {
+                font-size: 0.875rem;
+                color: #666;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-bottom: 0.5rem;
+            }
+
+            .metric-value {
+                font-size: 2.5rem;
+                font-weight: 700;
+                color: #667eea;
+                margin: 0.5rem 0;
+            }
+
+            .metric-desc {
+                font-size: 0.875rem;
+                color: #999;
+            }
+
+            &.cache-hits .metric-value {
+                color: #4CAF50;
+            }
+
+            &.network .metric-value {
+                color: #FF9800;
+            }
+
+            &.uptime .metric-value {
+                color: #2196F3;
+            }
+        }
+    }
+
+    // Статистика кеша
+    .cache-stats-section {
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+        h2 {
+            margin-top: 0;
+            color: #333;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .cache-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+
+            .cache-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 1rem;
+                background: #f5f5f5;
+                border-radius: 6px;
+                border-left: 4px solid #667eea;
+
+                .cache-type {
+                    font-weight: 600;
+                    color: #333;
+                }
+
+                .cache-count {
+                    font-size: 1.5rem;
+                    font-weight: 700;
+                    color: #667eea;
+                    background: rgba(102, 126, 234, 0.1);
+                    padding: 0.5rem 1rem;
+                    border-radius: 4px;
+                    min-width: 50px;
+                    text-align: center;
+                }
+            }
+        }
+
+        .cache-chart {
+            display: flex;
+            gap: 4px;
+            height: 40px;
+            background: #f9f9f9;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #eee;
+
+            .chart-bar {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-weight: 700;
+                font-size: 0.875rem;
+                transition: all 0.3s ease;
+                min-width: 30px;
+
+                &.memory {
+                    background: linear-gradient(90deg, #00BCD4, #0097A7);
+                }
+
+                &.localStorage {
+                    background: linear-gradient(90deg, #FF9800, #E65100);
+                }
+
+                &.network {
+                    background: linear-gradient(90deg, #4CAF50, #2E7D32);
+                }
+
+                span {
+                    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+                }
+            }
+        }
+    }
+
+    // Секция API вызовов
+    .api-calls-section {
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+        h2 {
+            margin-top: 0;
+            color: #333;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .api-calls-list {
+            .no-calls-block {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+                padding: 2rem;
+                color: #999;
+                background: #fafafa;
+                border-radius: 8px;
+                text-align: center;
+            }
+
+            .no-calls {
+                margin: 0;
+                font-style: italic;
+            }
+
+            .btn-demo {
+                padding: 0.75rem 1.25rem;
+                border: none;
+                border-radius: 8px;
+                background: #667eea;
+                color: white;
+                cursor: pointer;
+                font-weight: 700;
+                transition: transform 0.2s ease, background 0.2s ease;
+            }
+
+            .btn-demo:hover {
+                transform: translateY(-2px);
+                background: #5563d0;
+            }
+
+            .api-calls-table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 0.9rem;
+
+                thead tr {
+                    background: #f5f5f5;
+                    border-bottom: 2px solid #ddd;
+
+                    th {
+                        padding: 1rem;
+                        text-align: left;
+                        font-weight: 600;
+                        color: #333;
+                    }
+                }
+
+                tbody tr {
+                    border-bottom: 1px solid #eee;
+                    transition: background 0.2s ease;
+
+                    &:hover {
+                        background: #f9f9f9;
+                    }
+
+                    &.call-memory {
+                        td:first-child {
+                            background: rgba(0, 188, 212, 0.05);
+                        }
+                    }
+
+                    &.call-localStorage {
+                        td:first-child {
+                            background: rgba(255, 152, 0, 0.05);
+                        }
+                    }
+
+                    &.call-network {
+                        td:first-child {
+                            background: rgba(76, 175, 80, 0.05);
+                        }
+                    }
+
+                    td {
+                        padding: 1rem;
+
+                        .badge {
+                            display: inline-block;
+                            padding: 0.25rem 0.75rem;
+                            border-radius: 20px;
+                            font-weight: 600;
+                            font-size: 0.8rem;
+
+                            &.badge-memory {
+                                background: rgba(0, 188, 212, 0.2);
+                                color: #00796B;
+                            }
+
+                            &.badge-localStorage {
+                                background: rgba(255, 152, 0, 0.2);
+                                color: #E65100;
+                            }
+
+                            &.badge-network {
+                                background: rgba(76, 175, 80, 0.2);
+                                color: #2E7D32;
+                            }
+                        }
+
+                        &.url {
+                            font-family: 'Courier New', monospace;
+                            color: #666;
+                            word-break: break-all;
+                            max-width: 400px;
+                        }
+
+                        &.time {
+                            color: #999;
+                            font-size: 0.85rem;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Подсказка
+    .dashboard-hint {
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        padding: 1.5rem;
+        border-radius: 8px;
+        color: white;
+        margin-top: 2rem;
+        backdrop-filter: blur(10px);
+
+        p {
+            margin: 0;
+            font-size: 1rem;
+            line-height: 1.5;
+
+            strong {
+                font-weight: 700;
+            }
+        }
+    }
+
+    // Адаптивность
+    @media (max-width: 768px) {
+        padding: 1rem;
+
+        .performance-header {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .performance-controls {
+                width: 100%;
+            }
+        }
+
+        .metrics-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .cache-stats-section .cache-breakdown {
+            grid-template-columns: 1fr;
+        }
+
+        .api-calls-section .api-calls-table {
+            font-size: 0.8rem;
+
+            th,
+            td {
+                padding: 0.75rem;
+            }
+
+            td.url {
+                max-width: 200px;
+            }
+        }
+    }
+}

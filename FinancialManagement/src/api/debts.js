@@ -17,10 +17,25 @@ async function getDefaultCurrencyId() {
 
 function transformDebtResponse(debt) {
     if (!debt) return null;
+    
+    // Разбиваем creditorName обратно на name и person
+    // Формат: "Название долга (Имя человека)" или просто "Имя человека"
+    let name = '';
+    let person = debt.creditorName || '';
+    
+    const match = (debt.creditorName || '').match(/^(.+?)\s*\(([^)]+)\)$/);
+    if (match) {
+        name = match[1].trim();
+        person = match[2].trim();
+    } else {
+        name = debt.creditorName || '';
+        person = debt.creditorName || '';
+    }
+    
     return {
         id: debt.id,
-        name: debt.creditorName,
-        person: debt.creditorName,
+        name: name,
+        person: person,
         amount: debt.remainingAmount ?? debt.totalAmount ?? 0,
         totalAmount: debt.totalAmount ?? 0,
         remainingAmount: debt.remainingAmount ?? 0,
@@ -44,10 +59,19 @@ export async function getDebt(id) {
 export async function createDebt(data) {
     const profileId = getActiveProfileId();
     const currencyId = await getDefaultCurrencyId();
+    
+    // Комбинируем название долга и имя человека, чтобы сохранить оба значения
+    let creditorName = '';
+    if (data.name && data.person) {
+        creditorName = `${data.name} (${data.person})`;
+    } else {
+        creditorName = data.person || data.name || '';
+    }
+    
     const result = await api.post('/debt', {
         profileId,
         currencyId,
-        creditorName: data.person || data.name,
+        creditorName: creditorName,
         totalAmount: data.amount,
         dueDate: toDateOnly(data.returnDate),
     });
@@ -60,7 +84,13 @@ export async function updateDebt(id, data) {
     if (data.status === 'returned') {
         result = await api.patch(`/debt/${id}/repay`);
     } else {
-        result = await api.put(`/debt/${id}/creditor`, data.creditor || data.person || data.name);
+        // При обновлении используем person (имя человека)
+        // Если передано название долга, комбинируем с person
+        let creditorName = data.person || data.name || '';
+        if (data.name && data.person && data.name !== data.person) {
+            creditorName = `${data.name} (${data.person})`;
+        }
+        result = await api.put(`/debt/${id}/creditor`, creditorName);
     }
     invalidateCreditsDebtsCache();
     return result;

@@ -12,6 +12,7 @@ const Onboarding = lazy(() => import('../page/Onboarding/Onboarding').then(m => 
 const OnboardingSuccess = lazy(() => import('../page/OnboardingSuccess/OnboardingSuccess'))
 const AppLayout = lazy(() => import('../layouts/AppLayout'))
 const WelcomeModal = lazy(() => import('../components/ui/WelcomeModel/WelcomeModal.jsx'))
+const PerformanceDashboard = lazy(() => import('../page/PerformanceDashboard/PerformanceDashboard'))
 
 /**
  * Loading компонент для Suspense fallback
@@ -119,6 +120,24 @@ export default function AppRoutes() {
                                         />
                                     )}
                                 </>
+                            }
+                        />
+                    </Route>
+
+                    {/* ---------- PERFORMANCE DASHBOARD (для демонстрации и тестирования) ---------- */}
+                    <Route
+                        element={
+                            <ProtectedRoute
+                                isAllowed={isAuth && hasCompletedOnboarding}
+                            />
+                        }
+                    >
+                        <Route
+                            path="/performance"
+                            element={
+                                <Suspense fallback={<LoadingFallback />}>
+                                    <PerformanceDashboard />
+                                </Suspense>
                             }
                         />
                     </Route>
